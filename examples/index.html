@@ -409,6 +409,43 @@
                 </div>
                 <my-gauge id="interactiveGauge" value="50" label="Interactive Gauge" unit="%" show-value animated></my-gauge>
             </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Sparklines - Trend Visualization</span>
+                <div style="display: flex; flex-direction: column; gap: var(--_global-spacing-md);">
+                    <div>
+                        <label>Revenue Trend</label>
+                        <my-sparkline 
+                            data='[12, 19, 15, 25, 22, 30, 28, 35, 32, 40]'
+                            variant="success"
+                            fill
+                            smooth
+                            animated
+                            size="md"
+                        ></my-sparkline>
+                    </div>
+                    <div>
+                        <label>User Activity</label>
+                        <my-sparkline 
+                            data='[45, 52, 48, 61, 55, 67, 63, 58, 72, 68]'
+                            variant="info"
+                            dots
+                            animated
+                        ></my-sparkline>
+                    </div>
+                    <div>
+                        <label>System Load</label>
+                        <my-sparkline 
+                            data='[20, 35, 45, 38, 52, 61, 58, 73, 69, 85]'
+                            variant="warning"
+                            fill
+                            gradient
+                            smooth
+                            size="lg"
+                        ></my-sparkline>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -437,6 +474,60 @@
                 <my-button label="Top Right" onclick="showPositionedNotification('top-right')"></my-button>
                 <my-button label="Bottom Left" onclick="showPositionedNotification('bottom-left')"></my-button>
                 <my-button label="Bottom Right" onclick="showPositionedNotification('bottom-right')"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Drawers - Sliding Panels</span>
+                <my-button label="Left Navigation" onclick="openDrawer('left')"></my-button>
+                <my-button label="Right Settings" onclick="openDrawer('right')"></my-button>
+                <my-button label="Bottom Actions" onclick="openDrawer('bottom')"></my-button>
+                <my-button label="Top Notifications" onclick="openDrawer('top')"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Drawer Features</span>
+                <my-button label="Swipeable Drawer" onclick="openDrawer('swipe')"></my-button>
+                <my-button label="Large Drawer" onclick="openDrawer('large')"></my-button>
+                <my-button label="Persistent Drawer" onclick="openDrawer('persistent')"></my-button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Data Components -->
+    <section class="demo-section">
+        <h2 class="demo-title">Advanced Data Components</h2>
+        <div class="demo-grid">
+            <div class="demo-item">
+                <span class="demo-label">Data List - Basic</span>
+                <my-data-list 
+                    id="basic-data-list"
+                    searchable
+                    page-size="5"
+                    search-placeholder="Search users..."
+                    style="height: 400px;"
+                >
+                </my-data-list>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Data List - Advanced Features</span>
+                <my-data-list 
+                    id="advanced-data-list"
+                    searchable
+                    sortable
+                    filterable
+                    pagination-type="infinite"
+                    page-size="3"
+                    style="height: 300px;"
+                >
+                    <div slot="header">
+                        <h3>Product Catalog</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <my-button size="sm" variant="outlined">Export</my-button>
+                            <my-button size="sm" variant="filled">Add New</my-button>
+                        </div>
+                    </div>
+                </my-data-list>
             </div>
         </div>
     </section>
@@ -470,6 +561,194 @@
         </div>
     </my-modal>
 
+    <!-- Hidden Drawer Templates -->
+    <my-drawer id="leftDrawer" position="left" size="md" swipeable>
+        <div slot="header">
+            <h3>Navigation Menu</h3>
+            <my-button variant="text" onclick="closeDrawer('left')" size="sm">
+                <my-icon icon="close"></my-icon>
+            </my-button>
+        </div>
+        
+        <nav style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="#" style="padding: 12px; text-decoration: none; color: var(--_global-color-on-surface); border-radius: 8px; transition: background-color 0.2s;">
+                <my-icon icon="home" size="sm"></my-icon> Dashboard
+            </a>
+            <a href="#" style="padding: 12px; text-decoration: none; color: var(--_global-color-on-surface); border-radius: 8px; transition: background-color 0.2s;">
+                <my-icon icon="people" size="sm"></my-icon> Users
+            </a>
+            <a href="#" style="padding: 12px; text-decoration: none; color: var(--_global-color-on-surface); border-radius: 8px; transition: background-color 0.2s;">
+                <my-icon icon="analytics" size="sm"></my-icon> Analytics
+            </a>
+            <a href="#" style="padding: 12px; text-decoration: none; color: var(--_global-color-on-surface); border-radius: 8px; transition: background-color 0.2s;">
+                <my-icon icon="settings" size="sm"></my-icon> Settings
+            </a>
+        </nav>
+        
+        <div slot="footer">
+            <my-button variant="outlined" onclick="closeDrawer('left')" style="width: 100%;">Close Menu</my-button>
+        </div>
+    </my-drawer>
+
+    <my-drawer id="rightDrawer" position="right" size="lg">
+        <div slot="header">
+            <h3>Settings Panel</h3>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+                <h4>Appearance</h4>
+                <my-toggle label="Dark Mode" name="darkMode"></my-toggle>
+                <my-toggle label="High Contrast" name="highContrast"></my-toggle>
+            </div>
+            
+            <div>
+                <h4>Notifications</h4>
+                <my-checkbox label="Email notifications" checked></my-checkbox>
+                <my-checkbox label="Push notifications"></my-checkbox>
+                <my-checkbox label="SMS notifications"></my-checkbox>
+            </div>
+            
+            <div>
+                <h4>Language</h4>
+                <my-dropdown 
+                    placeholder="Select language"
+                    options='[{"label": "English", "value": "en"}, {"label": "Spanish", "value": "es"}, {"label": "French", "value": "fr"}]'
+                ></my-dropdown>
+            </div>
+        </div>
+        
+        <div slot="footer">
+            <my-button variant="text" onclick="closeDrawer('right')">Cancel</my-button>
+            <my-button variant="filled" onclick="saveSettings()">Save Settings</my-button>
+        </div>
+    </my-drawer>
+
+    <my-drawer id="bottomDrawer" position="bottom" size="md" swipeable>
+        <div slot="header">
+            <h3>Quick Actions</h3>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px;">
+            <my-button variant="outlined" onclick="quickAction('export')">
+                <my-icon icon="download" size="sm"></my-icon>
+                Export Data
+            </my-button>
+            <my-button variant="outlined" onclick="quickAction('import')">
+                <my-icon icon="upload" size="sm"></my-icon>
+                Import Data
+            </my-button>
+            <my-button variant="outlined" onclick="quickAction('share')">
+                <my-icon icon="share" size="sm"></my-icon>
+                Share
+            </my-button>
+            <my-button variant="outlined" onclick="quickAction('print')">
+                <my-icon icon="print" size="sm"></my-icon>
+                Print
+            </my-button>
+        </div>
+    </my-drawer>
+
+    <my-drawer id="topDrawer" position="top" size="sm">
+        <div slot="header">
+            <h3>System Notifications</h3>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="padding: 12px; background: var(--_global-color-success-light); border-radius: 8px;">
+                <strong>System Update</strong><br>
+                New features are now available!
+            </div>
+            <div style="padding: 12px; background: var(--_global-color-warning-light); border-radius: 8px;">
+                <strong>Maintenance</strong><br>
+                Scheduled maintenance in 2 hours.
+            </div>
+            <div style="padding: 12px; background: var(--_global-color-info-light); border-radius: 8px;">
+                <strong>New Message</strong><br>
+                You have 3 unread messages.
+            </div>
+        </div>
+        
+        <div slot="footer">
+            <my-button variant="text" onclick="closeDrawer('top')">Dismiss All</my-button>
+        </div>
+    </my-drawer>
+
+    <my-drawer id="swipeableDrawer" position="left" size="md" swipeable close-on-backdrop-click>
+        <div slot="header">
+            <h3>Swipeable Menu</h3>
+            <p style="font-size: 14px; color: var(--_global-color-on-surface-variant); margin: 4px 0 0 0;">
+                Try swiping left to close!
+            </p>
+        </div>
+        
+        <div style="padding: 16px; background: var(--_global-color-surface-container); border-radius: 8px; margin: 16px 0;">
+            <p><strong>Touch Gestures:</strong></p>
+            <ul style="margin: 8px 0 0 20px;">
+                <li>Swipe left to close</li>
+                <li>Tap backdrop to close</li>
+                <li>Use Escape key to close</li>
+            </ul>
+        </div>
+    </my-drawer>
+
+    <my-drawer id="largeDrawer" position="right" size="xl">
+        <div slot="header">
+            <h3>Large Content Panel</h3>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div>
+                <h4>User Profile</h4>
+                <my-input label="Full Name" value="John Doe"></my-input>
+                <my-input label="Email" type="email" value="john@example.com"></my-input>
+                <my-input label="Bio" type="textarea" placeholder="Tell us about yourself..."></my-input>
+            </div>
+            
+            <div>
+                <h4>Preferences</h4>
+                <my-radio-group name="theme" label="Theme Preference:">
+                    <my-radio value="light" label="Light"></my-radio>
+                    <my-radio value="dark" label="Dark"></my-radio>
+                    <my-radio value="auto" label="Auto" checked></my-radio>
+                </my-radio-group>
+            </div>
+        </div>
+        
+        <div slot="footer">
+            <my-button variant="text" onclick="closeDrawer('large')">Cancel</my-button>
+            <my-button variant="filled">Save Changes</my-button>
+        </div>
+    </my-drawer>
+
+    <my-drawer id="persistentDrawer" position="left" size="sm" persistent backdrop="false">
+        <div slot="header">
+            <h3>Persistent Menu</h3>
+            <p style="font-size: 12px; color: var(--_global-color-on-surface-variant); margin: 4px 0 0 0;">
+                No backdrop, won't close automatically
+            </p>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <my-button variant="text" style="justify-content: flex-start;">
+                <my-icon icon="dashboard" size="sm"></my-icon>
+                Dashboard
+            </my-button>
+            <my-button variant="text" style="justify-content: flex-start;">
+                <my-icon icon="folder" size="sm"></my-icon>
+                Files
+            </my-button>
+            <my-button variant="text" style="justify-content: flex-start;">
+                <my-icon icon="people" size="sm"></my-icon>
+                Team
+            </my-button>
+        </div>
+        
+        <div slot="footer">
+            <my-button variant="filled" onclick="closeDrawer('persistent')" size="sm" style="width: 100%;">Close</my-button>
+        </div>
+    </my-drawer>
+
     <!-- Load all components -->
     <script type="module">
         // Import all implemented components
@@ -485,6 +764,11 @@
         import '../src/components/my-gauge/my-gauge.js';
         import '../src/components/my-modal/my-modal.js';
         import '../src/components/my-notification/my-notification.js';
+        
+        // Import new components
+        import '../src/components/my-sparkline/my-sparkline.js';
+        import '../src/components/my-drawer/my-drawer.js';
+        import '../src/components/my-data-list/my-data-list.js';
         
         console.log('MyntUI Test Environment Loaded - All Components Available');
         
@@ -619,6 +903,182 @@
                 n.message = msg; n.type = 'info'; n.closeable = true; n.show();
             }
         };
+        
+        // Drawer functions
+        window.openDrawer = function(type) {
+            const drawers = {
+                'left': 'leftDrawer',
+                'right': 'rightDrawer',
+                'bottom': 'bottomDrawer',
+                'top': 'topDrawer',
+                'swipe': 'swipeableDrawer',
+                'large': 'largeDrawer',
+                'persistent': 'persistentDrawer'
+            };
+            const drawer = document.getElementById(drawers[type]);
+            if (drawer) {
+                drawer.show();
+            }
+        };
+        
+        window.closeDrawer = function(type) {
+            const drawers = {
+                'left': 'leftDrawer',
+                'right': 'rightDrawer',
+                'bottom': 'bottomDrawer',
+                'top': 'topDrawer',
+                'swipe': 'swipeableDrawer',
+                'large': 'largeDrawer',
+                'persistent': 'persistentDrawer'
+            };
+            const drawer = document.getElementById(drawers[type]);
+            if (drawer) {
+                drawer.hide();
+            }
+        };
+        
+        window.saveSettings = function() {
+            MyNotification.success('Settings saved successfully!');
+            closeDrawer('right');
+        };
+        
+        window.quickAction = function(action) {
+            const messages = {
+                'export': 'Data exported successfully!',
+                'import': 'Import started...',
+                'share': 'Share link copied to clipboard',
+                'print': 'Print job sent to printer'
+            };
+            MyNotification.info(messages[action] || `Action: ${action}`);
+            closeDrawer('bottom');
+        };
+        
+        // Data list setup and functions
+        const sampleUsers = [
+            { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active', lastLogin: '2024-01-15' },
+            { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'User', status: 'Active', lastLogin: '2024-01-14' },
+            { id: 3, name: 'Carol Davis', email: 'carol@example.com', role: 'Editor', status: 'Inactive', lastLogin: '2024-01-10' },
+            { id: 4, name: 'David Wilson', email: 'david@example.com', role: 'User', status: 'Active', lastLogin: '2024-01-16' },
+            { id: 5, name: 'Eve Martinez', email: 'eve@example.com', role: 'Admin', status: 'Active', lastLogin: '2024-01-15' },
+            { id: 6, name: 'Frank Brown', email: 'frank@example.com', role: 'User', status: 'Active', lastLogin: '2024-01-13' },
+            { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Editor', status: 'Active', lastLogin: '2024-01-16' },
+            { id: 8, name: 'Henry Taylor', email: 'henry@example.com', role: 'User', status: 'Inactive', lastLogin: '2024-01-08' },
+            { id: 9, name: 'Ivy Chen', email: 'ivy@example.com', role: 'Admin', status: 'Active', lastLogin: '2024-01-16' },
+            { id: 10, name: 'Jack Anderson', email: 'jack@example.com', role: 'User', status: 'Active', lastLogin: '2024-01-14' }
+        ];
+        
+        const sampleProducts = [
+            { id: 1, name: 'Wireless Headphones', price: 99.99, category: 'Electronics', stock: 15, rating: 4.5 },
+            { id: 2, name: 'Laptop Stand', price: 49.99, category: 'Accessories', stock: 8, rating: 4.2 },
+            { id: 3, name: 'Mechanical Keyboard', price: 129.99, category: 'Electronics', stock: 12, rating: 4.8 },
+            { id: 4, name: 'Desk Lamp', price: 34.99, category: 'Furniture', stock: 5, rating: 4.0 },
+            { id: 5, name: 'Monitor Stand', price: 79.99, category: 'Accessories', stock: 20, rating: 4.3 },
+            { id: 6, name: 'Ergonomic Mouse', price: 59.99, category: 'Electronics', stock: 25, rating: 4.6 },
+            { id: 7, name: 'Cable Organizer', price: 19.99, category: 'Accessories', stock: 30, rating: 4.1 },
+            { id: 8, name: 'Webcam HD', price: 89.99, category: 'Electronics', stock: 7, rating: 4.4 },
+            { id: 9, name: 'Standing Desk', price: 299.99, category: 'Furniture', stock: 3, rating: 4.7 },
+            { id: 10, name: 'Bluetooth Speaker', price: 69.99, category: 'Electronics', stock: 18, rating: 4.5 }
+        ];
+        
+        // Setup basic data list
+        const basicDataList = document.getElementById('basic-data-list');
+        if (basicDataList) {
+            basicDataList.rows = sampleUsers.slice(0, 5);
+            basicDataList.totalItems = sampleUsers.length;
+            
+            basicDataList.addEventListener('query-change', (e) => {
+                const { query } = e.detail;
+                console.log('Basic data list query changed:', query);
+                
+                // Simulate API call delay
+                basicDataList.loading = true;
+                setTimeout(() => {
+                    let filteredData = [...sampleUsers];
+                    
+                    // Apply search filter
+                    if (query.searchBy) {
+                        const searchTerm = query.searchBy.toLowerCase();
+                        filteredData = filteredData.filter(user => 
+                            user.name.toLowerCase().includes(searchTerm) ||
+                            user.email.toLowerCase().includes(searchTerm) ||
+                            user.role.toLowerCase().includes(searchTerm)
+                        );
+                    }
+                    
+                    // Apply pagination
+                    const start = query.offset;
+                    const end = start + query.limit;
+                    const pageData = filteredData.slice(start, end);
+                    
+                    basicDataList.rows = pageData;
+                    basicDataList.totalItems = filteredData.length;
+                    basicDataList.loading = false;
+                }, 500);
+            });
+        }
+        
+        // Setup advanced data list
+        const advancedDataList = document.getElementById('advanced-data-list');
+        if (advancedDataList) {
+            advancedDataList.rows = sampleProducts.slice(0, 3);
+            advancedDataList.totalItems = sampleProducts.length;
+            
+            advancedDataList.addEventListener('query-change', (e) => {
+                const { query } = e.detail;
+                console.log('Advanced data list query changed:', query);
+                
+                // Simulate API call delay
+                advancedDataList.loading = true;
+                setTimeout(() => {
+                    let filteredData = [...sampleProducts];
+                    
+                    // Apply search filter
+                    if (query.searchBy) {
+                        const searchTerm = query.searchBy.toLowerCase();
+                        filteredData = filteredData.filter(product => 
+                            product.name.toLowerCase().includes(searchTerm) ||
+                            product.category.toLowerCase().includes(searchTerm)
+                        );
+                    }
+                    
+                    // Apply sorting
+                    if (query.sortBy && query.sortBy.length > 0) {
+                        const sort = query.sortBy[0];
+                        filteredData.sort((a, b) => {
+                            let aVal = a[sort.field];
+                            let bVal = b[sort.field];
+                            
+                            if (typeof aVal === 'string') {
+                                aVal = aVal.toLowerCase();
+                                bVal = bVal.toLowerCase();
+                            }
+                            
+                            if (sort.direction === 'asc') {
+                                return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                            } else {
+                                return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+                            }
+                        });
+                    }
+                    
+                    // Apply pagination
+                    const start = query.offset;
+                    const end = start + query.limit;
+                    let pageData;
+                    
+                    if (advancedDataList.paginationType === 'infinite' && query.offset > 0) {
+                        // For infinite scroll, append new data
+                        pageData = [...advancedDataList.rows, ...filteredData.slice(start, end)];
+                    } else {
+                        pageData = filteredData.slice(start, end);
+                    }
+                    
+                    advancedDataList.rows = pageData;
+                    advancedDataList.totalItems = filteredData.length;
+                    advancedDataList.loading = false;
+                }, 300);
+            });
+        }
     </script>
 </body>
 </html>
