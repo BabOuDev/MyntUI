@@ -1351,9 +1351,9 @@ class MyInput extends MyntUIBaseComponent {
           --_input-icon-color-disabled: var(--_global-color-on-surface-variant);
           
           /* Enhanced shape system */
-          --_input-container-shape-small: var(--_global-border-radius-xs);
-          --_input-container-shape-medium: var(--_global-border-radius-sm);
-          --_input-container-shape-large: var(--_global-border-radius-md);
+          --_input-container-shape-small: var(--_global-border-radius-sm);
+          --_input-container-shape-medium: var(--_global-border-radius-md);
+          --_input-container-shape-large: var(--_global-border-radius-lg);
           --_input-container-shape: var(--_input-container-shape-medium);
           --_input-state-layer-shape: var(--_global-border-radius-full);
           
@@ -1364,9 +1364,9 @@ class MyInput extends MyntUIBaseComponent {
           --_input-state-layer-opacity-pressed: var(--_global-state-layer-pressed);
           
           /* Enhanced animation tokens */
-          --_input-motion-duration-short: var(--_global-motion-duration-short2);
+          --_input-motion-duration-short: var(--_global-interaction-feedback-duration);
           --_input-motion-duration-medium: var(--_global-motion-duration-medium2);
-          --_input-motion-easing: var(--_global-motion-easing-emphasized);
+          --_input-motion-easing: var(--_global-interaction-feedback-easing);
           --_input-motion-easing-decelerate: var(--_global-motion-easing-decelerate);
           
           /* Enhanced elevation system */
@@ -1375,9 +1375,9 @@ class MyInput extends MyntUIBaseComponent {
           --_input-container-elevation-focus: var(--_global-elevation-0);
           
           /* Focus ring system */
-          --_input-focus-ring: 2px solid var(--_global-color-primary);
-          --_input-focus-ring-offset: 2px;
-          --_input-focus-ring-error: 2px solid var(--_global-color-error);
+          --_input-focus-ring: var(--_global-focus-ring-width) var(--_global-focus-ring-style) var(--_global-focus-ring-color);
+          --_input-focus-ring-offset: var(--_global-focus-ring-offset);
+          --_input-focus-ring-error: var(--_global-focus-ring-width) var(--_global-focus-ring-style) var(--_global-color-error);
           
           display: block;
           width: 100%;
