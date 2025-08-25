@@ -21,10 +21,15 @@ import './components/my-dropdown/my-dropdown.js';
 // Data visualization components
 import './components/my-gauge/my-gauge.js';
 import './components/my-progress/my-progress.js';
+import './components/my-sparkline/my-sparkline.js';
+
+// Data display components
+import './components/my-data-list/my-data-list.js';
 
 // Overlay components
 import './components/my-modal/my-modal.js';
 import './components/my-notification/my-notification.js';
+import './components/my-drawer/my-drawer.js';
 
 console.log('MyntUI: Available components loaded successfully');
-console.log('Components ready: my-icon, my-button, my-input, my-toggle, my-checkbox, my-radio, my-radio-group, my-tooltip, my-dropdown, my-gauge, my-progress, my-modal, my-notification');
+console.log('Components ready: my-icon, my-button, my-input, my-toggle, my-checkbox, my-radio, my-radio-group, my-tooltip, my-dropdown, my-gauge, my-progress, my-sparkline, my-data-list, my-modal, my-notification, my-drawer');
