@@ -15,8 +15,8 @@ class MyModal extends HTMLElement {
     this.handleBackdropClick = this.handleBackdropClick.bind(this);
     this.handleEscapeKey = this.handleEscapeKey.bind(this);
     this.handleFocusTrap = this.handleFocusTrap.bind(this);
-    this.close = this.close.bind(this);
-    this.open = this.open.bind(this);
+    this.hide = this.hide.bind(this);
+    this.show = this.show.bind(this);
     
     // Focus management
     this.previousActiveElement = null;
@@ -220,8 +220,8 @@ class MyModal extends HTMLElement {
 
     const closeButton = this.shadowRoot.querySelector('.modal-close-button');
     if (closeButton) {
-      closeButton.removeEventListener('click', this.close);
-      closeButton.addEventListener('click', this.close);
+      closeButton.removeEventListener('click', this.hide);
+      closeButton.addEventListener('click', this.hide);
     }
   }
 
