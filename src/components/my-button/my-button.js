@@ -1,6 +1,6 @@
 /**
  * MyntUI my-button Component
- * A Material Design 3 button component with proper elevation and styling
+ * A Material Design 3 button component with enhanced state layers, accessibility, and consistency
  */
 
 class MyButton extends HTMLElement {
@@ -15,6 +15,10 @@ class MyButton extends HTMLElement {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
+    this.handleMouseEnter = this.handleMouseEnter.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
     this.createRipple = this.createRipple.bind(this);
     
     // Initialize component
@@ -24,7 +28,7 @@ class MyButton extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['label', 'variant', 'disabled', 'loading', 'size', 'density', 'fab', 'icon-only'];
+    return ['label', 'variant', 'disabled', 'loading', 'size', 'density', 'fab', 'icon-only', 'elevated', 'filled-tonal'];
   }
 
   // Handle attribute changes
@@ -116,6 +120,30 @@ class MyButton extends HTMLElement {
     }
   }
 
+  get elevated() {
+    return this.hasAttribute('elevated');
+  }
+
+  set elevated(value) {
+    if (value) {
+      this.setAttribute('elevated', '');
+    } else {
+      this.removeAttribute('elevated');
+    }
+  }
+
+  get filledTonal() {
+    return this.hasAttribute('filled-tonal');
+  }
+
+  set filledTonal(value) {
+    if (value) {
+      this.setAttribute('filled-tonal', '');
+    } else {
+      this.removeAttribute('filled-tonal');
+    }
+  }
+
   // Handle click events
   handleClick(event) {
     if (this.disabled || this.loading) {
@@ -173,7 +201,43 @@ class MyButton extends HTMLElement {
   handleBlur(event) {
     const button = this.shadowRoot.querySelector('button');
     if (button) {
-      button.classList.remove('focused');
+      button.classList.remove('focused', 'hovered', 'pressed');
+    }
+  }
+
+  // Handle mouse enter for hover states
+  handleMouseEnter(event) {
+    if (this.disabled || this.loading) return;
+    
+    const button = this.shadowRoot.querySelector('button');
+    if (button) {
+      button.classList.add('hovered');
+    }
+  }
+
+  // Handle mouse leave
+  handleMouseLeave(event) {
+    const button = this.shadowRoot.querySelector('button');
+    if (button) {
+      button.classList.remove('hovered', 'pressed');
+    }
+  }
+
+  // Handle mouse down for pressed states
+  handleMouseDown(event) {
+    if (this.disabled || this.loading) return;
+    
+    const button = this.shadowRoot.querySelector('button');
+    if (button) {
+      button.classList.add('pressed');
+    }
+  }
+
+  // Handle mouse up
+  handleMouseUp(event) {
+    const button = this.shadowRoot.querySelector('button');
+    if (button) {
+      button.classList.remove('pressed');
     }
   }
 
@@ -220,7 +284,7 @@ class MyButton extends HTMLElement {
     }, 600);
   }
 
-  // Attach event listeners - Standardized pattern for MyntUI components
+  // Attach event listeners - Enhanced for Material Design 3 state management
   attachEventListeners() {
     // Clean up existing listeners first
     this.removeEventListeners();
@@ -228,20 +292,23 @@ class MyButton extends HTMLElement {
     const button = this.shadowRoot.querySelector('button');
     if (!button) return;
     
-    // Only attach listeners to the shadow DOM button element
-    // This prevents duplicate event handling and simplifies the pattern
+    // Attach all event listeners for enhanced state management
     button.addEventListener('click', this.handleClick);
     button.addEventListener('keydown', this.handleKeyDown);
     button.addEventListener('focus', this.handleFocus);
     button.addEventListener('blur', this.handleBlur);
+    button.addEventListener('mouseenter', this.handleMouseEnter);
+    button.addEventListener('mouseleave', this.handleMouseLeave);
+    button.addEventListener('mousedown', this.handleMouseDown);
+    button.addEventListener('mouseup', this.handleMouseUp);
     
     // Store references for cleanup
     this._eventTargets = [
-      { element: button, events: ['click', 'keydown', 'focus', 'blur'] }
+      { element: button, events: ['click', 'keydown', 'focus', 'blur', 'mouseenter', 'mouseleave', 'mousedown', 'mouseup'] }
     ];
   }
 
-  // Remove event listeners - part of standardized cleanup pattern
+  // Remove event listeners - Enhanced cleanup pattern
   removeEventListeners() {
     if (this._eventTargets) {
       this._eventTargets.forEach(target => {
@@ -249,6 +316,10 @@ class MyButton extends HTMLElement {
         target.element.removeEventListener('keydown', this.handleKeyDown);
         target.element.removeEventListener('focus', this.handleFocus);
         target.element.removeEventListener('blur', this.handleBlur);
+        target.element.removeEventListener('mouseenter', this.handleMouseEnter);
+        target.element.removeEventListener('mouseleave', this.handleMouseLeave);
+        target.element.removeEventListener('mousedown', this.handleMouseDown);
+        target.element.removeEventListener('mouseup', this.handleMouseUp);
       });
       this._eventTargets = null;
     }
@@ -266,71 +337,112 @@ class MyButton extends HTMLElement {
     const variant = this.variant;
     const size = this.size;
     const density = this.density;
+    const isElevated = this.elevated;
+    const isFilledTonal = this.filledTonal;
     
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          /* Button-specific variables using global semantic variables */
+          /* Enhanced Material Design 3 button variables with better semantic naming */
           --_button-min-width: 64px;
+          --_button-state-layer-size: 40px;
+          --_button-border-width: 1px;
+          
+          /* Size system aligned with global variables */
+          --_button-height-xs: 24px;
           --_button-height-sm: var(--_global-component-height-sm);
           --_button-height-md: var(--_global-component-height-md);
           --_button-height-lg: var(--_global-component-height-lg);
+          --_button-height-xl: 56px;
           
+          /* Padding system with improved spacing */
+          --_button-padding-xs: 0 var(--_global-spacing-sm);
           --_button-padding-sm: 0 var(--_global-spacing-md);
           --_button-padding-md: 0 var(--_global-spacing-lg);
           --_button-padding-lg: 0 var(--_global-spacing-xl);
+          --_button-padding-xl: 0 calc(var(--_global-spacing-xl) + 4px);
           
+          /* Typography system */
           --_button-font-family: var(--_global-font-family-sans);
+          --_button-font-size-xs: var(--_global-font-size-xs);
           --_button-font-size-sm: var(--_global-font-size-sm);
           --_button-font-size-md: var(--_global-font-size-md);
           --_button-font-size-lg: var(--_global-font-size-lg);
+          --_button-font-size-xl: var(--_global-font-size-xl);
           --_button-font-weight: var(--_global-font-weight-medium);
           --_button-line-height: var(--_global-line-height-tight);
           
+          /* Border radius system */
           --_button-border-radius: var(--_global-border-radius-full);
           --_button-border-radius-fab: var(--_global-border-radius-lg);
           --_button-gap: var(--_global-spacing-sm);
           
+          /* Enhanced motion system */
           --_button-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
           --_button-transition-fast: var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
+          --_button-transition-emphasized: var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
           
-          /* Primary colors */
-          --_button-primary-bg: var(--_global-color-primary);
-          --_button-primary-bg-hover: var(--_global-color-primary-hover);
-          --_button-primary-bg-active: var(--_global-color-primary-active);
-          --_button-primary-text: var(--_global-color-white);
+          /* Material Design 3 color tokens */
+          /* Filled variant colors */
+          --_button-filled-bg: var(--_global-color-primary);
+          --_button-filled-text: var(--_global-color-on-primary);
+          --_button-filled-state-layer: var(--_global-color-on-primary);
           
-          /* Secondary colors */
-          --_button-secondary-bg: var(--_global-color-secondary);
-          --_button-secondary-bg-hover: var(--_global-color-secondary-hover);
-          --_button-secondary-bg-active: var(--_global-color-secondary-active);
-          --_button-secondary-text: var(--_global-color-white);
+          /* Filled-tonal variant colors */
+          --_button-filled-tonal-bg: var(--_global-color-secondary-container);
+          --_button-filled-tonal-text: var(--_global-color-on-secondary-container);
+          --_button-filled-tonal-state-layer: var(--_global-color-on-secondary-container);
           
-          /* Status colors */
-          --_button-success-bg: var(--_global-color-success);
-          --_button-error-bg: var(--_global-color-error);
+          /* Elevated variant colors */
+          --_button-elevated-bg: var(--_global-color-surface-container-low);
+          --_button-elevated-text: var(--_global-color-primary);
+          --_button-elevated-state-layer: var(--_global-color-primary);
           
-          /* Outlined variant */
-          --_button-outlined-border: 1px solid var(--_global-color-border);
+          /* Outlined variant colors */
+          --_button-outlined-bg: transparent;
           --_button-outlined-text: var(--_global-color-primary);
-          --_button-outlined-bg-hover: rgba(0, 123, 255, 0.08);
+          --_button-outlined-border: var(--_button-border-width) solid var(--_global-color-outline);
+          --_button-outlined-state-layer: var(--_global-color-primary);
           
-          /* Text variant */
-          --_button-text-bg-hover: rgba(0, 123, 255, 0.08);
+          /* Text variant colors */
+          --_button-text-bg: transparent;
+          --_button-text-text: var(--_global-color-primary);
+          --_button-text-state-layer: var(--_global-color-primary);
           
-          /* Elevations */
+          /* Status variant colors */
+          --_button-success-bg: var(--_global-color-success);
+          --_button-success-text: var(--_global-color-on-success);
+          --_button-error-bg: var(--_global-color-error);
+          --_button-error-text: var(--_global-color-on-error);
+          
+          /* Elevation system */
           --_button-elevation: var(--_global-elevation-1);
           --_button-elevation-hover: var(--_global-elevation-2);
+          --_button-elevation-elevated: var(--_global-elevation-1);
+          --_button-elevation-elevated-hover: var(--_global-elevation-2);
           
-          /* Focus */
-          --_button-focus-ring: 0 0 0 2px var(--_global-color-border-focus);
+          /* Enhanced state layer system */
+          --_button-state-layer-hover: var(--_global-state-layer-hover);
+          --_button-state-layer-focus: var(--_global-state-layer-focus);
+          --_button-state-layer-pressed: var(--_global-state-layer-pressed);
           
-          /* State layers */
-          --_button-state-hover: var(--_global-state-layer-hover);
-          --_button-state-pressed: var(--_global-state-layer-pressed);
+          /* Focus ring system */
+          --_button-focus-ring: 2px solid var(--_global-color-primary);
+          --_button-focus-ring-offset: 2px;
+          
+          /* Ripple system */
+          --_button-ripple-size: calc(var(--_button-state-layer-size) * 1.5);
+          --_button-ripple-duration: var(--_global-ripple-duration);
+          --_button-ripple-easing: var(--_global-ripple-easing);
+          
+          /* Disabled state */
+          --_button-disabled-opacity: 0.5;
+          --_button-disabled-bg: var(--_global-color-outline-variant);
+          --_button-disabled-text: var(--_global-color-outline);
           
           display: inline-flex;
           position: relative;
+          isolation: isolate;
         }
 
         button {
@@ -356,11 +468,70 @@ class MyButton extends HTMLElement {
           border-radius: var(--_button-border-radius);
           cursor: pointer;
           
-          transition: all var(--_button-transition);
+          transition: var(--_button-transition);
           outline: none;
+          overflow: hidden;
+          isolation: isolate;
+          
+          /* Default filled variant styling */
+          background-color: var(--_button-filled-bg);
+          color: var(--_button-filled-text);
+          box-shadow: var(--_button-elevation);
         }
 
-        /* Size variants */
+        /* Enhanced state layer with Material Design 3 principles */
+        button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: inherit;
+          background-color: var(--_button-filled-state-layer);
+          opacity: 0;
+          transition: var(--_button-transition-fast);
+          pointer-events: none;
+          z-index: -1;
+        }
+
+        /* Hover state layer */
+        button.hovered:not(:disabled)::before {
+          opacity: var(--_button-state-layer-hover);
+        }
+
+        /* Focus state layer */
+        button.focused:not(:disabled)::before {
+          opacity: var(--_button-state-layer-focus);
+        }
+
+        /* Pressed state layer */
+        button.pressed:not(:disabled)::before {
+          opacity: var(--_button-state-layer-pressed);
+          transform: scale(0.98);
+          transition: var(--_button-transition-emphasized);
+        }
+
+        /* Enhanced focus ring with proper accessibility */
+        button.focused:not(:disabled) {
+          outline: var(--_button-focus-ring);
+          outline-offset: var(--_button-focus-ring-offset);
+        }
+
+        /* Hover elevation enhancement */
+        button.hovered:not(:disabled) {
+          box-shadow: var(--_button-elevation-hover);
+          transform: translateY(-1px);
+        }
+
+        /* Enhanced size variants with proper scaling */
+        button.size-xs {
+          height: var(--_button-height-xs);
+          padding: var(--_button-padding-xs);
+          font-size: var(--_button-font-size-xs);
+          min-width: 48px;
+        }
+
         button.size-sm {
           height: var(--_button-height-sm);
           padding: var(--_button-padding-sm);
@@ -373,7 +544,13 @@ class MyButton extends HTMLElement {
           font-size: var(--_button-font-size-lg);
         }
 
-        /* Density variants */
+        button.size-xl {
+          height: var(--_button-height-xl);
+          padding: var(--_button-padding-xl);
+          font-size: var(--_button-font-size-xl);
+        }
+
+        /* Enhanced density variants */
         button.density-compact {
           min-width: 48px;
           letter-spacing: 0.01em;
@@ -394,100 +571,117 @@ class MyButton extends HTMLElement {
           padding: 0 var(--_global-spacing-lg);
         }
 
+        /* Material Design 3 Variant System */
+        
         /* Filled variant (default) */
         button.variant-filled,
         button.variant-primary {
-          background-color: var(--_button-primary-bg);
-          color: var(--_button-primary-text);
+          background-color: var(--_button-filled-bg);
+          color: var(--_button-filled-text);
           box-shadow: var(--_button-elevation);
         }
 
-        button.variant-filled:hover:not(:disabled),
-        button.variant-primary:hover:not(:disabled) {
-          background-color: var(--_button-primary-bg-hover);
-          box-shadow: var(--_button-elevation-hover);
-          transform: translateY(-1px);
+        button.variant-filled::before,
+        button.variant-primary::before {
+          background-color: var(--_button-filled-state-layer);
         }
 
-        /* Secondary variant */
-        button.variant-secondary {
-          background-color: var(--_button-secondary-bg);
-          color: var(--_button-secondary-text);
-          box-shadow: var(--_button-elevation);
+        /* Filled-tonal variant */
+        button.variant-filled-tonal {
+          background-color: var(--_button-filled-tonal-bg);
+          color: var(--_button-filled-tonal-text);
+          box-shadow: none;
         }
 
-        button.variant-secondary:hover:not(:disabled) {
-          background-color: var(--_button-secondary-bg-hover);
-          box-shadow: var(--_button-elevation-hover);
-          transform: translateY(-1px);
+        button.variant-filled-tonal::before {
+          background-color: var(--_button-filled-tonal-state-layer);
+        }
+
+        /* Elevated variant */
+        button.variant-elevated {
+          background-color: var(--_button-elevated-bg);
+          color: var(--_button-elevated-text);
+          box-shadow: var(--_button-elevation-elevated);
+        }
+
+        button.variant-elevated::before {
+          background-color: var(--_button-elevated-state-layer);
+        }
+
+        button.variant-elevated.hovered:not(:disabled) {
+          box-shadow: var(--_button-elevation-elevated-hover);
         }
 
         /* Outlined variant */
         button.variant-outlined {
-          background-color: transparent;
+          background-color: var(--_button-outlined-bg);
           color: var(--_button-outlined-text);
           border: var(--_button-outlined-border);
           box-shadow: none;
         }
 
-        button.variant-outlined:hover:not(:disabled) {
-          background-color: var(--_button-outlined-bg-hover);
-          box-shadow: var(--_button-elevation);
+        button.variant-outlined::before {
+          background-color: var(--_button-outlined-state-layer);
         }
 
         /* Text variant */
         button.variant-text {
-          background-color: transparent;
-          color: var(--_button-outlined-text);
+          background-color: var(--_button-text-bg);
+          color: var(--_button-text-text);
           box-shadow: none;
           min-width: auto;
         }
 
-        button.variant-text:hover:not(:disabled) {
-          background-color: var(--_button-text-bg-hover);
+        button.variant-text::before {
+          background-color: var(--_button-text-state-layer);
         }
 
-        /* Ghost variant (legacy) */
+        /* Legacy support variants */
+        button.variant-secondary {
+          background-color: var(--_global-color-secondary);
+          color: var(--_global-color-on-secondary);
+          box-shadow: var(--_button-elevation);
+        }
+
+        button.variant-secondary::before {
+          background-color: var(--_global-color-on-secondary);
+        }
+
         button.variant-ghost {
           background-color: transparent;
-          color: var(--_button-outlined-text);
-          border: 1px solid var(--_button-outlined-text);
+          color: var(--_global-color-primary);
+          border: 1px solid var(--_global-color-outline);
           box-shadow: none;
         }
 
-        button.variant-ghost:hover:not(:disabled) {
-          background-color: var(--_button-text-bg-hover);
+        button.variant-ghost::before {
+          background-color: var(--_global-color-primary);
         }
 
-        /* Success variant */
+        /* Status variants with enhanced styling */
         button.variant-success {
           background-color: var(--_button-success-bg);
-          color: var(--_global-color-white);
+          color: var(--_button-success-text);
           box-shadow: var(--_button-elevation);
         }
 
-        button.variant-success:hover:not(:disabled) {
-          background-color: var(--_global-color-success);
-          filter: brightness(0.9);
-          box-shadow: var(--_button-elevation-hover);
-          transform: translateY(-1px);
+        button.variant-success::before {
+          background-color: var(--_button-success-text);
         }
 
-        /* Danger variant */
-        button.variant-danger {
+        button.variant-danger,
+        button.variant-error {
           background-color: var(--_button-error-bg);
-          color: var(--_global-color-white);
+          color: var(--_button-error-text);
           box-shadow: var(--_button-elevation);
         }
 
-        button.variant-danger:hover:not(:disabled) {
-          background-color: var(--_global-color-error);
-          filter: brightness(0.9);
-          box-shadow: var(--_button-elevation-hover);
-          transform: translateY(-1px);
+        button.variant-danger::before,
+        button.variant-error::before {
+          background-color: var(--_button-error-text);
         }
 
-        /* Floating Action Button (FAB) styles */
+        /* Enhanced Floating Action Button (FAB) styles */
         :host([fab]) button {
           border-radius: var(--_button-border-radius-fab);
           min-width: 56px;
@@ -495,10 +689,19 @@ class MyButton extends HTMLElement {
           height: 56px;
           padding: 0;
           box-shadow: var(--_global-elevation-2);
+          background-color: var(--_button-filled-bg);
+          color: var(--_button-filled-text);
         }
 
-        :host([fab]) button:hover:not(:disabled) {
+        :host([fab]) button.hovered:not(:disabled) {
           box-shadow: var(--_global-elevation-3);
+          transform: translateY(-2px);
+        }
+
+        :host([fab][size="xs"]) button {
+          width: 32px;
+          height: 32px;
+          min-width: 32px;
         }
 
         :host([fab][size="sm"]) button {
@@ -513,12 +716,23 @@ class MyButton extends HTMLElement {
           min-width: 72px;
         }
 
-        /* Icon-only button styles */
+        :host([fab][size="xl"]) button {
+          width: 96px;
+          height: 96px;
+          min-width: 96px;
+        }
+
+        /* Enhanced icon-only button styles */
         :host([icon-only]) button {
           min-width: var(--_button-height-md);
           width: var(--_button-height-md);
           padding: 0;
           border-radius: var(--_global-border-radius-full);
+        }
+
+        :host([icon-only][size="xs"]) button {
+          min-width: var(--_button-height-xs);
+          width: var(--_button-height-xs);
         }
 
         :host([icon-only][size="sm"]) button {
@@ -531,186 +745,224 @@ class MyButton extends HTMLElement {
           width: var(--_button-height-lg);
         }
 
-        /* Focus state */
-        button:focus-visible {
-          box-shadow: var(--_button-focus-ring);
-          outline: none;
+        :host([icon-only][size="xl"]) button {
+          min-width: var(--_button-height-xl);
+          width: var(--_button-height-xl);
         }
 
-        /* Active state */
-        button:active:not(:disabled) {
-          transform: translateY(0) scale(0.98);
-          transition-duration: var(--_button-transition-fast);
-        }
-
-        /* Disabled state */
-        button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          pointer-events: none;
-          transform: none;
-          box-shadow: none;
-        }
-
-        /* Loading state */
-        button.loading {
-          opacity: 0.8;
-          cursor: not-allowed;
-        }
-
-        /* Loading spinner */
-        .loading-spinner {
-          width: 16px;
-          height: 16px;
-          border: 2px solid transparent;
-          border-top: 2px solid currentColor;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-right: 8px;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        /* Content container */
-        .content {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        /* Hide content when loading */
-        button.loading .content {
-          visibility: hidden;
-        }
-
-        /* Ripple effect styles */
-        .ripple {
-          position: absolute;
-          border-radius: 50%;
-          transform: scale(0);
-          animation: ripple-animation var(--_global-ripple-duration) var(--_global-ripple-easing);
-          background-color: var(--_global-ripple-color-light);
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        /* Dark ripple for light backgrounds */
-        button.variant-outlined .ripple,
-        button.variant-text .ripple,
-        button.variant-ghost .ripple {
-          background-color: var(--_global-ripple-color-dark);
-        }
-
-        @keyframes ripple-animation {
-          0% {
-            transform: scale(0);
-            opacity: 0.8;
-          }
-          50% {
-            opacity: 0.4;
-          }
-          100% {
-            transform: scale(2);
-            opacity: 0;
-          }
-        }
-
-        /* Enhanced focus styles */
-        :host(:focus),
-        :host(:focus-visible),
-        button:focus,
-        button:focus-visible,
-        button.focused {
-          outline: none;
-        }
-
-        :host(:focus) button,
-        :host(:focus-visible) button,
-        button:focus,
-        button:focus-visible,
-        button.focused {
-          box-shadow: var(--_button-focus-ring), var(--_button-elevation);
-          transform: translateY(-1px);
-        }
-
-        :host(:focus) button.variant-outlined,
-        :host(:focus-visible) button.variant-outlined,
-        button:focus.variant-outlined,
-        button:focus-visible.variant-outlined,
-        button.focused.variant-outlined {
-          box-shadow: var(--_button-focus-ring);
-        }
-
-        /* Better disabled state */
-        :host([disabled]),
-        :host([loading]) {
-          pointer-events: none;
-          cursor: not-allowed;
-        }
-
+        /* Enhanced disabled state following Material Design 3 */
+        button:disabled,
         :host([disabled]) button,
         :host([loading]) button {
-          opacity: 0.6;
+          background-color: var(--_button-disabled-bg);
+          color: var(--_button-disabled-text);
+          opacity: var(--_button-disabled-opacity);
           cursor: not-allowed;
           pointer-events: none;
           transform: none !important;
           box-shadow: none !important;
         }
 
-        /* Ensure button is relatively positioned for ripple */
-        button {
-          overflow: hidden;
+        button:disabled::before,
+        :host([disabled]) button::before,
+        :host([loading]) button::before {
+          display: none;
         }
 
-        /* Accessibility improvements - High Contrast Mode Support */
+        /* Enhanced loading state */
+        button.loading {
+          position: relative;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+
+        /* Improved loading spinner with Material Design aesthetics */
+        .loading-spinner {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 20px;
+          height: 20px;
+          border: 2px solid transparent;
+          border-top: 2px solid currentColor;
+          border-radius: 50%;
+          animation: spin var(--_global-motion-duration-long2) linear infinite;
+          z-index: 2;
+        }
+
+        .loading-spinner.size-xs {
+          width: 12px;
+          height: 12px;
+          border-width: 1px;
+        }
+
+        .loading-spinner.size-sm {
+          width: 16px;
+          height: 16px;
+          border-width: 2px;
+        }
+
+        .loading-spinner.size-lg {
+          width: 24px;
+          height: 24px;
+          border-width: 3px;
+        }
+
+        .loading-spinner.size-xl {
+          width: 28px;
+          height: 28px;
+          border-width: 3px;
+        }
+
+        @keyframes spin {
+          0% { transform: translate(-50%, -50%) rotate(0deg); }
+          100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Enhanced content container */
+        .content {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--_button-gap);
+          position: relative;
+          z-index: 1;
+        }
+
+        /* Hide content when loading with improved transition */
+        button.loading .content {
+          opacity: 0;
+          transition: opacity var(--_button-transition-fast);
+        }
+
+        /* Enhanced ripple effect following Material Design 3 principles */
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple-animation var(--_button-ripple-duration) var(--_button-ripple-easing);
+          background-color: var(--_global-ripple-color-light);
+          opacity: var(--_global-ripple-opacity-pressed);
+          pointer-events: none;
+          z-index: 0;
+          mix-blend-mode: normal;
+        }
+
+        /* Dynamic ripple colors based on variant */
+        button.variant-outlined .ripple,
+        button.variant-text .ripple,
+        button.variant-ghost .ripple,
+        button.variant-elevated .ripple {
+          background-color: var(--_global-ripple-color-dark);
+        }
+
+        @keyframes ripple-animation {
+          0% {
+            transform: scale(0);
+            opacity: var(--_global-ripple-opacity-pressed);
+          }
+          20% {
+            transform: scale(0.3);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.8);
+          }
+          50% {
+            transform: scale(1);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.4);
+          }
+          100% {
+            transform: scale(2.5);
+            opacity: 0;
+          }
+        }
+
+        /* Enhanced High Contrast Mode Support */
         @media (prefers-contrast: high) {
+          :host {
+            --_button-border-width: 2px;
+          }
+          
           button {
-            border: 2px solid currentColor;
+            border: var(--_button-border-width) solid currentColor;
+            background-color: var(--_global-color-surface);
+            color: var(--_global-color-on-surface);
           }
           
           button.variant-filled,
           button.variant-primary,
-          button.variant-secondary {
-            border: 2px solid transparent;
-            outline: 2px solid;
+          button.variant-secondary,
+          button.variant-success,
+          button.variant-danger,
+          button.variant-error {
+            background-color: var(--_global-color-primary);
+            color: var(--_global-color-on-primary);
+            outline: 2px solid var(--_global-color-on-surface);
             outline-offset: 2px;
           }
           
+          button::before,
           .ripple {
             display: none;
           }
+          
+          button.focused:not(:disabled) {
+            outline-width: 4px;
+            outline-style: double;
+          }
         }
 
-        /* Accessibility improvements - Reduced Motion Support */
+        /* Enhanced Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
-          button,
-          .loading-spinner,
-          .ripple {
-            animation: none;
-            transition: none;
+          :host {
+            --_button-transition: none;
+            --_button-transition-fast: none;
+            --_button-transition-emphasized: none;
           }
           
-          button:hover:not(:disabled),
-          button:active:not(:disabled),
-          :host(:focus) button,
-          button:focus,
-          button.focused {
+          button,
+          button::before,
+          .loading-spinner,
+          .ripple,
+          .content {
+            animation: none !important;
+            transition: none !important;
+          }
+          
+          .ripple {
+            display: none;
+          }
+          
+          button.hovered:not(:disabled),
+          button.pressed:not(:disabled) {
             transform: none;
           }
           
-          .ripple {
-            display: none;
+          button.loading .content {
+            opacity: 0.5;
           }
         }
 
-        /* Enhanced focus-visible for better keyboard navigation */
+        /* Enhanced focus-visible support with better keyboard navigation */
         @supports selector(:focus-visible) {
           button:focus:not(:focus-visible) {
-            box-shadow: var(--_button-elevation);
-            transform: none;
+            outline: none;
+          }
+          
+          button:focus:not(:focus-visible)::before {
+            opacity: 0;
+          }
+          
+          button:focus-visible,
+          button.focused {
+            outline: var(--_button-focus-ring);
+            outline-offset: var(--_button-focus-ring-offset);
+          }
+        }
+        
+        /* Color scheme adaptation */
+        @media (prefers-color-scheme: dark) {
+          :host {
+            --_button-elevation: 0 2px 8px rgba(0, 0, 0, 0.4);
+            --_button-elevation-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
           }
         }
       </style>
@@ -719,8 +971,12 @@ class MyButton extends HTMLElement {
         ${isDisabled || isLoading ? 'disabled' : ''}
         aria-label="${this.label || 'button'}"
         ${isLoading ? 'aria-busy="true"' : ''}
+        ${isDisabled ? 'aria-disabled="true"' : ''}
+        role="button"
+        tabindex="${isDisabled ? '-1' : '0'}"
+        type="button"
       >
-        ${isLoading ? '<div class="loading-spinner" aria-hidden="true"></div>' : ''}
+        ${isLoading ? `<div class="loading-spinner size-${size}" aria-hidden="true"></div>` : ''}
         <span class="content">
           <slot>${this.label}</slot>
         </span>
