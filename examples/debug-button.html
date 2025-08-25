@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Button Component</title>
+    <link rel="stylesheet" href="../src/styles/base.css">
+    <style>
+        body {
+            padding: 2rem;
+            font-family: system-ui, sans-serif;
+        }
+        
+        /* Debug styles to see if buttons have any size */
+        my-button {
+            border: 2px solid red !important;
+            display: inline-block !important;
+            min-width: 100px !important;
+            min-height: 40px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Button Test</h1>
+    
+    <p>Basic button test:</p>
+    <my-button label="Test Button"></my-button>
+    
+    <p>Button with variant:</p>
+    <my-button variant="filled" label="Filled Button"></my-button>
+    
+    <p>Manual button element for comparison:</p>
+    <button style="padding: 8px 16px;">Regular Button</button>
+    
+    <script type="module">
+        import '../src/components/my-button/my-button.js';
+        
+        console.log('Button component loaded');
+        
+        // Check if component is registered
+        if (customElements.get('my-button')) {
+            console.log('my-button component is registered');
+        } else {
+            console.error('my-button component is NOT registered');
+        }
+        
+        // Wait and inspect the components
+        setTimeout(() => {
+            const buttons = document.querySelectorAll('my-button');
+            buttons.forEach((btn, index) => {
+                console.log(`Button ${index}:`, {
+                    element: btn,
+                    shadowRoot: btn.shadowRoot,
+                    innerHTML: btn.shadowRoot?.innerHTML?.substring(0, 200),
+                    computedStyle: getComputedStyle(btn),
+                    dimensions: {
+                        width: btn.offsetWidth,
+                        height: btn.offsetHeight
+                    }
+                });
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

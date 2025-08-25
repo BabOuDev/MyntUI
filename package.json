@@ -18,6 +18,7 @@
   ],
   "author": "Mynt UI Team",
   "license": "MIT",
-  "devDependencies": {},
-  "dependencies": {}
+  "devDependencies": {
+    "cypress": "^15.0.0"
+  }
 }
