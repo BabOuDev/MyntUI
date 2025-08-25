@@ -13,60 +13,87 @@
   --_global-spacing-xxl: 48px;
 
   /* Color System */
-  /* Primary colors */
-  --_global-color-primary: #007bff;
-  --_global-color-primary-hover: #0056b3;
-  --_global-color-primary-active: #004085;
-  --_global-color-primary-light: #b3d4ff;
-  --_global-color-primary-dark: #003d7a;
+  /* Primary colors - Material Design 3 style */
+  --_global-color-primary: #6750a4;
+  --_global-color-primary-hover: #7c67b8;
+  --_global-color-primary-active: #4f3d8c;
+  --_global-color-primary-light: #e8def8;
+  --_global-color-primary-dark: #21005d;
+  --_global-color-primary-container: #eaddff;
+  --_global-color-on-primary: #ffffff;
+  --_global-color-on-primary-container: #21005d;
 
-  /* Secondary colors */
-  --_global-color-secondary: #6c757d;
-  --_global-color-secondary-hover: #545b62;
-  --_global-color-secondary-active: #495057;
-  --_global-color-secondary-light: #e2e3e5;
-  --_global-color-secondary-dark: #383d41;
+  /* Secondary colors - Material Design 3 style */
+  --_global-color-secondary: #625b71;
+  --_global-color-secondary-hover: #6e6479;
+  --_global-color-secondary-active: #4f4565;
+  --_global-color-secondary-light: #e8def8;
+  --_global-color-secondary-dark: #2a2635;
+  --_global-color-secondary-container: #e8def8;
+  --_global-color-on-secondary: #ffffff;
+  --_global-color-on-secondary-container: #1d192b;
 
-  /* Status colors */
-  --_global-color-success: #28a745;
-  --_global-color-success-light: #d4edda;
-  --_global-color-warning: #ffc107;
-  --_global-color-warning-light: #fff3cd;
-  --_global-color-error: #dc3545;
-  --_global-color-error-light: #f8d7da;
-  --_global-color-info: #17a2b8;
-  --_global-color-info-light: #d1ecf1;
+  /* Status colors - Material Design 3 style */
+  --_global-color-success: #2e7d32;
+  --_global-color-success-light: #e8f5e8;
+  --_global-color-success-container: #a8dea8;
+  --_global-color-on-success: #ffffff;
+  --_global-color-warning: #f57c00;
+  --_global-color-warning-light: #fff3e0;
+  --_global-color-warning-container: #ffcc80;
+  --_global-color-on-warning: #ffffff;
+  --_global-color-error: #d32f2f;
+  --_global-color-error-light: #ffebee;
+  --_global-color-error-container: #ffcdd2;
+  --_global-color-on-error: #ffffff;
+  --_global-color-info: #1976d2;
+  --_global-color-info-light: #e3f2fd;
+  --_global-color-info-container: #90caf9;
+  --_global-color-on-info: #ffffff;
 
-  /* Neutral colors */
+  /* Neutral colors - Material Design 3 style */
   --_global-color-white: #ffffff;
   --_global-color-black: #000000;
-  --_global-color-gray-100: #f8f9fa;
-  --_global-color-gray-200: #e9ecef;
-  --_global-color-gray-300: #dee2e6;
-  --_global-color-gray-400: #ced4da;
-  --_global-color-gray-500: #adb5bd;
-  --_global-color-gray-600: #6c757d;
-  --_global-color-gray-700: #495057;
-  --_global-color-gray-800: #343a40;
-  --_global-color-gray-900: #212529;
+  --_global-color-gray-50: #fafafa;
+  --_global-color-gray-100: #f5f5f5;
+  --_global-color-gray-200: #eeeeee;
+  --_global-color-gray-300: #e0e0e0;
+  --_global-color-gray-400: #bdbdbd;
+  --_global-color-gray-500: #9e9e9e;
+  --_global-color-gray-600: #757575;
+  --_global-color-gray-700: #616161;
+  --_global-color-gray-800: #424242;
+  --_global-color-gray-900: #212121;
 
-  /* Text colors */
-  --_global-color-text-primary: #212529;
-  --_global-color-text-secondary: #6c757d;
-  --_global-color-text-muted: #868e96;
+  /* Surface colors */
+  --_global-color-surface: #fef7ff;
+  --_global-color-surface-variant: #e7e0ec;
+  --_global-color-surface-container: #f3edf7;
+  --_global-color-surface-container-low: #f7f2fa;
+  --_global-color-surface-container-high: #ece6f0;
+  --_global-color-surface-container-highest: #e6e0e9;
+  --_global-color-on-surface: #1c1b1f;
+  --_global-color-on-surface-variant: #49454f;
+  --_global-color-outline: #79747e;
+  --_global-color-outline-variant: #cac4d0;
+
+  /* Text colors - Material Design 3 aligned */
+  --_global-color-text-primary: var(--_global-color-on-surface);
+  --_global-color-text-secondary: var(--_global-color-on-surface-variant);
+  --_global-color-text-muted: var(--_global-color-outline);
   --_global-color-text-light: #ffffff;
-  --_global-color-text-dark: #212529;
+  --_global-color-text-dark: var(--_global-color-on-surface);
 
-  /* Background colors */
-  --_global-color-background-light: #f8f9fa;
-  --_global-color-background-white: #ffffff;
-  --_global-color-background-dark: #343a40;
-  --_global-color-background-overlay: rgba(0, 0, 0, 0.5);
+  /* Background colors - Material Design 3 aligned */
+  --_global-color-background-light: var(--_global-color-surface-container-low);
+  --_global-color-background-white: var(--_global-color-surface);
+  --_global-color-background-dark: #1c1b1f;
+  --_global-color-background-overlay: rgba(28, 27, 31, 0.5);
 
-  /* Border colors */
-  --_global-color-border: #dee2e6;
-  --_global-color-border-focus: #80bdff;
-  --_global-color-border-error: #dc3545;
+  /* Border colors - Material Design 3 aligned */
+  --_global-color-border: var(--_global-color-outline-variant);
+  --_global-color-border-focus: var(--_global-color-primary);
+  --_global-color-border-error: var(--_global-color-error);
 
   /* Typography System */
   --_global-font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -144,12 +171,21 @@
   --_global-transition-normal: var(--_global-motion-duration-medium1) var(--_global-motion-easing-standard);
   --_global-transition-slow: var(--_global-motion-duration-long1) var(--_global-motion-easing-standard);
   
-  /* State Layer System */
+  /* State Layer System - Material Design 3 */
   --_global-state-layer-hover: 0.08;
   --_global-state-layer-focus: 0.12;
   --_global-state-layer-pressed: 0.16;
   --_global-state-layer-selected: 0.12;
   --_global-state-layer-activated: 0.12;
+  --_global-state-layer-dragged: 0.16;
+
+  /* Ripple Effect System */
+  --_global-ripple-duration: 600ms;
+  --_global-ripple-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --_global-ripple-color-light: rgba(255, 255, 255, 0.3);
+  --_global-ripple-color-dark: rgba(0, 0, 0, 0.2);
+  --_global-ripple-opacity-pressed: 0.16;
+  --_global-ripple-opacity-hover: 0.08;
 
   /* Breakpoints (for reference in JS) */
   --_global-breakpoint-sm: 576px;
