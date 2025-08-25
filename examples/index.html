@@ -9,15 +9,15 @@
     <style>
         body {
             padding: var(--_global-spacing-lg);
-            background-color: var(--_global-color-background-light);
+            background-color: var(--_global-color-background-white);
         }
         
         .demo-section {
-            background: var(--_global-color-white);
+            background: var(--_global-color-surface-container-low);
             border-radius: var(--_global-border-radius-lg);
             padding: var(--_global-spacing-lg);
             margin-bottom: var(--_global-spacing-lg);
-            box-shadow: var(--_global-shadow-sm);
+            box-shadow: var(--_global-elevation-1);
         }
         
         .demo-title {
@@ -37,9 +37,9 @@
         
         .demo-item {
             padding: var(--_global-spacing-md);
-            border: 1px solid var(--_global-color-border);
+            border: 1px solid var(--_global-color-outline-variant);
             border-radius: var(--_global-border-radius-md);
-            background: var(--_global-color-background-white);
+            background: var(--_global-color-surface);
         }
         
         .demo-label {
@@ -311,26 +311,110 @@
             </div>
             
             <div class="demo-item">
-                <span class="demo-label">Dropdown (Coming Soon)</span>
-                <p style="color: var(--_global-color-text-muted);">Will be implemented next</p>
+                <span class="demo-label">Dropdowns - Basic</span>
+                <my-dropdown 
+                    placeholder="Select an option"
+                    options='[{"label": "Option 1", "value": "1"}, {"label": "Option 2", "value": "2"}, {"label": "Option 3", "value": "3"}]'
+                ></my-dropdown>
+                <my-dropdown 
+                    placeholder="With Icons"
+                    options='[{"label": "Home", "value": "home", "icon": "home"}, {"label": "Settings", "value": "settings", "icon": "settings"}, {"type": "divider"}, {"label": "Logout", "value": "logout", "icon": "logout"}]'
+                ></my-dropdown>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Dropdowns - Sizes & States</span>
+                <my-dropdown 
+                    size="sm"
+                    placeholder="Small dropdown"
+                    options='[{"label": "Small 1", "value": "1"}, {"label": "Small 2", "value": "2"}]'
+                ></my-dropdown>
+                <my-dropdown 
+                    size="lg"
+                    placeholder="Large dropdown"
+                    options='[{"label": "Large 1", "value": "1"}, {"label": "Large 2", "value": "2"}]'
+                ></my-dropdown>
+                <my-dropdown 
+                    disabled
+                    placeholder="Disabled dropdown"
+                    options='[{"label": "Disabled", "value": "1"}]'
+                ></my-dropdown>
             </div>
         </div>
     </section>
 
     <!-- Data Visualization -->
     <section class="demo-section">
-        <h2 class="demo-title">Data Visualization (Coming Soon)</h2>
+        <h2 class="demo-title">Data Visualization</h2>
         <div class="demo-grid">
             <div class="demo-item">
-                <span class="demo-label">Progress, Gauge, Sparkline</span>
-                <p style="color: var(--_global-color-text-muted);">These components will be implemented after the core components are complete.</p>
+                <span class="demo-label">Progress Bars - Basic</span>
+                <my-progress value="25" label="Basic Progress" show-value></my-progress>
+                <my-progress value="50" variant="success" label="Success Progress" show-value></my-progress>
+                <my-progress value="75" variant="warning" label="Warning Progress" show-value></my-progress>
+                <my-progress value="90" variant="error" label="Error Progress" show-value></my-progress>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Progress Bars - Special Variants</span>
+                <my-progress value="60" variant="striped" label="Striped Progress" show-value></my-progress>
+                <my-progress value="40" variant="pulse" label="Pulsing Progress" show-value></my-progress>
+                <my-progress indeterminate label="Loading..." show-value></my-progress>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Progress Bars - Sizes</span>
+                <my-progress value="30" size="sm" label="Small Progress" show-value></my-progress>
+                <my-progress value="60" size="md" label="Medium Progress" show-value></my-progress>
+                <my-progress value="90" size="lg" label="Large Progress" show-value></my-progress>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Circular Progress</span>
+                <my-progress value="75" type="circular" label="Upload Progress" show-value></my-progress>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Gauges - Basic</span>
+                <my-gauge value="65" min="0" max="100" label="CPU Usage" unit="%" show-value animated></my-gauge>
+                <my-gauge value="45" min="0" max="100" label="Memory" unit="%" show-value variant="info" size="sm"></my-gauge>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Gauge with Thresholds</span>
+                <my-gauge 
+                    value="85" 
+                    min="0" 
+                    max="100" 
+                    label="System Load" 
+                    unit="%" 
+                    show-value 
+                    animated
+                    thresholds='[{"min": 0, "color": "#2e7d32", "label": "Good"}, {"min": 70, "color": "#f57c00", "label": "Warning"}, {"min": 90, "color": "#d32f2f", "label": "Critical"}]'
+                ></my-gauge>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Gauge Variants</span>
+                <my-gauge value="30" variant="success" label="Success" show-value size="sm"></my-gauge>
+                <my-gauge value="75" variant="warning" label="Warning" show-value size="sm"></my-gauge>
+                <my-gauge value="90" variant="error" label="Error" show-value size="sm"></my-gauge>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Interactive Demo</span>
+                <div style="margin-bottom: var(--_global-spacing-md);">
+                    <input type="range" id="gaugeSlider" min="0" max="100" value="50" style="width: 100%;">
+                    <label for="gaugeSlider">Adjust value: <span id="sliderValue">50</span></label>
+                </div>
+                <my-gauge id="interactiveGauge" value="50" label="Interactive Gauge" unit="%" show-value animated></my-gauge>
             </div>
         </div>
     </section>
 
     <!-- Load all components -->
     <script type="module">
-        // Import implemented components
+        // Import all implemented components
         import '../src/components/my-icon/my-icon.js';
         import '../src/components/my-button/my-button.js';
         import '../src/components/my-input/my-input.js';
@@ -338,10 +422,26 @@
         import '../src/components/my-checkbox/my-checkbox.js';
         import '../src/components/my-radio-group/my-radio-group.js';
         import '../src/components/my-tooltip/my-tooltip.js';
+        import '../src/components/my-dropdown/my-dropdown.js';
+        import '../src/components/my-progress/my-progress.js';
+        import '../src/components/my-gauge/my-gauge.js';
         
-        console.log('MyntUI Test Environment Loaded');
+        console.log('MyntUI Test Environment Loaded - All Components Available');
         
-        // Event listeners for testing
+        // Interactive demo for gauge
+        const gaugeSlider = document.getElementById('gaugeSlider');
+        const sliderValue = document.getElementById('sliderValue');
+        const interactiveGauge = document.getElementById('interactiveGauge');
+        
+        if (gaugeSlider && sliderValue && interactiveGauge) {
+            gaugeSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                sliderValue.textContent = value;
+                interactiveGauge.value = value;
+            });
+        }
+        
+        // Event listeners for testing and debugging
         document.addEventListener('change', (e) => {
             if (e.target.tagName.toLowerCase().startsWith('my-')) {
                 console.log('Component changed:', e.target.tagName, e.detail);
@@ -351,6 +451,24 @@
         document.addEventListener('click', (e) => {
             if (e.target.tagName.toLowerCase().startsWith('my-')) {
                 console.log('Component clicked:', e.target.tagName, e.detail);
+            }
+        });
+        
+        document.addEventListener('select', (e) => {
+            if (e.target.tagName.toLowerCase().startsWith('my-')) {
+                console.log('Component selected:', e.target.tagName, e.detail);
+            }
+        });
+        
+        document.addEventListener('open', (e) => {
+            if (e.target.tagName.toLowerCase().startsWith('my-')) {
+                console.log('Component opened:', e.target.tagName, e.detail);
+            }
+        });
+        
+        document.addEventListener('close', (e) => {
+            if (e.target.tagName.toLowerCase().startsWith('my-')) {
+                console.log('Component closed:', e.target.tagName, e.detail);
             }
         });
     </script>
