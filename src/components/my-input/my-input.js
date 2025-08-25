@@ -19,7 +19,6 @@ class MyInput extends MyntUIBaseComponent {
     // Component-specific bindings
     this.handleInput = this.handleInput.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.validateInput = this.validateInput.bind(this);
     
     // Debounced validation for better performance 
     this._validationTimer = null;
@@ -56,7 +55,7 @@ class MyInput extends MyntUIBaseComponent {
         break;
       case 'value':
         this._value = newValue || '';
-        this.validateInput();
+        // TODO: Add validation method
         break;
       case 'required':
         this.announceToScreenReader(
