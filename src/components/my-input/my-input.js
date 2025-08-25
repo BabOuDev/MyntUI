@@ -19,6 +19,8 @@ class MyInput extends HTMLElement {
     this.handleInput = this.handleInput.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     
     // Initialize component
     this.parseAttributes();
@@ -31,7 +33,7 @@ class MyInput extends HTMLElement {
     return [
       'type', 'label', 'name', 'placeholder', 'value', 'required', 'disabled', 'readonly',
       'min', 'max', 'minlength', 'maxlength', 'pattern', 'step', 'autocomplete',
-      'label-position', 'schema'
+      'label-position', 'schema', 'aria-label', 'aria-describedby', 'aria-invalid'
     ];
   }
 
@@ -115,6 +117,22 @@ class MyInput extends HTMLElement {
 
   get errors() {
     return this._errors;
+  }
+
+  // Public method to programmatically focus the input
+  focus() {
+    const inputElement = this.shadowRoot.querySelector('input, textarea, select');
+    if (inputElement && !this._schema.disabled) {
+      inputElement.focus();
+    }
+  }
+
+  // Public method to programmatically blur the input
+  blur() {
+    const inputElement = this.shadowRoot.querySelector('input, textarea, select');
+    if (inputElement) {
+      inputElement.blur();
+    }
   }
 
   // Validation methods
@@ -235,17 +253,103 @@ class MyInput extends HTMLElement {
   handleBlur(event) {
     this.validate();
     this.updateErrorDisplay();
+    this.updateFocusState(false);
   }
 
-  // Update error display
+  // Handle focus events
+  handleFocus(event) {
+    this.updateFocusState(true);
+  }
+
+  // Handle keyboard navigation
+  handleKeyDown(event) {
+    if (this._schema.disabled || this._schema.readonly) {
+      return;
+    }
+
+    const inputElement = this.shadowRoot.querySelector('input, textarea, select');
+    if (!inputElement) return;
+
+    // Handle Escape key to clear input (for non-required fields)
+    if (event.key === 'Escape' && !this._schema.required) {
+      inputElement.value = '';
+      this._value = '';
+      this.validate();
+      this.updateErrorDisplay();
+      
+      // Emit custom change event
+      this.dispatchEvent(new CustomEvent('input', {
+        detail: {
+          value: this._value,
+          valid: this.valid,
+          errors: this._errors,
+          name: this._schema.name
+        },
+        bubbles: true
+      }));
+    }
+
+    // Handle Enter key for form submission
+    if (event.key === 'Enter' && this._schema.type !== 'textarea') {
+      this.validate();
+      this.dispatchEvent(new CustomEvent('submit', {
+        detail: {
+          value: this._value,
+          valid: this.valid,
+          errors: this._errors,
+          name: this._schema.name
+        },
+        bubbles: true
+      }));
+    }
+  }
+
+  // Update focus state for visual feedback
+  updateFocusState(focused) {
+    const inputElement = this.shadowRoot.querySelector('input, textarea, select');
+    const container = this.shadowRoot.querySelector('.input-container');
+    
+    if (inputElement && container) {
+      if (focused) {
+        inputElement.classList.add('focused');
+        container.classList.add('focused');
+      } else {
+        inputElement.classList.remove('focused');
+        container.classList.remove('focused');
+      }
+    }
+  }
+
+  // Update error display with accessibility improvements
   updateErrorDisplay() {
     const errorElement = this.shadowRoot.querySelector('.error-message');
-    if (errorElement) {
+    const inputElement = this.shadowRoot.querySelector('input, textarea, select');
+    const container = this.shadowRoot.querySelector('.input-container');
+    
+    if (errorElement && inputElement) {
       if (this._errors.length > 0) {
         errorElement.textContent = this._errors[0];
         errorElement.style.display = 'block';
+        
+        // Update ARIA attributes for accessibility
+        inputElement.setAttribute('aria-invalid', 'true');
+        inputElement.setAttribute('aria-describedby', `${this._schema.name}-error`);
+        
+        // Add error class to container for styling
+        if (container) {
+          container.classList.add('has-error');
+        }
       } else {
         errorElement.style.display = 'none';
+        
+        // Clear ARIA attributes
+        inputElement.setAttribute('aria-invalid', 'false');
+        inputElement.removeAttribute('aria-describedby');
+        
+        // Remove error class
+        if (container) {
+          container.classList.remove('has-error');
+        }
       }
     }
   }
@@ -258,36 +362,69 @@ class MyInput extends HTMLElement {
       inputElement.removeEventListener('input', this.handleInput);
       inputElement.removeEventListener('change', this.handleChange);
       inputElement.removeEventListener('blur', this.handleBlur);
+      inputElement.removeEventListener('focus', this.handleFocus);
+      inputElement.removeEventListener('keydown', this.handleKeyDown);
       
       // Add new listeners
       inputElement.addEventListener('input', this.handleInput);
       inputElement.addEventListener('change', this.handleChange);
       inputElement.addEventListener('blur', this.handleBlur);
+      inputElement.addEventListener('focus', this.handleFocus);
+      inputElement.addEventListener('keydown', this.handleKeyDown);
+    }
+
+    // Make the custom element focusable if not disabled
+    if (!this._schema.disabled) {
+      this.setAttribute('tabindex', '0');
+      // Remove existing listeners
+      this.removeEventListener('focus', this.handleFocus);
+      this.removeEventListener('blur', this.handleBlur);
+      this.removeEventListener('keydown', this.handleKeyDown);
+      
+      // Add listeners to custom element for keyboard navigation
+      this.addEventListener('focus', this.handleFocus);
+      this.addEventListener('blur', this.handleBlur);
+      this.addEventListener('keydown', this.handleKeyDown);
+    } else {
+      this.removeAttribute('tabindex');
     }
   }
 
-  // Generate input element based on type
+  // Generate input element based on type with accessibility attributes
   generateInputElement() {
-    const { type, name, placeholder, value, disabled, readonly } = this._schema;
+    const { type, name, placeholder, value, disabled, readonly, label } = this._schema;
+    const inputId = `${name}-input`;
+    const errorId = `${name}-error`;
+    const hasErrors = this._errors.length > 0;
+
+    // Get custom ARIA attributes
+    const ariaLabel = this.getAttribute('aria-label') || label;
+    const ariaDescribedBy = this.getAttribute('aria-describedby') || (hasErrors ? errorId : '');
+    const ariaInvalid = this.getAttribute('aria-invalid') || (hasErrors ? 'true' : 'false');
 
     const commonAttributes = `
+      id="${inputId}"
       name="${name}"
+      class="input-field"
       ${placeholder ? `placeholder="${placeholder}"` : ''}
       ${disabled ? 'disabled' : ''}
       ${readonly ? 'readonly' : ''}
-      ${this._schema.required ? 'required' : ''}
+      ${this._schema.required ? 'required aria-required="true"' : ''}
       ${this._schema.autocomplete ? `autocomplete="${this._schema.autocomplete}"` : ''}
+      ${ariaLabel ? `aria-label="${ariaLabel}"` : ''}
+      ${ariaDescribedBy ? `aria-describedby="${ariaDescribedBy}"` : ''}
+      aria-invalid="${ariaInvalid}"
     `.trim();
 
     switch (type) {
       case 'textarea':
-        return `<textarea ${commonAttributes}>${value}</textarea>`;
+        return `<textarea ${commonAttributes} role="textbox" aria-multiline="true">${value}</textarea>`;
         
       case 'select':
         const options = this._schema.options.map(option => 
           `<option value="${option.value}" ${value === option.value ? 'selected' : ''}>${option.label}</option>`
         ).join('');
-        return `<select ${commonAttributes} ${this._schema.multiple ? 'multiple' : ''}>${options}</select>`;
+        return `<select ${commonAttributes} role="combobox" aria-expanded="false" ${this._schema.multiple ? 'multiple aria-multiselectable="true"' : ''}>${options}</select>`;
         
       default:
         const inputAttributes = `
@@ -300,7 +437,16 @@ class MyInput extends HTMLElement {
           ${this._schema.pattern ? `pattern="${this._schema.pattern}"` : ''}
           ${this._schema.step ? `step="${this._schema.step}"` : ''}
         `.trim();
-        return `<input ${commonAttributes} ${inputAttributes}>`;
+        
+        // Add appropriate role based on input type
+        let role = '';
+        if (type === 'email') role = 'textbox';
+        else if (type === 'tel') role = 'textbox';
+        else if (type === 'url') role = 'textbox';
+        else if (type === 'search') role = 'searchbox';
+        else if (type === 'number') role = 'spinbutton';
+        
+        return `<input ${commonAttributes} ${inputAttributes} ${role ? `role="${role}"` : ''}>`;
     }
   }
 
@@ -329,6 +475,17 @@ class MyInput extends HTMLElement {
           
           display: block;
           width: 100%;
+          position: relative;
+        }
+
+        /* Host focus management */
+        :host(:focus-within) .input-container {
+          transform: translateY(-1px);
+        }
+
+        :host([disabled]) {
+          pointer-events: none;
+          cursor: not-allowed;
         }
 
         .input-container {
@@ -398,23 +555,76 @@ class MyInput extends HTMLElement {
           color: var(--_input-placeholder-color);
         }
 
-        .input-field:focus {
+        /* Focus states with enhanced visual feedback */
+        .input-field:focus,
+        .input-field.focused {
           border-color: var(--_input-border-color-focus);
           box-shadow: var(--_input-focus-shadow);
+          outline: none;
         }
 
+        /* Enhanced focus for container */
+        .input-container.focused {
+          transform: translateY(-1px);
+          transition: transform var(--_input-transition);
+        }
+
+        /* Focus-visible for keyboard navigation */
+        .input-field:focus-visible {
+          box-shadow: 0 0 0 3px var(--_global-color-border-focus);
+          outline: none;
+        }
+
+        /* Enhanced disabled state */
         .input-field:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           background-color: var(--_global-color-gray-100);
+          color: var(--_global-color-text-disabled);
+          border-color: var(--_global-color-border-disabled);
         }
 
-        .input-field.error {
+        .input-field:disabled::placeholder {
+          color: var(--_global-color-text-disabled);
+        }
+
+        /* Host-level disabled state */
+        :host([disabled]) {
+          pointer-events: none;
+          cursor: not-allowed;
+        }
+
+        :host([disabled]) .input-container {
+          opacity: 0.6;
+        }
+
+        /* Enhanced error states */
+        .input-field.error,
+        .input-container.has-error .input-field {
+          border-color: var(--_input-border-color-error);
+          background-color: rgba(220, 53, 69, 0.05);
+        }
+
+        .input-field.error:focus,
+        .input-container.has-error .input-field:focus {
+          box-shadow: var(--_input-error-shadow);
           border-color: var(--_input-border-color-error);
         }
 
-        .input-field.error:focus {
-          box-shadow: var(--_input-error-shadow);
+        /* Error state for container */
+        .input-container.has-error {
+          --_input-border-color: var(--_input-border-color-error);
+        }
+
+        /* Animate error state changes */
+        .input-container.has-error .input-field {
+          animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-2px); }
+          75% { transform: translateX(2px); }
         }
 
         /* Textarea specific styling */
@@ -461,12 +671,22 @@ class MyInput extends HTMLElement {
           border-bottom-right-radius: 0;
         }
 
-        /* Error message */
+        /* Enhanced error message styling */
         .error-message {
           color: var(--_global-color-error);
           font-size: var(--_global-font-size-xs);
           margin-top: var(--_global-spacing-xs);
           display: none;
+          line-height: var(--_global-line-height-tight);
+          font-weight: var(--_global-font-weight-medium);
+          opacity: 0;
+          transform: translateY(-4px);
+          transition: opacity var(--_input-transition), transform var(--_input-transition);
+        }
+
+        .error-message[style*="block"] {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         /* Floating label animation */
@@ -480,7 +700,7 @@ class MyInput extends HTMLElement {
       </style>
 
       <div class="input-container ${labelPosition === 'left' ? 'label-left' : labelPosition === 'over' ? 'label-over' : ''}">
-        ${labelPosition !== 'over' ? `<label class="label ${this._schema.required ? 'required' : ''}" for="${this._schema.name}">${label}</label>` : ''}
+        ${labelPosition !== 'over' ? `<label class="label ${this._schema.required ? 'required' : ''}" for="${this._schema.name}-input">${label}</label>` : ''}
         
         <div class="input-wrapper">
           <div class="slot-left">
@@ -489,28 +709,31 @@ class MyInput extends HTMLElement {
           
           ${this.generateInputElement()}
           
-          ${labelPosition === 'over' ? `<label class="label over ${this._schema.required ? 'required' : ''}" for="${this._schema.name}">${label}</label>` : ''}
+          ${labelPosition === 'over' ? `<label class="label over ${this._schema.required ? 'required' : ''}" for="${this._schema.name}-input">${label}</label>` : ''}
           
           <div class="slot-right">
             <slot name="right"></slot>
           </div>
         </div>
         
-        <div class="error-message" role="alert" aria-live="polite"></div>
+        <div class="error-message" id="${this._schema.name}-error" role="alert" aria-live="polite" aria-atomic="true"></div>
       </div>
     `;
 
-    // Apply conditional classes based on slots
+    // Apply conditional classes based on slots and state
     const inputField = this.shadowRoot.querySelector('.input-field');
+    const container = this.shadowRoot.querySelector('.input-container');
     const leftSlot = this.shadowRoot.querySelector('slot[name="left"]');
     const rightSlot = this.shadowRoot.querySelector('slot[name="right"]');
     
-    if (inputField) {
+    if (inputField && container) {
       // Add error class if there are validation errors
       if (this._errors.length > 0) {
         inputField.classList.add('error');
+        container.classList.add('has-error');
       } else {
         inputField.classList.remove('error');
+        container.classList.remove('has-error');
       }
 
       // Handle slot visibility
@@ -522,6 +745,9 @@ class MyInput extends HTMLElement {
         inputField.classList.add('has-right-slot');
       }
     }
+    
+    // Update error display to ensure proper ARIA attributes
+    this.updateErrorDisplay();
   }
 }
 
