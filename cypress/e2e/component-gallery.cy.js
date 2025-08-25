@@ -139,8 +139,14 @@ describe('MyntUI Component Gallery Tests', () => {
   })
 
   it('tests accessibility features', () => {
-    // Test focus indicators
-    cy.get('my-button').first().focus()
+    // Test focus indicators by focusing on the shadow DOM button element
+    cy.get('my-button').first().then(($button) => {
+      const shadowRoot = $button[0].shadowRoot
+      const button = shadowRoot.querySelector('button')
+      if (button) {
+        cy.wrap(button).focus()
+      }
+    })
     cy.wait(200)
     cy.takeFullPageScreenshot('accessibility-focus-indicators')
   })
