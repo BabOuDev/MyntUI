@@ -188,7 +188,7 @@ class MyCheckbox extends MyntUIBaseComponent {
           /* Enhanced Material Design 3 variables with better semantic naming */
           --_checkbox-size: 18px;
           --_checkbox-state-layer-size: 40px;
-          --_checkbox-border-radius: var(--_global-border-radius-xs);
+          --_checkbox-border-radius: var(--_global-border-radius-sm);
           
           /* Color tokens following Material Design 3 principles */
           --_checkbox-color-unchecked: var(--_global-color-outline);
