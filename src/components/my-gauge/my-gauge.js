@@ -468,33 +468,36 @@ class MyGauge extends MyntUIBaseComponent {
           --_gauge-size-md: 180px;
           --_gauge-size-lg: 240px;
           --_gauge-size: var(--_gauge-size-md);
-          --_gauge-stroke-width: 8;
-          --_gauge-stroke-width-bg: 6;
-          --_gauge-needle-width: 2;
-          --_gauge-bg-color: var(--_global-color-surface-container);
-          --_gauge-track-color: var(--_global-color-outline-variant);
+          --_gauge-stroke-width: 12;
+          --_gauge-stroke-width-bg: 8;
+          --_gauge-needle-width: 3;
+          --_gauge-bg-color: var(--_global-color-surface);
+          --_gauge-track-color: var(--_global-color-surface-container-high);
           --_gauge-fill-color: var(--_global-color-primary);
           --_gauge-text-color: var(--_global-color-on-surface);
           --_gauge-label-color: var(--_global-color-on-surface-variant);
           --_gauge-range-color: var(--_global-color-on-surface-variant);
           --_gauge-needle-color: var(--_global-color-on-surface);
-          --_gauge-shadow: var(--_global-elevation-2);
+          --_gauge-shadow: var(--_global-elevation-3);
           --_gauge-transition: all var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized);
           --_gauge-tooltip-bg: var(--_global-color-inverse-surface);
           --_gauge-tooltip-text: var(--_global-color-inverse-on-surface);
+          --_gauge-glow-color: rgba(103, 80, 164, 0.3);
+          --_gauge-pulse-duration: 2s;
           
           display: inline-block;
           width: var(--_gauge-size);
-          height: calc(var(--_gauge-size) * 0.7);
+          height: calc(var(--_gauge-size) * 0.75);
           font-family: var(--_global-font-family-sans);
-          background: var(--_gauge-bg-color);
-          border-radius: var(--_global-border-radius-lg);
+          background: linear-gradient(145deg, var(--_gauge-bg-color), var(--_global-color-surface-container-low));
+          border-radius: var(--_global-border-radius-xl);
           box-shadow: var(--_gauge-shadow);
-          padding: var(--_global-spacing-md);
+          padding: var(--_global-spacing-lg);
           box-sizing: border-box;
           position: relative;
           transition: var(--_gauge-transition);
           cursor: pointer;
+          border: 1px solid var(--_global-color-outline-variant);
         }
 
         .gauge-container {
