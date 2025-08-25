@@ -30,7 +30,7 @@ class MyDropdown extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['options', 'disabled', 'position', 'trigger-text', 'value', 'placeholder'];
+    return ['options', 'disabled', 'position', 'trigger-text', 'value', 'placeholder', 'size', 'error', 'multiple', 'search'];
   }
 
   // Handle attribute changes
@@ -128,6 +128,50 @@ class MyDropdown extends HTMLElement {
 
   set placeholder(value) {
     this.setAttribute('placeholder', value);
+  }
+
+  get size() {
+    return this.getAttribute('size') || 'md';
+  }
+
+  set size(value) {
+    this.setAttribute('size', value);
+  }
+
+  get error() {
+    return this.hasAttribute('error');
+  }
+
+  set error(value) {
+    if (value) {
+      this.setAttribute('error', '');
+    } else {
+      this.removeAttribute('error');
+    }
+  }
+
+  get multiple() {
+    return this.hasAttribute('multiple');
+  }
+
+  set multiple(value) {
+    if (value) {
+      this.setAttribute('multiple', '');
+    } else {
+      this.removeAttribute('multiple');
+    }
+  }
+
+  get search() {
+    return this.hasAttribute('search');
+  }
+
+  set search(value) {
+    if (value) {
+      this.setAttribute('search', '');
+    } else {
+      this.removeAttribute('search');
+    }
   }
 
   get isOpen() {
@@ -647,6 +691,64 @@ class MyDropdown extends HTMLElement {
           --_dropdown-trigger-height: var(--_global-input-height-lg);
           --_dropdown-trigger-padding: var(--_global-spacing-sm) var(--_global-spacing-md);
           --_dropdown-min-width: 140px;
+        }
+
+        /* Error state */
+        :host([error]) {
+          --_dropdown-border-color: var(--_global-color-error);
+          --_dropdown-border-color-hover: var(--_global-color-error);
+          --_dropdown-border-color-focus: var(--_global-color-error);
+        }
+
+        :host([error]) .dropdown-trigger {
+          border-color: var(--_global-color-error);
+        }
+
+        :host([error]) .dropdown-trigger:focus-visible {
+          outline-color: var(--_global-color-error);
+        }
+
+        :host([error]) .trigger-text {
+          color: var(--_global-color-error);
+        }
+
+        /* Enhanced disabled state */
+        :host([disabled]) .dropdown-trigger {
+          opacity: 0.6;
+          background-color: var(--_global-color-surface-variant);
+          border-color: var(--_global-color-outline);
+          cursor: not-allowed;
+        }
+
+        :host([disabled]) .trigger-text {
+          color: var(--_global-color-outline);
+        }
+
+        /* Improved animations with reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+          .dropdown-menu,
+          .dropdown-trigger,
+          .dropdown-icon,
+          .dropdown-option {
+            transition: none !important;
+          }
+          
+          .dropdown-trigger.open .dropdown-icon {
+            transform: none;
+          }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+          .dropdown-trigger {
+            border-width: 2px;
+          }
+          
+          .dropdown-option:focus,
+          .dropdown-option.focused {
+            outline: 2px solid currentColor;
+            outline-offset: -2px;
+          }
         }
       </style>
 
