@@ -10,19 +10,25 @@ class MyIcon extends HTMLElement {
     // Create Shadow DOM for encapsulation
     this.attachShadow({ mode: 'open' });
     
+    // Bind event handlers
+    this.handleClick = this.handleClick.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    
     // Initialize component
     this.render();
+    this.attachEventListeners();
   }
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['icon', 'size', 'color'];
+    return ['icon', 'size', 'color', 'disabled', 'interactive', 'aria-label'];
   }
 
   // Handle attribute changes
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue !== newValue) {
       this.render();
+      this.attachEventListeners();
     }
   }
 
@@ -54,6 +60,86 @@ class MyIcon extends HTMLElement {
   // Setter for color
   set color(value) {
     this.setAttribute('color', value);
+  }
+
+  // Getter for disabled
+  get disabled() {
+    return this.hasAttribute('disabled');
+  }
+
+  // Setter for disabled
+  set disabled(value) {
+    if (value) {
+      this.setAttribute('disabled', '');
+    } else {
+      this.removeAttribute('disabled');
+    }
+  }
+
+  // Getter for interactive
+  get interactive() {
+    return this.hasAttribute('interactive');
+  }
+
+  // Setter for interactive
+  set interactive(value) {
+    if (value) {
+      this.setAttribute('interactive', '');
+    } else {
+      this.removeAttribute('interactive');
+    }
+  }
+
+  // Handle click events for interactive icons
+  handleClick(event) {
+    if (this.disabled || !this.interactive) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    // Emit custom click event
+    this.dispatchEvent(new CustomEvent('icon-click', {
+      detail: {
+        icon: this.icon,
+        size: this.size,
+        color: this.color
+      },
+      bubbles: true,
+      cancelable: true
+    }));
+  }
+
+  // Handle keyboard events for interactive icons
+  handleKeyDown(event) {
+    if (this.disabled || !this.interactive) {
+      event.preventDefault();
+      return;
+    }
+
+    // Handle Enter and Space keys
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.handleClick(event);
+    }
+  }
+
+  // Attach event listeners
+  attachEventListeners() {
+    // Remove existing listeners
+    this.removeEventListener('click', this.handleClick);
+    this.removeEventListener('keydown', this.handleKeyDown);
+
+    // Add listeners only for interactive icons
+    if (this.interactive && !this.disabled) {
+      this.addEventListener('click', this.handleClick);
+      this.addEventListener('keydown', this.handleKeyDown);
+      this.setAttribute('tabindex', '0');
+      this.setAttribute('role', 'button');
+    } else {
+      this.removeAttribute('tabindex');
+      this.removeAttribute('role');
+    }
   }
 
   // Render the component
@@ -110,25 +196,80 @@ class MyIcon extends HTMLElement {
         :host([size="lg"]) { --_icon-size: var(--_icon-size-lg); }
         :host([size="xl"]) { --_icon-size: var(--_icon-size-xl); }
 
-        /* Hover effect for interactive icons */
-        :host(:hover) {
-          opacity: 0.8;
+        /* Interactive states - only apply to interactive icons */
+        :host([interactive]) {
+          cursor: pointer;
+          border-radius: var(--_icon-border-radius);
+          transition: all var(--_icon-transition);
         }
 
-        /* Focus state for accessibility */
-        :host(:focus) {
+        :host([interactive]:hover) {
+          opacity: 0.8;
+          transform: scale(1.05);
+          background-color: rgba(0, 0, 0, 0.04);
+        }
+
+        :host([interactive]:active) {
+          transform: scale(0.95);
+          transition-duration: var(--_global-motion-duration-short1);
+        }
+
+        /* Focus state for accessibility - only for interactive icons */
+        :host([interactive]:focus),
+        :host([interactive]:focus-visible) {
           outline: var(--_icon-focus-ring);
           outline-offset: var(--_icon-focus-offset);
           border-radius: var(--_icon-border-radius);
+          background-color: rgba(0, 0, 0, 0.08);
+        }
+
+        /* Make interactive icons focusable */
+        :host([interactive]) {
+          tabindex: 0;
         }
 
         /* Disabled state */
         :host([disabled]) {
           opacity: 0.5;
           pointer-events: none;
+          cursor: not-allowed;
+        }
+
+        /* Non-interactive icons should not be focusable */
+        :host(:not([interactive])) {
+          pointer-events: none;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+          :host([interactive]:focus) {
+            outline-width: 3px;
+            outline-color: var(--_global-color-text-primary);
+          }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+          :host([interactive]) {
+            transition: none;
+          }
+          
+          :host([interactive]:hover) {
+            transform: none;
+          }
+          
+          :host([interactive]:active) {
+            transform: none;
+          }
         }
       </style>
-      <span class="material-icons" role="img" aria-label="${this.icon || 'icon'}">${this.icon}</span>
+      <span 
+        class="material-icons" 
+        role="img" 
+        aria-label="${this.getAttribute('aria-label') || this.icon || 'icon'}"
+        ${this.disabled ? 'aria-disabled="true"' : ''}
+        ${this.interactive ? 'tabindex="0"' : ''}
+      >${this.icon}</span>
     `;
   }
 }
