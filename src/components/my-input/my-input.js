@@ -1181,10 +1181,9 @@ class MyInput extends MyntUIBaseComponent {
     const ariaRequired = this._schema.required ? 'true' : 'false';
     const ariaReadOnly = this._schema.readonly ? 'true' : 'false';
     
-    // Enhanced placeholder for better accessibility
-    const accessiblePlaceholder = placeholder || 
-      (this._schema.labelPosition === 'over' ? '' : 
-        (label || `Enter ${this._schema.type === 'email' ? 'email address' : this._schema.type}`));
+    // Enhanced placeholder for better accessibility - hide when using floating labels
+    const accessiblePlaceholder = this._schema.labelPosition === 'over' ? '' : 
+      (placeholder || label || `Enter ${this._schema.type === 'email' ? 'email address' : this._schema.type}`);
     
     const commonAttributes = `
       id="${inputId}"
@@ -1509,7 +1508,7 @@ class MyInput extends MyntUIBaseComponent {
           padding: 0 var(--_global-spacing-xs);
           transition: all var(--_input-motion-duration-medium) var(--_input-motion-easing);
           pointer-events: none;
-          z-index: 2;
+          z-index: 10;
           margin-bottom: 0;
           border-radius: var(--_global-border-radius-xs);
           transform-origin: left center;
@@ -1614,7 +1613,18 @@ class MyInput extends MyntUIBaseComponent {
         .input-field::placeholder {
           color: var(--_input-placeholder-color);
           opacity: 1;
-          transition: color var(--_input-motion-duration-short) var(--_input-motion-easing);
+          transition: opacity var(--_input-motion-duration-short) var(--_input-motion-easing);
+        }
+        
+        /* Hide placeholder when floating label is present */
+        :host([label-position="over"]) .input-field::placeholder {
+          opacity: 0;
+        }
+        
+        /* Show placeholder only when focused and no floating label conflict */
+        :host([label-position="over"]) .input-field:focus::placeholder {
+          opacity: 0.6;
+          transition-delay: var(--_input-motion-duration-medium);
         }
 
         /* Enhanced hover states with consistent patterns */
@@ -2411,7 +2421,7 @@ class MyInput extends MyntUIBaseComponent {
           font-weight: var(--_global-font-weight-medium);
           box-shadow: 0 0 0 6px var(--_global-color-surface);
           letter-spacing: 0.02em;
-          z-index: 3;
+          z-index: 15;
           padding: 2px 6px;
           backdrop-filter: blur(4px);
         }
@@ -2430,40 +2440,11 @@ class MyInput extends MyntUIBaseComponent {
           animation: labelFloat var(--_input-motion-duration-medium) var(--_input-motion-easing) forwards;
         }
         
-        @keyframes labelFloat {
-          0% {
-            transform: translateY(-50%) scale(1);
-            opacity: 0.7;
-          }
-          50% {
-            transform: translateY(-25%) scale(0.9);
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateY(0) scale(0.75);
-            opacity: 1;
-          }
-        }
-        
-        /* Reverse animation when losing focus without content */
+        /* Simplified reverse animation - use transitions instead of keyframes */
         .input-field:not(:focus):placeholder-shown:not([value]) ~ .label.over {
-          animation: labelUnfloat var(--_input-motion-duration-medium) var(--_input-motion-easing) forwards;
+          transition: all var(--_input-motion-duration-medium) var(--_input-motion-easing);
         }
         
-        @keyframes labelUnfloat {
-          0% {
-            transform: translateY(0) scale(0.75);
-            opacity: 1;
-          }
-          50% {
-            transform: translateY(-25%) scale(0.9);
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateY(-50%) scale(1);
-            opacity: 0.7;
-          }
-        }
         
         /* Filled variant floating label - no background */
         :host([variant="filled"]) .input-field:focus ~ .label.over,
@@ -2475,27 +2456,12 @@ class MyInput extends MyntUIBaseComponent {
           padding: 0 4px;
         }
         
-        /* Error state for floating label with enhanced animation */
+        /* Simplified error state for floating label */
         .input-container.has-error .input-field:focus ~ .label.over,
         .input-container.has-error .input-field:not(:placeholder-shown) ~ .label.over,
         .input-container.has-error .input-field[value]:not([value=""]) ~ .label.over {
           color: var(--_input-label-color-error);
-          animation: labelErrorFloat var(--_input-motion-duration-medium) var(--_input-motion-easing) forwards;
-        }
-        
-        @keyframes labelErrorFloat {
-          0% {
-            transform: translateY(-50%) scale(1);
-            color: var(--_input-label-color);
-          }
-          50% {
-            transform: translateY(-25%) scale(0.9);
-            color: color-mix(in srgb, var(--_input-label-color-error) 50%, var(--_input-label-color));
-          }
-          100% {
-            transform: translateY(0) scale(0.75);
-            color: var(--_input-label-color-error);
-          }
+          transition: all var(--_input-motion-duration-medium) var(--_input-motion-easing);
         }
         
         /* Label state management for better UX */
@@ -2512,6 +2478,7 @@ class MyInput extends MyntUIBaseComponent {
           font-size: calc(var(--_global-font-size-xs) * 0.9);
           padding: 1px 4px;
           box-shadow: 0 0 0 4px var(--_global-color-surface);
+          z-index: 15;
         }
         
         :host([size="large"]) .input-field:focus ~ .label.over,
@@ -2521,6 +2488,7 @@ class MyInput extends MyntUIBaseComponent {
           font-size: var(--_global-font-size-sm);
           padding: 3px 8px;
           box-shadow: 0 0 0 8px var(--_global-color-surface);
+          z-index: 15;
         }
         /* High contrast mode support */
         @media (prefers-contrast: high) {
