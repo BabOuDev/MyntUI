@@ -1,14 +1,14 @@
 /**
  * MyntUI my-gauge Component
  * Visualizes a single numerical value within a defined range, often with a radial or arc-shaped display
+ * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
  */
 
-class MyGauge extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyGauge extends MyntUIBaseComponent {
   constructor() {
     super();
-    
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
     
     // Internal state
     this._value = 0;
@@ -16,38 +16,68 @@ class MyGauge extends HTMLElement {
     this._max = 100;
     this._animationId = null;
     
-    // Initialize component
-    this.render();
+    // Initialize with base component pattern
+    this.log('Gauge component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['value', 'min', 'max', 'label', 'unit', 'size', 'variant', 'show-value', 'animated', 'thresholds', 'tooltip', 'gradient'];
+    return [
+      ...super.observedAttributes,
+      'value', 'min', 'max', 'label', 'unit', 'show-value', 'animated', 'thresholds', 'tooltip', 'gradient'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      if (name === 'value' || name === 'min' || name === 'max') {
-        this.updateGauge();
-      } else {
-        this.render();
-      }
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'value':
+        this._parseNumericValues();
+        this.announceToScreenReader(
+          `Gauge value changed to ${newValue} ${this.unit || ''}`,
+          'polite'
+        );
+        // Only update gauge visuals for value changes
+        setTimeout(() => this.updateGauge(), 0);
+        return; // Don't trigger full re-render
+      case 'min':
+      case 'max':
+        this._parseNumericValues();
+        this.announceToScreenReader(
+          `Gauge ${name} changed to ${newValue}`,
+          'polite'
+        );
+        break;
+      case 'thresholds':
+        try {
+          const thresholds = JSON.parse(newValue || '[]');
+          this.log('Thresholds updated:', thresholds);
+        } catch (error) {
+          this.log('Invalid thresholds JSON:', error);
+        }
+        break;
     }
   }
 
-  // Getters and setters
+  // Enhanced getters and setters with validation (inherits common ones from base)
   get value() {
     return this._value;
   }
 
   set value(value) {
     const numValue = Math.max(this.min, Math.min(this.max, parseFloat(value) || 0));
-    if (this.animated && this._value !== numValue) {
-      this.animateToValue(numValue);
-    } else {
-      this._value = numValue;
-      this.setAttribute('value', numValue.toString());
+    
+    if (this.validateAttribute('value', numValue, (v) => typeof v === 'number' && !isNaN(v))) {
+      if (this.animated && this._value !== numValue) {
+        this.animateToValue(numValue);
+      } else {
+        this._value = numValue;
+        this.updateGauge();
+        this.setAttribute('value', numValue.toString());
+      }
+      this.log('Value changed:', numValue);
     }
   }
 
@@ -56,10 +86,12 @@ class MyGauge extends HTMLElement {
   }
 
   set min(value) {
-    this._min = parseFloat(value) || 0;
-    this.setAttribute('min', this._min.toString());
-    // Ensure value is still within bounds
-    this.value = this._value;
+    const numValue = parseFloat(value) || 0;
+    if (this.validateAttribute('min', numValue, (v) => typeof v === 'number' && !isNaN(v))) {
+      this._min = numValue;
+      this.setAttribute('min', numValue.toString());
+      this._parseNumericValues(); // Re-validate all values
+    }
   }
 
   get max() {
@@ -67,10 +99,12 @@ class MyGauge extends HTMLElement {
   }
 
   set max(value) {
-    this._max = parseFloat(value) || 100;
-    this.setAttribute('max', this._max.toString());
-    // Ensure value is still within bounds
-    this.value = this._value;
+    const numValue = parseFloat(value) || 100;
+    if (this.validateAttribute('max', numValue, (v) => typeof v === 'number' && !isNaN(v))) {
+      this._max = numValue;
+      this.setAttribute('max', numValue.toString());
+      this._parseNumericValues(); // Re-validate all values
+    }
   }
 
   get label() {
@@ -133,16 +167,20 @@ class MyGauge extends HTMLElement {
     const thresholdsAttr = this.getAttribute('thresholds');
     if (thresholdsAttr) {
       try {
-        return JSON.parse(thresholdsAttr);
-      } catch (e) {
-        console.warn('Invalid thresholds JSON in my-gauge:', e);
+        const parsed = JSON.parse(thresholdsAttr);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        this.log('Invalid thresholds JSON:', error);
+        this._handleError(error, 'thresholds parsing');
       }
     }
     return [];
   }
 
   set thresholds(value) {
-    this.setAttribute('thresholds', JSON.stringify(value || []));
+    if (this.validateAttribute('thresholds', value, (v) => Array.isArray(v) || v === null || v === undefined)) {
+      this.setAttribute('thresholds', JSON.stringify(value || []));
+    }
   }
 
   get tooltip() {
@@ -275,20 +313,39 @@ class MyGauge extends HTMLElement {
     }
   }
 
-  // Connected callback
-  connectedCallback() {
-    // Parse initial values
-    this._value = Math.max(this.min, Math.min(this.max, parseFloat(this.getAttribute('value')) || 0));
+  // Parse numeric values from attributes with validation
+  _parseNumericValues() {
     this._min = parseFloat(this.getAttribute('min')) || 0;
-    this._max = parseFloat(this.getAttribute('max')) || 100;
+    this._max = Math.max(this._min, parseFloat(this.getAttribute('max')) || 100);
+    
+    // Ensure min is not greater than max
+    if (this._min > this._max) {
+      this._min = this._max;
+    }
+    
+    // Clamp value within bounds
+    const rawValue = parseFloat(this.getAttribute('value')) || 0;
+    this._value = Math.max(this._min, Math.min(this._max, rawValue));
   }
 
-  // Standardized lifecycle cleanup - part of MyntUI component pattern
-  disconnectedCallback() {
+  // Override base connected callback
+  onConnected() {
+    this._parseNumericValues();
+    this.log('Gauge component connected with values:', {
+      value: this._value,
+      min: this._min,
+      max: this._max,
+      thresholds: this.thresholds.length
+    });
+  }
+
+  // Override base disconnected callback
+  onDisconnected() {
     if (this._animationId) {
       cancelAnimationFrame(this._animationId);
       this._animationId = null;
     }
+    this.log('Gauge component disconnected');
   }
 
   // Format display value
@@ -297,6 +354,103 @@ class MyGauge extends HTMLElement {
       return value.toString();
     }
     return value.toFixed(1);
+  }
+
+  // Attach event listeners using base component pattern
+  attachEventListeners() {
+    this.removeEventListeners(); // Clean up existing listeners
+    
+    const gaugeContainer = this.shadowRoot.querySelector('.gauge-container');
+    if (!gaugeContainer) return;
+    
+    // Use base component's standardized event listener management
+    this.addEventListeners([
+      {
+        element: gaugeContainer,
+        events: ['click'],
+        handler: this.handleClick.bind(this)
+      },
+      {
+        element: gaugeContainer,
+        events: ['keydown'],
+        handler: this.handleKeyDown
+      },
+      {
+        element: gaugeContainer,
+        events: ['focus'],
+        handler: this.handleFocus
+      },
+      {
+        element: gaugeContainer,
+        events: ['blur'],
+        handler: this.handleBlur
+      }
+    ]);
+  }
+
+  // Handle click events on gauge
+  handleClick(event) {
+    if (this.disabled) return;
+    
+    // Emit gauge interaction event
+    this.emit('gauge-click', {
+      value: this._value,
+      percentage: this.percentage,
+      min: this.min,
+      max: this.max,
+      threshold: this.getCurrentThreshold()
+    });
+  }
+
+  // Override base key handling for gauge-specific interactions
+  handleKeyDown(event) {
+    super.handleKeyDown(event);
+    
+    if (this.disabled) {
+      event.preventDefault();
+      return;
+    }
+
+    const step = (this.max - this.min) / 100; // 1% steps
+    let newValue = this._value;
+
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowRight':
+        event.preventDefault();
+        newValue = Math.min(this.max, this._value + step);
+        break;
+      case 'ArrowDown':
+      case 'ArrowLeft':
+        event.preventDefault();
+        newValue = Math.max(this.min, this._value - step);
+        break;
+      case 'Home':
+        event.preventDefault();
+        newValue = this.min;
+        break;
+      case 'End':
+        event.preventDefault();
+        newValue = this.max;
+        break;
+      case 'PageUp':
+        event.preventDefault();
+        newValue = Math.min(this.max, this._value + step * 10);
+        break;
+      case 'PageDown':
+        event.preventDefault();
+        newValue = Math.max(this.min, this._value - step * 10);
+        break;
+    }
+
+    if (newValue !== this._value) {
+      this.value = newValue;
+      this.emit('gauge-change', {
+        value: newValue,
+        percentage: this.percentage,
+        oldValue: this._value
+      });
+    }
   }
 
   // Render the component
@@ -579,6 +733,7 @@ class MyGauge extends HTMLElement {
            aria-label="${this.label || 'gauge'} - ${this.formatValue(this._value)}${this.unit}"
            ${this.getCurrentThreshold() ? `aria-describedby="threshold-${this.getCurrentThreshold().label || 'current'}"` : ''}
            ${this.tooltip ? `title="${this.tooltip}"` : ''}
+           ${this.disabled ? 'aria-disabled="true"' : 'tabindex="0"'}
       >
         ${this.tooltip ? `<div class="gauge-tooltip">${this.tooltip}</div>` : ''}
         <svg class="gauge-svg" viewBox="0 0 100 60" aria-hidden="true">
