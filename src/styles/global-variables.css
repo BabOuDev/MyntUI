@@ -96,10 +96,13 @@
   --_global-color-gray-800: #424242;
   --_global-color-gray-900: #212121;
 
-  /* Surface colors */
+  /* Surface colors - Enhanced Material Design 3 surface system */
   --_global-color-surface: #fef7ff;
+  --_global-color-surface-dim: #ded8e1;
+  --_global-color-surface-bright: #fef7ff;
   --_global-color-surface-variant: #e7e0ec;
   --_global-color-surface-container: #f3edf7;
+  --_global-color-surface-container-lowest: #ffffff;
   --_global-color-surface-container-low: #f7f2fa;
   --_global-color-surface-container-high: #ece6f0;
   --_global-color-surface-container-highest: #e6e0e9;

@@ -318,6 +318,11 @@ class MyIcon extends HTMLElement {
           position: relative;
           box-sizing: border-box;
         }
+        
+        /* Ensure icons are always visible with proper contrast */
+        :host(:not([color])) {
+          color: var(--_global-color-on-surface);
+        }
 
         /* Built-in SVG icon styling */
         .builtin-icon {
@@ -325,6 +330,12 @@ class MyIcon extends HTMLElement {
           height: var(--_icon-size);
           display: block;
           color: inherit;
+          fill: currentColor;
+          flex-shrink: 0;
+        }
+        
+        /* Ensure SVG paths use currentColor */
+        .builtin-icon path {
           fill: currentColor;
         }
 
