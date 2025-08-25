@@ -12,26 +12,51 @@
   --_global-spacing-xl: 32px;
   --_global-spacing-xxl: 48px;
 
-  /* Color System */
-  /* Primary colors - Material Design 3 style */
-  --_global-color-primary: #6750a4;
-  --_global-color-primary-hover: #7c67b8;
-  --_global-color-primary-active: #4f3d8c;
-  --_global-color-primary-light: #e8def8;
-  --_global-color-primary-dark: #21005d;
-  --_global-color-primary-container: #eaddff;
-  --_global-color-on-primary: #ffffff;
-  --_global-color-on-primary-container: #21005d;
+  /* Color System - Enhanced Material Design 3 */
+  /* Primary colors - Updated for better consistency */
+  --_global-color-primary: #6750A4;
+  --_global-color-primary-hover: #7C67B8;
+  --_global-color-primary-active: #5A4099;
+  --_global-color-primary-light: #E8DEF8;
+  --_global-color-primary-dark: #21005D;
+  --_global-color-primary-container: #EADDFF;
+  --_global-color-on-primary: #FFFFFF;
+  --_global-color-on-primary-container: #21005D;
+  
+  /* Primary variants for better state indication */
+  --_global-color-primary-10: #21005D;
+  --_global-color-primary-20: #381E72;
+  --_global-color-primary-30: #4F378B;
+  --_global-color-primary-40: #6750A4;
+  --_global-color-primary-50: #7F67BE;
+  --_global-color-primary-60: #9A82DB;
+  --_global-color-primary-70: #B69DF8;
+  --_global-color-primary-80: #D0BCFF;
+  --_global-color-primary-90: #EADDFF;
+  --_global-color-primary-95: #F6EDFF;
+  --_global-color-primary-99: #FFFBFE;
 
-  /* Secondary colors - Material Design 3 style */
-  --_global-color-secondary: #625b71;
-  --_global-color-secondary-hover: #6e6479;
-  --_global-color-secondary-active: #4f4565;
-  --_global-color-secondary-light: #e8def8;
-  --_global-color-secondary-dark: #2a2635;
-  --_global-color-secondary-container: #e8def8;
-  --_global-color-on-secondary: #ffffff;
-  --_global-color-on-secondary-container: #1d192b;
+  /* Secondary colors - Enhanced Material Design 3 */
+  --_global-color-secondary: #625B71;
+  --_global-color-secondary-hover: #706579;
+  --_global-color-secondary-active: #544963;
+  --_global-color-secondary-light: #E8DEF8;
+  --_global-color-secondary-dark: #332D41;
+  --_global-color-secondary-container: #E8DEF8;
+  --_global-color-on-secondary: #FFFFFF;
+  --_global-color-on-secondary-container: #1E192B;
+  
+  /* Secondary variants */
+  --_global-color-secondary-10: #1E192B;
+  --_global-color-secondary-20: #332D41;
+  --_global-color-secondary-30: #4A4458;
+  --_global-color-secondary-40: #625B71;
+  --_global-color-secondary-50: #7C7489;
+  --_global-color-secondary-60: #968DA3;
+  --_global-color-secondary-70: #B1A7BE;
+  --_global-color-secondary-80: #CCC2DC;
+  --_global-color-secondary-90: #E8DEF8;
+  --_global-color-secondary-95: #F6EDFF;
 
   /* Status colors - Material Design 3 style */
   --_global-color-success: #2e7d32;
