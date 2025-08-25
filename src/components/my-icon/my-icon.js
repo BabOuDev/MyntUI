@@ -62,14 +62,19 @@ class MyIcon extends HTMLElement {
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
       <style>
         :host {
-          /* Component-specific variables using global variables */
+          /* Icon-specific variables using global semantic variables */
           --_icon-color: ${this.color || 'var(--_global-color-text-primary)'};
-          --_icon-size-xs: 16px;
-          --_icon-size-sm: 20px;
-          --_icon-size-md: 24px;
-          --_icon-size-lg: 32px;
-          --_icon-size-xl: 40px;
+          --_icon-size-xs: var(--_global-font-size-xs);
+          --_icon-size-sm: var(--_global-font-size-md);
+          --_icon-size-md: var(--_global-font-size-lg);
+          --_icon-size-lg: var(--_global-font-size-xxl);
+          --_icon-size-xl: var(--_global-font-size-display);
           --_icon-size: var(--_icon-size-${this.size});
+          
+          --_icon-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_icon-focus-ring: 2px solid var(--_global-color-border-focus);
+          --_icon-focus-offset: 2px;
+          --_icon-border-radius: var(--_global-border-radius-sm);
           
           display: inline-flex;
           align-items: center;
@@ -77,7 +82,7 @@ class MyIcon extends HTMLElement {
           width: var(--_icon-size);
           height: var(--_icon-size);
           color: var(--_icon-color);
-          transition: color var(--_global-transition-fast, 150ms ease-in-out);
+          transition: color var(--_icon-transition);
         }
 
         .material-icons {
@@ -112,9 +117,9 @@ class MyIcon extends HTMLElement {
 
         /* Focus state for accessibility */
         :host(:focus) {
-          outline: 2px solid var(--_global-color-border-focus, #80bdff);
-          outline-offset: 2px;
-          border-radius: var(--_global-border-radius-sm, 4px);
+          outline: var(--_icon-focus-ring);
+          outline-offset: var(--_icon-focus-offset);
+          border-radius: var(--_icon-border-radius);
         }
 
         /* Disabled state */
@@ -128,5 +133,7 @@ class MyIcon extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define('my-icon', MyIcon);
+// Register the custom element only if it hasn't been registered already
+if (!customElements.get('my-icon')) {
+  customElements.define('my-icon', MyIcon);
+}
