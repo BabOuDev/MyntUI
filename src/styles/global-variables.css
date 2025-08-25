@@ -267,13 +267,43 @@
   --_global-state-layer-activated: 0.12;
   --_global-state-layer-dragged: 0.16;
 
-  /* Ripple Effect System */
+  /* Enhanced Ripple Effect System */
   --_global-ripple-duration: 600ms;
+  --_global-ripple-duration-fast: 300ms;
+  --_global-ripple-duration-slow: 900ms;
   --_global-ripple-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --_global-ripple-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --_global-ripple-color-light: rgba(255, 255, 255, 0.3);
   --_global-ripple-color-dark: rgba(0, 0, 0, 0.2);
   --_global-ripple-opacity-pressed: 0.16;
   --_global-ripple-opacity-hover: 0.08;
+  --_global-ripple-opacity-focus: 0.12;
+
+  /* Spring-based Animation System */
+  --_global-spring-gentle: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --_global-spring-wobbly: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --_global-spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --_global-spring-energetic: cubic-bezier(0.23, 1, 0.32, 1);
+  
+  /* Micro-interaction Enhancements */
+  --_global-micro-scale-subtle: scale(1.02);
+  --_global-micro-scale-noticeable: scale(1.05);
+  --_global-micro-scale-prominent: scale(1.08);
+  --_global-micro-translate-subtle: translateY(-1px);
+  --_global-micro-translate-noticeable: translateY(-2px);
+  --_global-micro-translate-prominent: translateY(-4px);
+  
+  /* Enhanced Shadow System for Micro-interactions */
+  --_global-shadow-interaction-subtle: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --_global-shadow-interaction-moderate: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --_global-shadow-interaction-strong: 0 8px 16px rgba(0, 0, 0, 0.16);
+  --_global-shadow-interaction-dramatic: 0 12px 24px rgba(0, 0, 0, 0.20);
+
+  /* Loading and Progress Animations */
+  --_global-loading-pulse-duration: 2s;
+  --_global-loading-pulse-easing: ease-in-out;
+  --_global-loading-shimmer-duration: 1.5s;
+  --_global-loading-shimmer-easing: ease-in-out;
 
   /* Breakpoints (for reference in JS) */
   --_global-breakpoint-sm: 576px;

@@ -669,19 +669,49 @@ class MyGauge extends MyntUIBaseComponent {
         }
 
         /* Responsive adjustments */
-        /* Enhanced hover effects */
+        /* Enhanced hover effects with sophisticated micro-interactions */
         :host(:hover) {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), var(--_gauge-shadow);
+          transform: translateY(-2px) var(--_global-micro-scale-subtle);
+          transition: transform var(--_global-motion-duration-medium1) var(--_global-spring-bouncy),
+                      box-shadow var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
+          box-shadow: var(--_global-shadow-interaction-moderate), var(--_gauge-shadow);
+          cursor: pointer;
         }
         
         :host(:hover) .gauge-needle {
-          filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+          filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6));
+          transition: filter var(--_global-motion-duration-short2) var(--_global-spring-gentle);
+          transform-origin: 50px 50px;
+          animation: gauge-needle-pulse var(--_global-loading-pulse-duration) var(--_global-spring-gentle) infinite alternate;
         }
         
         :host(:hover) .gauge-fill {
-          stroke-width: calc(var(--_gauge-stroke-width) + 1px);
-          filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.2)) brightness(1.05);
+          stroke-width: calc(var(--_gauge-stroke-width) + 1.5px);
+          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25)) brightness(1.08) saturate(1.1);
+          transition: stroke-width var(--_global-motion-duration-short2) var(--_global-spring-wobbly),
+                      filter var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+        }
+        
+        /* Active/pressed state for better feedback */
+        :host(:active) {
+          transform: translateY(-1px) scale(0.98);
+          transition: transform var(--_global-motion-duration-short1) var(--_global-spring-energetic);
+        }
+        
+        /* Enhanced focus state */
+        :host(:focus-within) .gauge-container {
+          box-shadow: 0 0 0 3px var(--_global-color-primary-container);
+          transition: box-shadow var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+        }
+        
+        /* Pulse animation for needle on hover */
+        @keyframes gauge-needle-pulse {
+          0% {
+            filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6));
+          }
+          100% {
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
+          }
         }
         
         /* Tooltip styles */

@@ -759,18 +759,37 @@ class MyProgress extends MyntUIBaseComponent {
           box-sizing: border-box;
         }
         
-        /* Enhanced hover and interaction states */
+        /* Enhanced hover and interaction states with micro-interactions */
         :host(:hover) {
           --_progress-track-bg: var(--_global-color-surface-container);
+          transform: var(--_global-micro-translate-subtle);
+          transition: transform var(--_global-motion-duration-short2) var(--_global-spring-gentle),
+                      box-shadow var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          box-shadow: var(--_global-shadow-interaction-subtle);
         }
         
         :host(:hover) .progress-fill {
           filter: brightness(1.08) saturate(1.1);
           transform: scaleY(1.1);
+          transition: filter var(--_global-motion-duration-short2) var(--_global-spring-gentle),
+                      transform var(--_global-motion-duration-short2) var(--_global-spring-wobbly);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         
         :host(:hover) .progress-buffer {
           opacity: calc(var(--_progress-buffer-opacity) + 0.1);
+          transition: opacity var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+        }
+        
+        /* Enhanced active/pressed states */
+        :host(:active) {
+          transform: var(--_global-micro-translate-noticeable);
+          transition: transform var(--_global-motion-duration-short1) var(--_global-spring-energetic);
+        }
+        
+        :host(:active) .progress-fill {
+          transform: scaleY(1.15);
+          filter: brightness(1.12) saturate(1.15);
         }
         
         /* Focus states for accessibility */
