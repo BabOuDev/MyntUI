@@ -185,51 +185,77 @@ class MyCheckbox extends MyntUIBaseComponent {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          /* Enhanced Material Design 3 variables with better semantic naming */
+          /* Enhanced Material Design 3 variables with superior semantic naming */
           --_checkbox-size: 18px;
           --_checkbox-state-layer-size: 40px;
           --_checkbox-border-radius: var(--_global-border-radius-sm);
           
-          /* Color tokens following Material Design 3 principles */
+          /* Enhanced color system with expanded Material Design 3 palette */
           --_checkbox-color-unchecked: var(--_global-color-outline);
+          --_checkbox-color-unchecked-hover: var(--_global-color-primary-40);
           --_checkbox-color-checked: var(--_global-color-primary);
+          --_checkbox-color-checked-hover: var(--_global-color-primary-60);
           --_checkbox-color-disabled: var(--_global-color-outline-variant);
           --_checkbox-color-error: var(--_global-color-error);
+          --_checkbox-color-error-hover: #E53E3E;
           
-          /* Background colors */
+          /* Enhanced background colors with subtle gradients */
           --_checkbox-background-unchecked: var(--_global-color-surface);
+          --_checkbox-background-unchecked-hover: var(--_global-color-surface-container-low);
           --_checkbox-background-checked: var(--_global-color-primary);
+          --_checkbox-background-checked-hover: var(--_global-color-primary-60);
           --_checkbox-background-disabled: var(--_global-color-surface-variant);
           --_checkbox-background-error: var(--_global-color-error);
           
-          /* Border definitions */
+          /* Enhanced border system with dynamic thickness */
           --_checkbox-border-width: 2px;
+          --_checkbox-border-width-focus: 3px;
           --_checkbox-border-unchecked: var(--_checkbox-border-width) solid var(--_checkbox-color-unchecked);
           --_checkbox-border-checked: var(--_checkbox-border-width) solid var(--_checkbox-color-checked);
-          --_checkbox-border-hover: var(--_checkbox-border-width) solid var(--_global-color-on-surface);
-          --_checkbox-border-focus: var(--_checkbox-border-width) solid var(--_checkbox-color-checked);
+          --_checkbox-border-hover: var(--_checkbox-border-width) solid var(--_checkbox-color-unchecked-hover);
+          --_checkbox-border-focus: var(--_checkbox-border-width-focus) solid var(--_checkbox-color-checked);
           --_checkbox-border-disabled: var(--_checkbox-border-width) solid var(--_checkbox-color-disabled);
           --_checkbox-border-error: var(--_checkbox-border-width) solid var(--_checkbox-color-error);
           
-          /* Enhanced state layer colors */
+          /* Advanced state layer colors with contextual awareness */
           --_checkbox-state-layer-unchecked: var(--_checkbox-color-checked);
           --_checkbox-state-layer-checked: var(--_checkbox-color-checked);
           --_checkbox-state-layer-error: var(--_checkbox-color-error);
+          --_checkbox-state-layer-hover: var(--_global-state-layer-hover);
+          --_checkbox-state-layer-focus: var(--_global-state-layer-focus);
+          --_checkbox-state-layer-pressed: var(--_global-state-layer-pressed);
           
-          /* Improved motion and transitions */
-          --_checkbox-transition: all var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
-          --_checkbox-transition-fast: all var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
-          --_checkbox-transition-emphasized: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          /* Spring-based motion system with enhanced easing */
+          --_checkbox-transition: all var(--_global-motion-duration-medium1) var(--_global-spring-gentle);
+          --_checkbox-transition-fast: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_checkbox-transition-emphasized: all var(--_global-motion-duration-medium1) var(--_global-spring-energetic);
+          --_checkbox-transition-bounce: all var(--_global-motion-duration-medium2) var(--_global-spring-bouncy);
           
-          /* Ripple enhancements */
-          --_checkbox-ripple-size: calc(var(--_checkbox-state-layer-size) * 1.2);
+          /* Enhanced ripple system with better physics */
+          --_checkbox-ripple-size: calc(var(--_checkbox-state-layer-size) * 1.4);
           --_checkbox-ripple-duration: var(--_global-ripple-duration);
-          --_checkbox-ripple-easing: var(--_global-ripple-easing);
+          --_checkbox-ripple-duration-fast: var(--_global-ripple-duration-fast);
+          --_checkbox-ripple-easing: var(--_global-spring-gentle);
+          --_checkbox-ripple-easing-bounce: var(--_global-spring-wobbly);
           
-          /* Typography */
+          /* Enhanced typography with better hierarchy */
           --_checkbox-label-color: var(--_global-color-on-surface);
+          --_checkbox-label-color-hover: var(--_global-color-primary-10);
           --_checkbox-label-color-disabled: var(--_global-color-outline);
           --_checkbox-label-color-error: var(--_global-color-error);
+          
+          /* Advanced elevation system for depth */
+          --_checkbox-elevation-rest: var(--_global-elevation-0);
+          --_checkbox-elevation-hover: var(--_global-shadow-interaction-subtle);
+          --_checkbox-elevation-focus: var(--_global-shadow-interaction-moderate);
+          --_checkbox-elevation-active: var(--_global-shadow-interaction-strong);
+          
+          /* Micro-interaction enhancements */
+          --_checkbox-scale-rest: 1;
+          --_checkbox-scale-hover: var(--_global-micro-scale-subtle);
+          --_checkbox-scale-focus: var(--_global-micro-scale-noticeable);
+          --_checkbox-scale-active: 0.98;
+          --_checkbox-translate-hover: var(--_global-micro-translate-subtle);
           
           display: inline-flex;
           align-items: center;
@@ -240,6 +266,8 @@ class MyCheckbox extends MyntUIBaseComponent {
           position: relative;
           min-height: var(--_checkbox-state-layer-size);
           font-family: var(--_global-font-family-sans);
+          contain: layout style;
+          isolation: isolate;
         }
 
         :host([disabled]) {
@@ -258,11 +286,14 @@ class MyCheckbox extends MyntUIBaseComponent {
           padding: calc((var(--_checkbox-state-layer-size) - var(--_checkbox-size)) / 2);
           margin: calc((var(--_checkbox-state-layer-size) - var(--_checkbox-size)) / -2);
           border-radius: 50%;
-          overflow: hidden;
+          overflow: visible;
           isolation: isolate;
+          transform: var(--_checkbox-scale-rest);
+          transition: var(--_checkbox-transition);
+          will-change: transform, box-shadow;
         }
         
-        /* Enhanced state layer with dynamic color */
+        /* Enhanced multi-layered state system for superior depth */
         .checkbox-container::before {
           content: '';
           position: absolute;
@@ -273,51 +304,138 @@ class MyCheckbox extends MyntUIBaseComponent {
           border-radius: 50%;
           background-color: var(--_checkbox-state-layer-unchecked);
           opacity: 0;
-          transition: var(--_checkbox-transition-fast);
+          transform: scale(0.8);
+          transition: var(--_checkbox-transition-emphasized);
           pointer-events: none;
           z-index: -1;
+          box-shadow: var(--_checkbox-elevation-rest);
         }
         
-        /* State layer color changes for checked state */
+        /* Advanced state layer for focus ring enhancement */
+        .checkbox-container::after {
+          content: '';
+          position: absolute;
+          top: -4px;
+          left: -4px;
+          right: -4px;
+          bottom: -4px;
+          border-radius: 50%;
+          background-color: var(--_checkbox-state-layer-unchecked);
+          opacity: 0;
+          transform: scale(0.6);
+          transition: var(--_checkbox-transition-bounce);
+          pointer-events: none;
+          z-index: -2;
+          border: 2px solid transparent;
+        }
+        
+        /* Enhanced state layer color changes for checked state */
         .checkbox-container:has(.checked)::before,
         .checkbox-container:has(.indeterminate)::before {
           background-color: var(--_checkbox-state-layer-checked);
         }
         
-        /* Hover state with enhanced interaction feedback */
-        .checkbox-container:hover:not([aria-disabled="true"])::before {
-          opacity: var(--_global-state-layer-hover);
-          transform: scale(1.1);
+        .checkbox-container:has(.checked)::after,
+        .checkbox-container:has(.indeterminate)::after {
+          background-color: var(--_checkbox-state-layer-checked);
         }
         
-        /* Active/pressed state */
+        /* Superior hover state with spring physics and micro-interactions */
+        .checkbox-container:hover:not([aria-disabled="true"]) {
+          transform: var(--_checkbox-scale-hover) var(--_checkbox-translate-hover);
+          box-shadow: var(--_checkbox-elevation-hover);
+        }
+        
+        .checkbox-container:hover:not([aria-disabled="true"])::before {
+          opacity: var(--_checkbox-state-layer-hover);
+          transform: scale(1.2);
+          box-shadow: var(--_checkbox-elevation-hover);
+        }
+        
+        .checkbox-container:hover:not([aria-disabled="true"])::after {
+          opacity: calc(var(--_checkbox-state-layer-hover) * 0.6);
+          transform: scale(1);
+        }
+        
+        /* Enhanced active/pressed state with realistic physics */
+        .checkbox-container:active:not([aria-disabled="true"]) {
+          transform: scale(var(--_checkbox-scale-active));
+          box-shadow: var(--_checkbox-elevation-active);
+          transition: var(--_checkbox-transition-fast);
+        }
+        
         .checkbox-container:active:not([aria-disabled="true"])::before {
-          opacity: var(--_global-state-layer-pressed);
-          transform: scale(0.95);
-          transition: var(--_checkbox-transition-emphasized);
+          opacity: var(--_checkbox-state-layer-pressed);
+          transform: scale(1);
+          transition: var(--_checkbox-transition-fast);
+        }
+        
+        .checkbox-container:active:not([aria-disabled="true"])::after {
+          opacity: calc(var(--_checkbox-state-layer-pressed) * 0.8);
+          transform: scale(0.8);
+          transition: var(--_checkbox-transition-fast);
         }
 
-        /* Enhanced focus indicators with smooth transitions */
+        /* Superior focus indicators with advanced visual feedback */
         .checkbox-container:focus {
-          outline: 2px solid var(--_checkbox-color-checked);
-          outline-offset: 2px;
-          transition: outline-color var(--_checkbox-transition-fast);
+          outline: var(--_checkbox-border-focus);
+          outline-offset: 3px;
+          transform: var(--_checkbox-scale-focus);
+          box-shadow: var(--_checkbox-elevation-focus);
+          transition: var(--_checkbox-transition-emphasized);
         }
         
         .checkbox-container:focus::before {
-          opacity: var(--_global-state-layer-focus);
-          transform: scale(1.05);
+          opacity: var(--_checkbox-state-layer-focus);
+          transform: scale(1.3);
+          box-shadow: var(--_checkbox-elevation-focus);
         }
         
-        /* Focus ring enhancement for keyboard navigation */
+        .checkbox-container:focus::after {
+          opacity: calc(var(--_checkbox-state-layer-focus) * 0.7);
+          transform: scale(1.1);
+          border-color: var(--_checkbox-color-checked);
+        }
+        
+        /* Enhanced focus ring for superior keyboard navigation */
         .checkbox-container:focus:not(:active) {
-          outline-width: 3px;
-          animation: focus-pulse 2s ease-in-out infinite;
+          outline-width: var(--_checkbox-border-width-focus);
+          animation: focus-pulse-advanced 2.5s var(--_global-spring-gentle) infinite;
         }
         
-        @keyframes focus-pulse {
-          0%, 100% { outline-offset: 2px; }
-          50% { outline-offset: 4px; }
+        .checkbox-container:focus:not(:active)::after {
+          animation: focus-ring-pulse 2.5s var(--_global-spring-gentle) infinite;
+        }
+        
+        /* Advanced focus animations with spring physics */
+        @keyframes focus-pulse-advanced {
+          0%, 100% { 
+            outline-offset: 3px;
+            transform: var(--_checkbox-scale-focus);
+          }
+          25% { 
+            outline-offset: 5px;
+            transform: scale(1.08);
+          }
+          50% { 
+            outline-offset: 6px;
+            transform: scale(1.1);
+          }
+          75% { 
+            outline-offset: 5px;
+            transform: scale(1.08);
+          }
+        }
+        
+        @keyframes focus-ring-pulse {
+          0%, 100% { 
+            transform: scale(1.1);
+            opacity: calc(var(--_checkbox-state-layer-focus) * 0.7);
+          }
+          50% { 
+            transform: scale(1.2);
+            opacity: calc(var(--_checkbox-state-layer-focus) * 0.9);
+          }
         }
 
         .checkbox-input {
@@ -327,38 +445,90 @@ class MyCheckbox extends MyntUIBaseComponent {
           border: var(--_checkbox-border-unchecked);
           border-radius: var(--_checkbox-border-radius);
           background-color: var(--_checkbox-background-unchecked);
+          background-image: linear-gradient(135deg, var(--_checkbox-background-unchecked) 0%, var(--_global-color-surface-container-low) 100%);
           transition: var(--_checkbox-transition);
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: var(--_global-elevation-1), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+          overflow: hidden;
+          will-change: transform, background-color, border-color, box-shadow;
         }
         
-        /* Enhanced checked state with smooth color transition */
+        /* Enhanced checked state with superior visual feedback */
         .checkbox-input.checked {
           background-color: var(--_checkbox-background-checked);
+          background-image: linear-gradient(135deg, var(--_checkbox-background-checked) 0%, var(--_checkbox-background-checked-hover) 100%);
           border: var(--_checkbox-border-checked);
-          transform: scale(1.05);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          transform: scale(1.08);
+          box-shadow: var(--_global-elevation-2), 0 0 0 1px var(--_checkbox-color-checked), inset 0 1px 3px rgba(255, 255, 255, 0.2);
+          animation: checkbox-check-bounce var(--_global-motion-duration-medium1) var(--_global-spring-bouncy) forwards;
         }
         
-        /* Enhanced indeterminate state */
+        /* Enhanced indeterminate state with sophisticated styling */
         .checkbox-input.indeterminate {
           background-color: var(--_checkbox-background-checked);
+          background-image: linear-gradient(135deg, var(--_checkbox-background-checked) 0%, var(--_checkbox-background-checked-hover) 100%);
           border: var(--_checkbox-border-checked);
-          transform: scale(1.05);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          transform: scale(1.08);
+          box-shadow: var(--_global-elevation-2), 0 0 0 1px var(--_checkbox-color-checked), inset 0 1px 3px rgba(255, 255, 255, 0.2);
+          animation: checkbox-indeterminate-bounce var(--_global-motion-duration-medium1) var(--_global-spring-bouncy) forwards;
         }
         
-        /* Hover enhancement for unchecked state */
+        /* Superior hover enhancements for unchecked state */
         .checkbox-container:hover:not([aria-disabled="true"]) .checkbox-input:not(.checked):not(.indeterminate) {
           border: var(--_checkbox-border-hover);
-          background-color: var(--_global-color-surface-variant);
-          transform: scale(1.02);
+          background-color: var(--_checkbox-background-unchecked-hover);
+          background-image: linear-gradient(135deg, var(--_checkbox-background-unchecked-hover) 0%, var(--_global-color-surface-container) 100%);
+          transform: scale(1.04);
+          box-shadow: var(--_global-elevation-2), inset 0 1px 3px rgba(255, 255, 255, 0.15);
         }
         
-        /* Enhanced checkmark with smoother animation */
+        /* Enhanced hover effects for checked states */
+        .checkbox-container:hover:not([aria-disabled="true"]) .checkbox-input.checked,
+        .checkbox-container:hover:not([aria-disabled="true"]) .checkbox-input.indeterminate {
+          background-color: var(--_checkbox-background-checked-hover);
+          background-image: linear-gradient(135deg, var(--_checkbox-background-checked-hover) 0%, var(--_global-color-primary-70) 100%);
+          transform: scale(1.1);
+          box-shadow: var(--_global-elevation-3), 0 0 0 1px var(--_checkbox-color-checked-hover), inset 0 1px 4px rgba(255, 255, 255, 0.25);
+        }
+        
+        /* Advanced check/indeterminate bounce animations */
+        @keyframes checkbox-check-bounce {
+          0% {
+            transform: scale(1);
+          }
+          30% {
+            transform: scale(0.9);
+          }
+          60% {
+            transform: scale(1.15);
+          }
+          80% {
+            transform: scale(1.05);
+          }
+          100% {
+            transform: scale(1.08);
+          }
+        }
+        
+        @keyframes checkbox-indeterminate-bounce {
+          0% {
+            transform: scale(1);
+          }
+          40% {
+            transform: scale(0.95);
+          }
+          70% {
+            transform: scale(1.12);
+          }
+          100% {
+            transform: scale(1.08);
+          }
+        }
+        
+        /* Superior checkmark with advanced spring animations */
         .checkbox-input::after {
           content: '';
           position: absolute;
@@ -367,107 +537,202 @@ class MyCheckbox extends MyntUIBaseComponent {
           transform: translate(-50%, -50%) scale(0) rotate(-45deg);
           width: 10px;
           height: 6px;
-          border: 2px solid var(--_global-color-on-primary);
+          border: 2.5px solid var(--_global-color-on-primary);
           border-top: none;
           border-right: none;
+          border-radius: 0 0 1px 1px;
           transform-origin: center;
-          transition: var(--_checkbox-transition-emphasized);
+          transition: var(--_checkbox-transition-bounce);
           opacity: 0;
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+          will-change: transform, opacity;
         }
         
         .checkbox-input.checked::after {
           transform: translate(-50%, -60%) scale(1) rotate(-45deg);
           opacity: 1;
-          animation: checkmark-draw 0.3s var(--_global-motion-easing-emphasized) forwards;
+          animation: checkmark-draw-advanced var(--_global-motion-duration-medium1) var(--_global-spring-energetic) forwards;
         }
         
-        /* Enhanced indeterminate state with better visual feedback */
+        /* Enhanced indeterminate mark with sophisticated styling */
         .checkbox-input.indeterminate::after {
           width: 8px;
-          height: 2px;
+          height: 2.5px;
           border: none;
           background-color: var(--_global-color-on-primary);
-          border-radius: 1px;
+          background-image: linear-gradient(90deg, var(--_global-color-on-primary) 0%, rgba(255, 255, 255, 0.3) 50%, var(--_global-color-on-primary) 100%);
+          border-radius: 2px;
           transform: translate(-50%, -50%) scale(1) rotate(0deg);
           opacity: 1;
-          animation: indeterminate-draw 0.2s var(--_global-motion-easing-emphasized) forwards;
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+          animation: indeterminate-draw-advanced var(--_global-motion-duration-medium1) var(--_global-spring-energetic) forwards;
         }
         
-        /* Checkmark drawing animation */
-        @keyframes checkmark-draw {
+        /* Advanced checkmark drawing animation with spring physics */
+        @keyframes checkmark-draw-advanced {
           0% {
-            transform: translate(-50%, -60%) scale(0.3) rotate(-45deg);
+            transform: translate(-50%, -60%) scale(0) rotate(-45deg);
             opacity: 0;
+            filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
           }
-          50% {
-            transform: translate(-50%, -60%) scale(1.1) rotate(-45deg);
+          20% {
             opacity: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+          }
+          40% {
+            transform: translate(-50%, -60%) scale(0.7) rotate(-45deg);
+          }
+          60% {
+            transform: translate(-50%, -60%) scale(1.2) rotate(-45deg);
+          }
+          80% {
+            transform: translate(-50%, -60%) scale(0.95) rotate(-45deg);
+          }
+          90% {
+            transform: translate(-50%, -60%) scale(1.05) rotate(-45deg);
           }
           100% {
             transform: translate(-50%, -60%) scale(1) rotate(-45deg);
             opacity: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
           }
         }
         
-        /* Indeterminate drawing animation */
-        @keyframes indeterminate-draw {
+        /* Advanced indeterminate drawing animation with spring physics */
+        @keyframes indeterminate-draw-advanced {
           0% {
-            transform: translate(-50%, -50%) scale(0, 1) rotate(0deg);
+            transform: translate(-50%, -50%) scale(0, 0.8) rotate(0deg);
             opacity: 0;
+            filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+          }
+          30% {
+            opacity: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
           }
           50% {
-            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1, 1.2) rotate(0deg);
+          }
+          70% {
+            transform: translate(-50%, -50%) scale(0.95, 0.9) rotate(0deg);
+          }
+          85% {
+            transform: translate(-50%, -50%) scale(1.02, 1.05) rotate(0deg);
           }
           100% {
             transform: translate(-50%, -50%) scale(1, 1) rotate(0deg);
             opacity: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
           }
         }
 
         .label {
           color: var(--_checkbox-label-color);
-          font-size: var(--_global-font-size-sm);
-          font-weight: var(--_global-font-weight-normal);
+          font-size: var(--_global-font-size-body-small);
+          font-weight: var(--_global-font-weight-medium);
           line-height: var(--_global-line-height-normal);
           cursor: pointer;
           flex: 1;
-          transition: var(--_checkbox-transition-fast);
+          transition: var(--_checkbox-transition);
+          letter-spacing: var(--_global-letter-spacing-normal);
+          user-select: none;
+          will-change: color, transform;
         }
-
-        /* Enhanced ripple effect styles - using BaseComponent standardized ripple */
+        
+        /* Enhanced label hover effects */
+        .checkbox-container:hover:not([aria-disabled="true"]) .label {
+          color: var(--_checkbox-label-color-hover);
+          transform: var(--_checkbox-translate-hover);
+        }
+        
+        /* Advanced ripple effect with superior physics */
         .ripple {
           position: absolute;
           border-radius: 50%;
           transform: scale(0);
-          animation: ripple-animation var(--_global-ripple-duration) var(--_global-ripple-easing);
+          animation: ripple-animation-advanced var(--_checkbox-ripple-duration) var(--_checkbox-ripple-easing);
           background-color: var(--_global-ripple-color-light);
           opacity: var(--_global-ripple-opacity-pressed);
           pointer-events: none;
           z-index: 1;
           mix-blend-mode: normal;
+          filter: blur(0.5px);
+          will-change: transform, opacity;
         }
         
-        /* Dynamic ripple color based on checkbox state */
+        /* Dynamic ripple color with contextual awareness */
         .checkbox-container:has(.checked) .ripple,
         .checkbox-container:has(.indeterminate) .ripple {
           background-color: var(--_checkbox-state-layer-checked);
+          filter: blur(0);
+        }
+        
+        /* Enhanced ripple for error states */
+        :host([error]) .checkbox-container .ripple {
+          background-color: var(--_checkbox-state-layer-error);
+          animation-name: ripple-animation-error;
         }
 
-        @keyframes ripple-animation {
+        /* Superior ripple animation with spring physics */
+        @keyframes ripple-animation-advanced {
           0% {
             transform: scale(0);
             opacity: var(--_global-ripple-opacity-pressed);
+            filter: blur(0);
           }
-          20% {
-            transform: scale(0.3);
+          15% {
+            transform: scale(0.2);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.9);
+            filter: blur(0.5px);
+          }
+          30% {
+            transform: scale(0.6);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.7);
+            filter: blur(1px);
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.5);
+            filter: blur(1.5px);
+          }
+          70% {
+            transform: scale(1.8);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.25);
+            filter: blur(2px);
+          }
+          85% {
+            transform: scale(2.3);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.1);
+            filter: blur(2.5px);
+          }
+          100% {
+            transform: scale(2.8);
+            opacity: 0;
+            filter: blur(3px);
+          }
+        }
+        
+        /* Enhanced error state ripple animation */
+        @keyframes ripple-animation-error {
+          0% {
+            transform: scale(0);
+            opacity: var(--_global-ripple-opacity-pressed);
+            background-color: var(--_checkbox-state-layer-error);
+          }
+          25% {
+            transform: scale(0.4);
             opacity: calc(var(--_global-ripple-opacity-pressed) * 0.8);
+            background-color: var(--_checkbox-color-error-hover);
           }
           50% {
             transform: scale(1);
             opacity: calc(var(--_global-ripple-opacity-pressed) * 0.4);
           }
+          75% {
+            transform: scale(2);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.15);
+          }
           100% {
-            transform: scale(2.5);
+            transform: scale(2.8);
             opacity: 0;
           }
         }
@@ -592,33 +857,93 @@ class MyCheckbox extends MyntUIBaseComponent {
           }
         }
 
-        /* Enhanced focus-visible support with better keyboard navigation indicators */
+        /* Superior focus-visible support with advanced accessibility */
         @supports selector(:focus-visible) {
           .checkbox-container:focus:not(:focus-visible) {
             outline: none;
             animation: none;
+            transform: var(--_checkbox-scale-rest);
+            box-shadow: var(--_checkbox-elevation-rest);
           }
           
-          .checkbox-container:focus:not(:focus-visible)::before {
+          .checkbox-container:focus:not(:focus-visible)::before,
+          .checkbox-container:focus:not(:focus-visible)::after {
             opacity: 0;
+            transform: scale(0.8);
           }
           
           .checkbox-container:focus-visible {
-            outline: 3px solid var(--_checkbox-color-checked);
-            outline-offset: 3px;
-            animation: focus-pulse 2s ease-in-out infinite;
+            outline: var(--_checkbox-border-width-focus) solid var(--_checkbox-color-checked);
+            outline-offset: 4px;
+            transform: var(--_checkbox-scale-focus);
+            box-shadow: var(--_checkbox-elevation-focus);
+            animation: focus-pulse-advanced 2.5s var(--_global-spring-gentle) infinite;
+          }
+          
+          .checkbox-container:focus-visible::before {
+            opacity: var(--_checkbox-state-layer-focus);
+            transform: scale(1.3);
+            animation: focus-state-pulse 2.5s var(--_global-spring-gentle) infinite;
+          }
+          
+          .checkbox-container:focus-visible::after {
+            opacity: calc(var(--_checkbox-state-layer-focus) * 0.7);
+            transform: scale(1.1);
+            border-color: var(--_checkbox-color-checked);
+            animation: focus-ring-pulse 2.5s var(--_global-spring-gentle) infinite;
+          }
+          
+          /* Enhanced focus state animations */
+          @keyframes focus-state-pulse {
+            0%, 100% {
+              transform: scale(1.3);
+              opacity: var(--_checkbox-state-layer-focus);
+            }
+            50% {
+              transform: scale(1.4);
+              opacity: calc(var(--_checkbox-state-layer-focus) * 1.2);
+            }
           }
         }
         
-        /* Color scheme adaptation */
+        /* Enhanced dark theme adaptation with sophisticated styling */
         @media (prefers-color-scheme: dark) {
+          :host {
+            --_checkbox-color-unchecked: var(--_global-color-scheme-dark-outline);
+            --_checkbox-color-unchecked-hover: var(--_global-color-scheme-dark-primary);
+            --_checkbox-color-checked: var(--_global-color-scheme-dark-primary);
+            --_checkbox-color-checked-hover: #E0B3FF;
+            --_checkbox-background-unchecked: var(--_global-color-scheme-dark-surface);
+            --_checkbox-background-unchecked-hover: var(--_global-color-scheme-dark-surface-variant);
+            --_checkbox-background-checked: var(--_global-color-scheme-dark-primary);
+            --_checkbox-label-color: var(--_global-color-scheme-dark-on-surface);
+            --_checkbox-label-color-hover: var(--_global-color-scheme-dark-primary);
+          }
+          
           .checkbox-input {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--_global-elevation-1), inset 0 1px 2px rgba(255, 255, 255, 0.05);
+            background-image: linear-gradient(135deg, var(--_checkbox-background-unchecked) 0%, rgba(255, 255, 255, 0.02) 100%);
           }
           
           .checkbox-input.checked,
           .checkbox-input.indeterminate {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            box-shadow: var(--_global-elevation-2), 0 0 0 1px var(--_checkbox-color-checked), inset 0 1px 3px rgba(255, 255, 255, 0.1);
+            background-image: linear-gradient(135deg, var(--_checkbox-background-checked) 0%, var(--_checkbox-background-checked-hover) 100%);
+          }
+          
+          .checkbox-container:hover:not([aria-disabled="true"]) .checkbox-input:not(.checked):not(.indeterminate) {
+            box-shadow: var(--_global-elevation-2), inset 0 1px 3px rgba(255, 255, 255, 0.08);
+            background-image: linear-gradient(135deg, var(--_checkbox-background-unchecked-hover) 0%, rgba(255, 255, 255, 0.05) 100%);
+          }
+          
+          .checkbox-container:hover:not([aria-disabled="true"]) .checkbox-input.checked,
+          .checkbox-container:hover:not([aria-disabled="true"]) .checkbox-input.indeterminate {
+            box-shadow: var(--_global-elevation-3), 0 0 0 1px var(--_checkbox-color-checked-hover), inset 0 1px 4px rgba(255, 255, 255, 0.15);
+          }
+          
+          .ripple {
+            background-color: rgba(208, 188, 255, 0.2);
+            filter: blur(0.3px);
           }
         }
       </style>

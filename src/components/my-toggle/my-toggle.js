@@ -161,7 +161,7 @@ class MyToggle extends MyntUIBaseComponent {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          /* Enhanced Material Design 3 variables with better semantic naming */
+          /* Advanced Material Design 3 variables with superior semantic naming */
           --_toggle-width: 52px;
           --_toggle-height: 32px;
           --_toggle-thumb-size: 24px;
@@ -171,55 +171,96 @@ class MyToggle extends MyntUIBaseComponent {
           --_toggle-state-layer-size: 40px;
           --_toggle-border-radius: var(--_global-border-radius-full);
           --_toggle-border-width: 2px;
+          --_toggle-border-width-focus: 3px;
           
-          /* Enhanced color tokens following Material Design 3 principles */
+          /* Advanced color system with contextual variations */
+          --_toggle-color-unchecked: var(--_global-color-outline);
+          --_toggle-color-unchecked-hover: var(--_global-color-on-surface-variant);
+          --_toggle-color-checked: var(--_global-color-primary);
+          --_toggle-color-checked-hover: var(--_global-color-primary-60);
+          --_toggle-color-disabled: var(--_global-color-outline-variant);
+          --_toggle-color-error: var(--_global-color-error);
+          --_toggle-color-error-hover: #E53E3E;
+          
+          /* Enhanced background colors with subtle gradients */
           --_toggle-track-color-off: var(--_global-color-surface-container-highest);
+          --_toggle-track-color-off-hover: var(--_global-color-surface-container-high);
           --_toggle-track-color-on: var(--_global-color-primary);
+          --_toggle-track-color-on-hover: var(--_global-color-primary-60);
           --_toggle-track-color-disabled: var(--_global-color-surface-variant);
           --_toggle-track-color-error: var(--_global-color-error);
           
-          /* Enhanced border definitions */
-          --_toggle-border-off: var(--_toggle-border-width) solid var(--_global-color-outline);
-          --_toggle-border-on: var(--_toggle-border-width) solid var(--_global-color-primary);
-          --_toggle-border-hover: var(--_toggle-border-width) solid var(--_global-color-on-surface);
-          --_toggle-border-focus: var(--_toggle-border-width) solid var(--_global-color-primary);
-          --_toggle-border-disabled: var(--_toggle-border-width) solid var(--_global-color-outline);
-          --_toggle-border-error: var(--_toggle-border-width) solid var(--_global-color-error);
+          /* Enhanced border system with dynamic thickness */
+          --_toggle-border-off: var(--_toggle-border-width) solid var(--_toggle-color-unchecked);
+          --_toggle-border-on: var(--_toggle-border-width) solid var(--_toggle-color-checked);
+          --_toggle-border-hover: var(--_toggle-border-width) solid var(--_toggle-color-unchecked-hover);
+          --_toggle-border-focus: var(--_toggle-border-width-focus) solid var(--_toggle-color-checked);
+          --_toggle-border-disabled: var(--_toggle-border-width) solid var(--_toggle-color-disabled);
+          --_toggle-border-error: var(--_toggle-border-width) solid var(--_toggle-color-error);
           
-          /* Enhanced thumb colors */
+          /* Advanced thumb color system */
           --_toggle-thumb-color-off: var(--_global-color-outline);
+          --_toggle-thumb-color-off-hover: var(--_global-color-on-surface-variant);
           --_toggle-thumb-color-on: var(--_global-color-on-primary);
+          --_toggle-thumb-color-on-hover: var(--_global-color-surface);
           --_toggle-thumb-color-disabled: var(--_global-color-surface);
           --_toggle-thumb-color-error: var(--_global-color-on-error);
           
-          /* Enhanced state layer colors */
-          --_toggle-state-layer-off: var(--_global-color-on-surface);
-          --_toggle-state-layer-on: var(--_global-color-primary);
-          --_toggle-state-layer-error: var(--_global-color-error);
+          /* Advanced state layer colors with contextual awareness */
+          --_toggle-state-layer-off: var(--_toggle-color-checked);
+          --_toggle-state-layer-on: var(--_toggle-color-checked);
+          --_toggle-state-layer-error: var(--_toggle-color-error);
+          --_toggle-state-layer-hover: var(--_global-state-layer-hover);
+          --_toggle-state-layer-focus: var(--_global-state-layer-focus);
+          --_toggle-state-layer-pressed: var(--_global-state-layer-pressed);
           
-          /* Improved motion and transitions */
-          --_toggle-transition: all var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
-          --_toggle-transition-fast: all var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
-          --_toggle-transition-thumb: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized-decelerate);
+          /* Spring-based motion system with enhanced easing */
+          --_toggle-transition: all var(--_global-motion-duration-medium1) var(--_global-spring-gentle);
+          --_toggle-transition-fast: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_toggle-transition-emphasized: all var(--_global-motion-duration-medium1) var(--_global-spring-energetic);
+          --_toggle-transition-bounce: all var(--_global-motion-duration-medium2) var(--_global-spring-bouncy);
+          --_toggle-transition-thumb: all var(--_global-motion-duration-medium1) var(--_global-spring-wobbly);
           
-          /* Enhanced shadows and elevations */
-          --_toggle-thumb-shadow-off: var(--_global-elevation-1);
-          --_toggle-thumb-shadow-on: var(--_global-elevation-2);
-          --_toggle-thumb-shadow-pressed: var(--_global-elevation-3);
+          /* Enhanced ripple system with better physics */
+          --_toggle-ripple-size: calc(var(--_toggle-state-layer-size) * 1.4);
+          --_toggle-ripple-duration: var(--_global-ripple-duration);
+          --_toggle-ripple-duration-fast: var(--_global-ripple-duration-fast);
+          --_toggle-ripple-easing: var(--_global-spring-gentle);
+          --_toggle-ripple-easing-bounce: var(--_global-spring-wobbly);
           
-          /* Typography */
+          /* Enhanced typography with better hierarchy */
           --_toggle-label-color: var(--_global-color-on-surface);
+          --_toggle-label-color-hover: var(--_global-color-primary-10);
           --_toggle-label-color-disabled: var(--_global-color-outline);
           --_toggle-label-color-error: var(--_global-color-error);
+          
+          /* Advanced elevation system for depth */
+          --_toggle-thumb-elevation-rest: var(--_global-elevation-0);
+          --_toggle-thumb-elevation-hover: var(--_global-shadow-interaction-subtle);
+          --_toggle-thumb-elevation-focus: var(--_global-shadow-interaction-moderate);
+          --_toggle-thumb-elevation-active: var(--_global-shadow-interaction-strong);
+          --_toggle-track-elevation-rest: var(--_global-elevation-0);
+          --_toggle-track-elevation-hover: var(--_global-shadow-surface-subtle);
+          --_toggle-track-elevation-focus: var(--_global-shadow-surface-moderate);
+          
+          /* Micro-interaction enhancements */
+          --_toggle-scale-rest: 1;
+          --_toggle-scale-hover: var(--_global-micro-scale-subtle);
+          --_toggle-scale-focus: var(--_global-micro-scale-noticeable);
+          --_toggle-scale-active: 0.98;
+          --_toggle-translate-hover: var(--_global-micro-translate-subtle);
           
           display: inline-flex;
           align-items: center;
           gap: var(--_global-spacing-sm);
           cursor: pointer;
           user-select: none;
+          line-height: var(--_global-line-height-normal);
           position: relative;
           min-height: var(--_toggle-state-layer-size);
           font-family: var(--_global-font-family-sans);
+          contain: layout style;
+          isolation: isolate;
         }
 
         :host([disabled]) {
@@ -229,19 +270,23 @@ class MyToggle extends MyntUIBaseComponent {
         }
 
         .toggle-container {
-          position: relative;
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          justify-content: center;
-          width: var(--_toggle-state-layer-size);
-          height: var(--_toggle-state-layer-size);
-          border-radius: 50%;
+          gap: var(--_global-spacing-sm);
           cursor: pointer;
           outline: none;
+          position: relative;
+          padding: calc((var(--_toggle-state-layer-size) - var(--_toggle-width)) / 2);
+          margin: calc((var(--_toggle-state-layer-size) - var(--_toggle-width)) / -2);
+          border-radius: 50%;
+          overflow: visible;
           isolation: isolate;
+          transform: var(--_toggle-scale-rest);
+          transition: var(--_toggle-transition);
+          will-change: transform, box-shadow;
         }
         
-        /* Enhanced state layer with dynamic color */
+        /* Enhanced multi-layered state system for superior depth */
         .toggle-container::before {
           content: '';
           position: absolute;
@@ -252,50 +297,133 @@ class MyToggle extends MyntUIBaseComponent {
           border-radius: 50%;
           background-color: var(--_toggle-state-layer-off);
           opacity: 0;
-          transition: var(--_toggle-transition-fast);
+          transform: scale(0.8);
+          transition: var(--_toggle-transition-emphasized);
           pointer-events: none;
           z-index: -1;
+          box-shadow: var(--_toggle-track-elevation-rest);
         }
         
-        /* State layer color changes for checked state */
-        .toggle-container:has(.checked)::before {
+        /* Advanced state layer for focus ring enhancement */
+        .toggle-container::after {
+          content: '';
+          position: absolute;
+          top: -4px;
+          left: -4px;
+          right: -4px;
+          bottom: -4px;
+          border-radius: 50%;
+          background-color: var(--_toggle-state-layer-off);
+          opacity: 0;
+          transform: scale(0.6);
+          transition: var(--_toggle-transition-bounce);
+          pointer-events: none;
+          z-index: -2;
+          border: 2px solid transparent;
+        }
+        
+        /* Enhanced state layer color changes for checked state */
+        .toggle-container:has(.checked)::before,
+        .toggle-container:has(.checked)::after {
           background-color: var(--_toggle-state-layer-on);
         }
         
-        /* Enhanced hover state with interaction feedback */
+        /* Superior hover state with spring physics and micro-interactions */
+        .toggle-container:hover:not([aria-disabled="true"]) {
+          transform: var(--_toggle-scale-hover) var(--_toggle-translate-hover);
+          box-shadow: var(--_toggle-track-elevation-hover);
+        }
+        
         .toggle-container:hover:not([aria-disabled="true"])::before {
-          opacity: var(--_global-state-layer-hover);
-          transform: scale(1.1);
+          opacity: var(--_toggle-state-layer-hover);
+          transform: scale(1.2);
+          box-shadow: var(--_toggle-track-elevation-hover);
         }
         
-        /* Active/pressed state */
+        .toggle-container:hover:not([aria-disabled="true"])::after {
+          opacity: calc(var(--_toggle-state-layer-hover) * 0.6);
+          transform: scale(1);
+        }
+        
+        /* Enhanced active/pressed state with realistic physics */
+        .toggle-container:active:not([aria-disabled="true"]) {
+          transform: scale(var(--_toggle-scale-active));
+          box-shadow: var(--_toggle-track-elevation-focus);
+          transition: var(--_toggle-transition-fast);
+        }
+        
         .toggle-container:active:not([aria-disabled="true"])::before {
-          opacity: var(--_global-state-layer-pressed);
-          transform: scale(0.95);
-          transition: var(--_toggle-transition);
+          opacity: var(--_toggle-state-layer-pressed);
+          transform: scale(1);
+          transition: var(--_toggle-transition-fast);
         }
         
-        /* Enhanced focus indicators */
+        .toggle-container:active:not([aria-disabled="true"])::after {
+          opacity: calc(var(--_toggle-state-layer-pressed) * 0.8);
+          transform: scale(0.8);
+          transition: var(--_toggle-transition-fast);
+        }
+
+        /* Superior focus indicators with advanced visual feedback */
         .toggle-container:focus {
-          outline: 2px solid var(--_toggle-state-layer-on);
-          outline-offset: 2px;
-          transition: outline-color var(--_toggle-transition-fast);
+          outline: var(--_toggle-border-focus);
+          outline-offset: 3px;
+          transform: var(--_toggle-scale-focus);
+          box-shadow: var(--_toggle-track-elevation-focus);
+          transition: var(--_toggle-transition-emphasized);
         }
         
         .toggle-container:focus::before {
-          opacity: var(--_global-state-layer-focus);
-          transform: scale(1.05);
+          opacity: var(--_toggle-state-layer-focus);
+          transform: scale(1.3);
+          box-shadow: var(--_toggle-track-elevation-focus);
         }
         
-        /* Focus ring enhancement for keyboard navigation */
+        .toggle-container:focus::after {
+          opacity: calc(var(--_toggle-state-layer-focus) * 0.7);
+          transform: scale(1.1);
+          border-color: var(--_toggle-color-checked);
+        }
+        
+        /* Enhanced focus ring for superior keyboard navigation */
         .toggle-container:focus:not(:active) {
-          outline-width: 3px;
-          animation: focus-pulse 2s ease-in-out infinite;
+          outline-width: var(--_toggle-border-width-focus);
+          animation: focus-pulse-advanced 2.5s var(--_global-spring-gentle) infinite;
         }
         
-        @keyframes focus-pulse {
-          0%, 100% { outline-offset: 2px; }
-          50% { outline-offset: 4px; }
+        .toggle-container:focus:not(:active)::after {
+          animation: focus-ring-pulse 2.5s var(--_global-spring-gentle) infinite;
+        }
+        
+        /* Advanced focus animations with spring physics */
+        @keyframes focus-pulse-advanced {
+          0%, 100% { 
+            outline-offset: 3px;
+            transform: var(--_toggle-scale-focus);
+          }
+          25% { 
+            outline-offset: 5px;
+            transform: scale(1.08);
+          }
+          50% { 
+            outline-offset: 6px;
+            transform: scale(1.1);
+          }
+          75% { 
+            outline-offset: 5px;
+            transform: scale(1.08);
+          }
+        }
+        
+        @keyframes focus-ring-pulse {
+          0%, 100% { 
+            transform: scale(1.1);
+            opacity: calc(var(--_toggle-state-layer-focus) * 0.7);
+          }
+          50% { 
+            transform: scale(1.2);
+            opacity: calc(var(--_toggle-state-layer-focus) * 0.9);
+          }
         }
 
         .toggle-track {
@@ -303,24 +431,51 @@ class MyToggle extends MyntUIBaseComponent {
           width: var(--_toggle-width);
           height: var(--_toggle-track-height);
           background-color: var(--_toggle-track-color-off);
+          background-image: linear-gradient(135deg, var(--_toggle-track-color-off) 0%, var(--_global-color-surface-container-low) 100%);
           border: var(--_toggle-border-off);
           border-radius: var(--_toggle-border-radius);
           transition: var(--_toggle-transition);
           box-sizing: border-box;
           overflow: hidden;
-          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), var(--_toggle-track-elevation-rest);
+          will-change: background-color, border-color, box-shadow, transform;
         }
 
         .toggle-track.checked {
           background-color: var(--_toggle-track-color-on);
+          background-image: linear-gradient(135deg, var(--_toggle-track-color-on) 0%, var(--_toggle-color-checked-hover) 100%);
           border: var(--_toggle-border-on);
-          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15), var(--_toggle-track-elevation-hover);
+          animation: track-checked-bounce var(--_global-motion-duration-medium1) var(--_global-spring-bouncy) forwards;
         }
         
-        /* Enhanced hover state for track */
+        /* Enhanced hover state for track with superior visual feedback */
         .toggle-container:hover:not([aria-disabled="true"]) .toggle-track:not(.checked) {
           border: var(--_toggle-border-hover);
-          background-color: var(--_global-color-surface-variant);
+          background-color: var(--_toggle-track-color-off-hover);
+          background-image: linear-gradient(135deg, var(--_toggle-track-color-off-hover) 0%, var(--_global-color-surface-container) 100%);
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12), var(--_toggle-track-elevation-hover);
+          transform: var(--_toggle-scale-hover);
+        }
+        
+        .toggle-container:hover:not([aria-disabled="true"]) .toggle-track.checked {
+          background-color: var(--_toggle-track-color-on-hover);
+          background-image: linear-gradient(135deg, var(--_toggle-track-color-on-hover) 0%, var(--_toggle-color-checked) 100%);
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18), var(--_toggle-track-elevation-focus);
+          transform: var(--_toggle-scale-hover);
+        }
+        
+        /* Track bounce animation for checked state */
+        @keyframes track-checked-bounce {
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+          100% {
+            transform: scale(1);
+          }
         }
 
         .toggle-thumb {
@@ -330,34 +485,38 @@ class MyToggle extends MyntUIBaseComponent {
           width: var(--_toggle-thumb-size);
           height: var(--_toggle-thumb-size);
           background-color: var(--_toggle-thumb-color-off);
+          background-image: linear-gradient(135deg, var(--_toggle-thumb-color-off) 0%, var(--_global-color-surface) 100%);
           border-radius: var(--_toggle-border-radius);
           transition: var(--_toggle-transition-thumb);
           transform: translateY(-50%);
-          box-shadow: var(--_toggle-thumb-shadow-off);
+          box-shadow: var(--_toggle-thumb-elevation-rest), 0 1px 3px rgba(0, 0, 0, 0.15);
           z-index: 2;
           border: 1px solid rgba(0, 0, 0, 0.1);
+          will-change: transform, background-color, box-shadow, left, width, height;
         }
         
-        /* Enhanced checked state for thumb */
+        /* Enhanced checked state for thumb with sophisticated animations */
         .toggle-track.checked .toggle-thumb {
           left: calc(100% - var(--_toggle-thumb-size) / 2 - var(--_toggle-border-width));
           background-color: var(--_toggle-thumb-color-on);
-          box-shadow: var(--_toggle-thumb-shadow-on);
+          background-image: linear-gradient(135deg, var(--_toggle-thumb-color-on) 0%, var(--_toggle-thumb-color-on-hover) 100%);
+          box-shadow: var(--_toggle-thumb-elevation-hover), 0 2px 6px rgba(0, 0, 0, 0.2);
           transform: translateY(-50%) scale(1.1);
-          animation: thumb-bounce 0.3s var(--_global-motion-easing-emphasized) forwards;
+          animation: thumb-bounce-advanced var(--_global-motion-duration-medium1) var(--_global-spring-wobbly) forwards;
         }
         
-        /* Enhanced pressed state for thumb with better expansion */
+        /* Enhanced pressed state for thumb with superior expansion physics */
         .toggle-container:active .toggle-thumb {
           width: var(--_toggle-thumb-size-pressed);
           height: var(--_toggle-thumb-size-pressed);
-          box-shadow: var(--_toggle-thumb-shadow-pressed);
+          box-shadow: var(--_toggle-thumb-elevation-active), 0 3px 8px rgba(0, 0, 0, 0.25);
           transition: var(--_toggle-transition-fast);
         }
         
         .toggle-container:active .toggle-track:not(.checked) .toggle-thumb {
           left: calc(-1 * var(--_toggle-thumb-size-pressed) / 2 + var(--_toggle-border-width));
           transform: translateY(-50%) scale(0.9);
+          background-image: linear-gradient(135deg, var(--_toggle-thumb-color-off-hover) 0%, var(--_global-color-surface-variant) 100%);
         }
         
         .toggle-container:active .toggle-track.checked .toggle-thumb {
@@ -365,29 +524,39 @@ class MyToggle extends MyntUIBaseComponent {
           width: var(--_toggle-thumb-size-expanded);
           height: var(--_toggle-thumb-size-expanded);
           transform: translateY(-50%) scale(0.9);
+          background-image: linear-gradient(135deg, var(--_toggle-thumb-color-on-hover) 0%, var(--_toggle-thumb-color-on) 100%);
         }
         
-        /* Thumb bounce animation */
-        @keyframes thumb-bounce {
+        /* Advanced thumb bounce animation with spring physics */
+        @keyframes thumb-bounce-advanced {
           0% {
             transform: translateY(-50%) scale(1);
           }
+          25% {
+            transform: translateY(-50%) scale(1.2) rotate(2deg);
+          }
           50% {
-            transform: translateY(-50%) scale(1.15);
+            transform: translateY(-50%) scale(1.15) rotate(-1deg);
+          }
+          75% {
+            transform: translateY(-50%) scale(1.12) rotate(0.5deg);
           }
           100% {
-            transform: translateY(-50%) scale(1.1);
+            transform: translateY(-50%) scale(1.1) rotate(0deg);
           }
         }
         
-        /* Hover enhancement for thumb */
+        /* Superior hover enhancement for thumb with micro-interactions */
         .toggle-container:hover:not([aria-disabled="true"]) .toggle-thumb {
-          box-shadow: var(--_toggle-thumb-shadow-on);
-          transform: translateY(-50%) scale(1.05);
+          box-shadow: var(--_toggle-thumb-elevation-hover), 0 2px 6px rgba(0, 0, 0, 0.18);
+          transform: translateY(-50%) scale(1.05) translateZ(0);
+          background-image: linear-gradient(135deg, var(--_toggle-thumb-color-off-hover) 0%, var(--_global-color-surface-container) 100%);
         }
         
         .toggle-container:hover:not([aria-disabled="true"]) .toggle-track.checked .toggle-thumb {
-          transform: translateY(-50%) scale(1.15);
+          transform: translateY(-50%) scale(1.15) translateZ(0);
+          background-image: linear-gradient(135deg, var(--_toggle-thumb-color-on-hover) 0%, var(--_toggle-thumb-color-on) 100%);
+          box-shadow: var(--_toggle-thumb-elevation-focus), 0 3px 8px rgba(0, 0, 0, 0.22);
         }
 
         .label {
@@ -398,10 +567,18 @@ class MyToggle extends MyntUIBaseComponent {
           cursor: pointer;
           flex: 1;
           transition: var(--_toggle-transition-fast);
+          will-change: color;
+        }
+        
+        /* Enhanced label hover states with contextual color changes */
+        .toggle-container:hover:not([aria-disabled="true"]) + .label {
+          color: var(--_toggle-label-color-hover);
         }
 
-        /* Enhanced disabled states */
+        /* Enhanced disabled states with sophisticated visual feedback */
         :host([disabled]) {
+          --_toggle-color-unchecked: var(--_toggle-color-disabled);
+          --_toggle-color-checked: var(--_toggle-color-disabled);
           --_toggle-track-color-off: var(--_toggle-track-color-disabled);
           --_toggle-track-color-on: var(--_toggle-track-color-disabled);
           --_toggle-border-off: var(--_toggle-border-disabled);
@@ -409,9 +586,12 @@ class MyToggle extends MyntUIBaseComponent {
           --_toggle-thumb-color-off: var(--_toggle-thumb-color-disabled);
           --_toggle-thumb-color-on: var(--_toggle-thumb-color-disabled);
           --_toggle-label-color: var(--_toggle-label-color-disabled);
+          opacity: 0.6;
+          filter: grayscale(0.3);
         }
         
-        :host([disabled]) .toggle-container::before {
+        :host([disabled]) .toggle-container::before,
+        :host([disabled]) .toggle-container::after {
           display: none;
         }
         
@@ -419,20 +599,26 @@ class MyToggle extends MyntUIBaseComponent {
           box-shadow: none;
           transform: translateY(-50%) scale(0.9);
           cursor: not-allowed;
+          background-image: none;
+          filter: brightness(0.9);
         }
         
         :host([disabled]) .toggle-track.checked .toggle-thumb {
           transform: translateY(-50%) scale(0.9);
           animation: none;
+          background-image: none;
         }
         
         :host([disabled]) .toggle-track {
           box-shadow: none;
           cursor: not-allowed;
+          background-image: none;
+          filter: brightness(0.95);
         }
         
         :host([disabled]) .label {
           cursor: not-allowed;
+          filter: brightness(0.8);
         }
 
         /* Enhanced size variants with improved scaling */
@@ -463,10 +649,16 @@ class MyToggle extends MyntUIBaseComponent {
           --_toggle-state-layer-size: 48px;
         }
         
-        /* Enhanced error state support */
+        /* Enhanced error state support with sophisticated visual feedback */
         :host([error]) {
+          --_toggle-color-unchecked: var(--_toggle-color-error);
+          --_toggle-color-checked: var(--_toggle-color-error);
+          --_toggle-color-unchecked-hover: var(--_toggle-color-error-hover);
+          --_toggle-color-checked-hover: var(--_toggle-color-error-hover);
           --_toggle-track-color-off: var(--_toggle-track-color-error);
           --_toggle-track-color-on: var(--_toggle-track-color-error);
+          --_toggle-track-color-off-hover: var(--_toggle-color-error-hover);
+          --_toggle-track-color-on-hover: var(--_toggle-color-error-hover);
           --_toggle-border-off: var(--_toggle-border-error);
           --_toggle-border-on: var(--_toggle-border-error);
           --_toggle-border-hover: var(--_toggle-border-error);
@@ -478,6 +670,25 @@ class MyToggle extends MyntUIBaseComponent {
         
         :host([error]) .toggle-container:focus {
           outline-color: var(--_toggle-state-layer-error);
+        }
+        
+        :host([error]) .toggle-container:focus::after {
+          border-color: var(--_toggle-color-error);
+        }
+        
+        /* Error state animations for enhanced feedback */
+        :host([error]) .toggle-track {
+          animation: error-pulse 2s var(--_global-spring-gentle) infinite;
+        }
+        
+        @keyframes error-pulse {
+          0%, 100% { 
+            border-color: var(--_toggle-color-error);
+          }
+          50% { 
+            border-color: var(--_toggle-color-error-hover);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(229, 62, 62, 0.2);
+          }
         }
 
         /* Enhanced High Contrast Mode Support */
@@ -554,36 +765,73 @@ class MyToggle extends MyntUIBaseComponent {
           }
         }
 
-        /* Enhanced focus-visible support */
+        /* Enhanced focus-visible support with advanced visual feedback */
         @supports selector(:focus-visible) {
           .toggle-container:focus:not(:focus-visible) {
             outline: none;
             animation: none;
+            transform: var(--_toggle-scale-rest);
+            box-shadow: var(--_toggle-track-elevation-rest);
           }
           
-          .toggle-container:focus:not(:focus-visible)::before {
+          .toggle-container:focus:not(:focus-visible)::before,
+          .toggle-container:focus:not(:focus-visible)::after {
             opacity: 0;
+            transform: scale(0.8);
           }
           
           .toggle-container:focus-visible {
-            outline: 3px solid var(--_toggle-state-layer-on);
+            outline: var(--_toggle-border-width-focus) solid var(--_toggle-state-layer-on);
             outline-offset: 3px;
-            animation: focus-pulse 2s ease-in-out infinite;
+            animation: focus-pulse-advanced 2.5s var(--_global-spring-gentle) infinite;
+            transform: var(--_toggle-scale-focus);
+            box-shadow: var(--_toggle-track-elevation-focus);
+          }
+          
+          .toggle-container:focus-visible::before {
+            opacity: var(--_toggle-state-layer-focus);
+            transform: scale(1.3);
+            animation: focus-ring-pulse 2.5s var(--_global-spring-gentle) infinite;
+          }
+          
+          .toggle-container:focus-visible::after {
+            opacity: calc(var(--_toggle-state-layer-focus) * 0.7);
+            transform: scale(1.1);
+            border-color: var(--_toggle-color-checked);
+            animation: focus-ring-pulse 2.5s var(--_global-spring-gentle) infinite;
           }
         }
         
-        /* Color scheme adaptation */
+        /* Enhanced color scheme adaptation with sophisticated dark mode support */
         @media (prefers-color-scheme: dark) {
           .toggle-track {
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), var(--_toggle-track-elevation-rest);
+            background-image: linear-gradient(135deg, var(--_toggle-track-color-off) 0%, rgba(255, 255, 255, 0.05) 100%);
           }
           
           .toggle-track.checked {
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4), var(--_toggle-track-elevation-hover);
+            background-image: linear-gradient(135deg, var(--_toggle-track-color-on) 0%, rgba(255, 255, 255, 0.1) 100%);
           }
           
           .toggle-thumb {
-            border-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+            background-image: linear-gradient(135deg, var(--_toggle-thumb-color-off) 0%, rgba(255, 255, 255, 0.08) 100%);
+            box-shadow: var(--_toggle-thumb-elevation-rest), 0 1px 3px rgba(0, 0, 0, 0.25);
+          }
+          
+          .toggle-track.checked .toggle-thumb {
+            background-image: linear-gradient(135deg, var(--_toggle-thumb-color-on) 0%, rgba(255, 255, 255, 0.12) 100%);
+            box-shadow: var(--_toggle-thumb-elevation-hover), 0 2px 6px rgba(0, 0, 0, 0.3);
+          }
+          
+          /* Enhanced hover states for dark mode */
+          .toggle-container:hover:not([aria-disabled="true"]) .toggle-track:not(.checked) {
+            background-image: linear-gradient(135deg, var(--_toggle-track-color-off-hover) 0%, rgba(255, 255, 255, 0.08) 100%);
+          }
+          
+          .toggle-container:hover:not([aria-disabled="true"]) .toggle-track.checked {
+            background-image: linear-gradient(135deg, var(--_toggle-track-color-on-hover) 0%, rgba(255, 255, 255, 0.15) 100%);
           }
         }
       </style>

@@ -1310,52 +1310,59 @@ class MyInput extends MyntUIBaseComponent {
           --_input-padding-y-large: var(--_global-spacing-md);
           --_input-gap: var(--_global-spacing-sm);
           
-          /* Enhanced Material Design 3 color tokens */
-          /* Outlined variant colors */
+          /* Enhanced Material Design 3 color tokens with better visual hierarchy */
+          /* Outlined variant colors with subtle background enhancements */
           --_input-outlined-outline-color: var(--_global-color-outline-variant);
           --_input-outlined-outline-color-focus: var(--_global-color-primary);
           --_input-outlined-outline-color-error: var(--_global-color-error);
           --_input-outlined-outline-color-hover: var(--_global-color-outline);
           --_input-outlined-outline-color-disabled: var(--_global-color-outline-variant);
-          --_input-outlined-container-color: transparent;
+          --_input-outlined-container-color: var(--_global-color-surface);
+          --_input-outlined-container-color-hover: color-mix(in srgb, var(--_global-color-on-surface) 4%, var(--_global-color-surface));
+          --_input-outlined-container-color-focus: color-mix(in srgb, var(--_global-color-primary) 3%, var(--_global-color-surface));
           
-          /* Filled variant colors */
+          /* Filled variant colors with enhanced visual depth */
           --_input-filled-container-color: var(--_global-color-surface-container-highest);
-          --_input-filled-container-color-hover: color-mix(in srgb, var(--_global-color-on-surface) 8%, var(--_global-color-surface-container-highest));
-          --_input-filled-container-color-focus: color-mix(in srgb, var(--_global-color-primary) 12%, var(--_global-color-surface-container-highest));
+          --_input-filled-container-color-hover: color-mix(in srgb, var(--_global-color-on-surface) 6%, var(--_global-color-surface-container-highest));
+          --_input-filled-container-color-focus: color-mix(in srgb, var(--_global-color-primary) 8%, var(--_global-color-surface-container-highest));
           --_input-filled-container-color-disabled: color-mix(in srgb, var(--_global-color-on-surface) 4%, var(--_global-color-surface));
           --_input-filled-active-indicator-color: var(--_global-color-primary);
           --_input-filled-active-indicator-color-error: var(--_global-color-error);
           --_input-filled-active-indicator-height: 1px;
           --_input-filled-active-indicator-height-focus: 2px;
           
-          /* Text colors */
+          /* Enhanced text colors with better contrast */
           --_input-text-color: var(--_global-color-on-surface);
-          --_input-text-color-disabled: var(--_global-color-on-surface-variant);
-          --_input-placeholder-color: var(--_global-color-on-surface-variant);
+          --_input-text-color-disabled: color-mix(in srgb, var(--_global-color-on-surface) 38%, transparent);
+          --_input-placeholder-color: color-mix(in srgb, var(--_global-color-on-surface) 60%, transparent);
           --_input-label-color: var(--_global-color-on-surface-variant);
           --_input-label-color-focus: var(--_global-color-primary);
           --_input-label-color-error: var(--_global-color-error);
-          --_input-label-color-disabled: var(--_global-color-on-surface-variant);
+          --_input-label-color-disabled: color-mix(in srgb, var(--_global-color-on-surface) 38%, transparent);
+          --_input-label-color-hover: color-mix(in srgb, var(--_global-color-on-surface) 87%, transparent);
           
-          /* Supporting text colors */
-          --_input-supporting-text-color: var(--_global-color-on-surface-variant);
+          /* Enhanced supporting text colors with proper hierarchy */
+          --_input-supporting-text-color: color-mix(in srgb, var(--_global-color-on-surface) 65%, transparent);
           --_input-supporting-text-color-error: var(--_global-color-error);
-          --_input-supporting-text-color-disabled: var(--_global-color-on-surface-variant);
+          --_input-supporting-text-color-disabled: color-mix(in srgb, var(--_global-color-on-surface) 38%, transparent);
+          --_input-supporting-text-color-success: var(--_global-color-success, #4caf50);
           
-          /* Icon colors with enhanced states */
-          --_input-leading-icon-color: var(--_global-color-on-surface-variant);
-          --_input-trailing-icon-color: var(--_global-color-on-surface-variant);
+          /* Enhanced icon colors with better visual hierarchy */
+          --_input-leading-icon-color: color-mix(in srgb, var(--_global-color-on-surface) 65%, transparent);
+          --_input-trailing-icon-color: color-mix(in srgb, var(--_global-color-on-surface) 65%, transparent);
+          --_input-icon-color-hover: color-mix(in srgb, var(--_global-color-on-surface) 80%, transparent);
           --_input-icon-color-focus: var(--_global-color-primary);
           --_input-icon-color-error: var(--_global-color-error);
-          --_input-icon-color-disabled: var(--_global-color-on-surface-variant);
+          --_input-icon-color-disabled: color-mix(in srgb, var(--_global-color-on-surface) 38%, transparent);
+          --_input-icon-color-success: var(--_global-color-success, #4caf50);
           
-          /* Enhanced shape system */
-          --_input-container-shape-small: var(--_global-border-radius-sm);
+          /* Enhanced shape system with more polished borders */
+          --_input-container-shape-small: var(--_global-border-radius-xs);
           --_input-container-shape-medium: var(--_global-border-radius-sm);
           --_input-container-shape-large: var(--_global-border-radius-md);
           --_input-container-shape: var(--_input-container-shape-medium);
           --_input-state-layer-shape: var(--_global-border-radius-full);
+          --_input-container-shape-top: var(--_input-container-shape) var(--_input-container-shape) 0 0;
           
           /* Enhanced Material Design 3 state layer system */
           --_input-state-layer-color: var(--_global-color-on-surface);
@@ -1363,16 +1370,22 @@ class MyInput extends MyntUIBaseComponent {
           --_input-state-layer-opacity-focus: var(--_global-state-layer-focus);
           --_input-state-layer-opacity-pressed: var(--_global-state-layer-pressed);
           
-          /* Enhanced animation tokens */
+          /* Enhanced animation tokens with micro-interactions */
           --_input-motion-duration-short: var(--_global-interaction-feedback-duration);
           --_input-motion-duration-medium: var(--_global-motion-duration-medium2);
+          --_input-motion-duration-long: var(--_global-motion-duration-long1);
           --_input-motion-easing: var(--_global-interaction-feedback-easing);
           --_input-motion-easing-decelerate: var(--_global-motion-easing-decelerate);
+          --_input-motion-easing-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          --_input-motion-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
           
-          /* Enhanced elevation system */
+          /* Enhanced elevation system with better focus states */
           --_input-container-elevation: var(--_global-elevation-0);
           --_input-container-elevation-hover: var(--_global-elevation-1);
-          --_input-container-elevation-focus: var(--_global-elevation-0);
+          --_input-container-elevation-focus: 0 0 0 1px var(--_global-color-primary), var(--_global-elevation-2);
+          --_input-container-elevation-filled: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.12);
+          --_input-container-elevation-filled-hover: 0 2px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.16);
+          --_input-container-elevation-filled-focus: 0 0 0 1px var(--_global-color-primary), 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
           
           /* Focus ring system */
           --_input-focus-ring: var(--_global-focus-ring-width) var(--_global-focus-ring-style) var(--_global-focus-ring-color);
@@ -1387,12 +1400,13 @@ class MyInput extends MyntUIBaseComponent {
           isolation: isolate;
         }
 
-        /* Size variants */
+        /* Size variants with consistent shape system */
         :host([size="small"]) {
           --_input-height: var(--_input-height-small);
           --_input-padding-x: var(--_input-padding-x-small);
           --_input-padding-y: var(--_input-padding-y-small);
           --_input-container-shape: var(--_input-container-shape-small);
+          --_input-container-shape-top: var(--_input-container-shape-small) var(--_input-container-shape-small) 0 0;
           font-size: var(--_global-font-size-sm);
         }
         
@@ -1401,16 +1415,19 @@ class MyInput extends MyntUIBaseComponent {
           --_input-padding-x: var(--_input-padding-x-large);
           --_input-padding-y: var(--_input-padding-y-large);
           --_input-container-shape: var(--_input-container-shape-large);
+          --_input-container-shape-top: var(--_input-container-shape-large) var(--_input-container-shape-large) 0 0;
           font-size: var(--_global-font-size-lg);
         }
         
-        /* Variant styles */
+        /* Variant styles with consistent elevation */
         :host([variant="filled"]) {
           --_input-container-color: var(--_input-filled-container-color);
           --_input-container-color-hover: var(--_input-filled-container-color-hover);
           --_input-container-color-focus: var(--_input-filled-container-color-focus);
           --_input-container-color-disabled: var(--_input-filled-container-color-disabled);
-          --_input-container-elevation: var(--_global-elevation-1);
+          --_input-container-elevation: var(--_input-container-elevation-filled);
+          --_input-container-elevation-hover: var(--_input-container-elevation-filled-hover);
+          --_input-container-elevation-focus: var(--_input-container-elevation-filled-focus);
         }
         
         /* Host state management */
@@ -1454,9 +1471,10 @@ class MyInput extends MyntUIBaseComponent {
           background-color: var(--_input-filled-container-color);
           border: none;
           border-bottom: var(--_input-filled-active-indicator-height) solid var(--_input-outlined-outline-color);
-          border-radius: var(--_input-container-shape) var(--_input-container-shape) 0 0;
-          box-shadow: var(--_input-container-elevation);
+          border-radius: var(--_input-container-shape-top);
+          box-shadow: var(--_input-container-elevation-filled);
           position: relative;
+          backdrop-filter: blur(0.5px);
         }
         
         /* Filled variant active indicator */
@@ -1480,6 +1498,7 @@ class MyInput extends MyntUIBaseComponent {
           border-radius: var(--_input-container-shape);
           box-shadow: var(--_input-container-elevation);
           position: relative;
+          backdrop-filter: blur(0.5px);
         }
 
         .label {
@@ -1487,16 +1506,20 @@ class MyInput extends MyntUIBaseComponent {
           font-weight: var(--_global-font-weight-medium);
           color: var(--_input-label-color);
           line-height: var(--_global-line-height-tight);
-          transition: color var(--_input-motion-duration-short) var(--_input-motion-easing);
+          transition: color var(--_input-motion-duration-short) var(--_input-motion-easing),
+                      transform var(--_input-motion-duration-short) var(--_input-motion-easing-spring);
           display: block;
           margin-bottom: var(--_global-spacing-xs);
           user-select: none;
+          letter-spacing: 0.01em;
         }
 
         .label.required::after {
           content: ' *';
           color: var(--_input-label-color-error);
           font-weight: var(--_global-font-weight-bold);
+          margin-left: 1px;
+          filter: drop-shadow(0 0.5px 1px rgba(0, 0, 0, 0.1));
         }
 
         .label.over {
@@ -1516,11 +1539,14 @@ class MyInput extends MyntUIBaseComponent {
           overflow: hidden;
           text-overflow: ellipsis;
           max-width: calc(100% - 2 * var(--_input-padding-x, var(--_input-padding-x-medium)));
+          backdrop-filter: blur(8px);
         }
         
-        /* Floating label background for outlined variant */
+        /* Floating label background for outlined variant with smooth backdrop */
         :host([variant="outlined"]) .label.over {
           background-color: var(--_global-color-surface);
+          box-shadow: 0 0 0 2px var(--_global-color-surface);
+          border-radius: var(--_global-border-radius-xs);
         }
 
         .input-wrapper {
@@ -1555,7 +1581,9 @@ class MyInput extends MyntUIBaseComponent {
           line-height: var(--_global-line-height-normal);
           transition: all var(--_input-motion-duration-short) var(--_input-motion-easing),
                       border-color var(--_input-motion-duration-short) var(--_input-motion-easing),
-                      box-shadow var(--_input-motion-duration-short) var(--_input-motion-easing);
+                      box-shadow var(--_input-motion-duration-short) var(--_input-motion-easing),
+                      transform var(--_input-motion-duration-short) var(--_input-motion-easing-spring),
+                      background-color var(--_input-motion-duration-medium) var(--_input-motion-easing);
           outline: none;
           box-shadow: var(--_input-container-elevation);
           position: relative;
@@ -1563,6 +1591,7 @@ class MyInput extends MyntUIBaseComponent {
           appearance: none;
           resize: none;
           box-sizing: border-box;
+          will-change: transform, box-shadow, background-color;
         }
         
         /* Adjust padding when icons are present */
@@ -1613,7 +1642,10 @@ class MyInput extends MyntUIBaseComponent {
         .input-field::placeholder {
           color: var(--_input-placeholder-color);
           opacity: 1;
-          transition: opacity var(--_input-motion-duration-short) var(--_input-motion-easing);
+          transition: opacity var(--_input-motion-duration-short) var(--_input-motion-easing),
+                      color var(--_input-motion-duration-short) var(--_input-motion-easing);
+          font-style: normal;
+          letter-spacing: 0.01em;
         }
         
         /* Hide placeholder when floating label is present */
@@ -1624,28 +1656,46 @@ class MyInput extends MyntUIBaseComponent {
         /* Show placeholder only when focused and no floating label conflict */
         :host([label-position="over"]) .input-field:focus::placeholder {
           opacity: 0.6;
+          color: color-mix(in srgb, var(--_input-placeholder-color) 80%, transparent);
           transition-delay: var(--_input-motion-duration-medium);
+        }
+        
+        /* Enhanced label hover states */
+        .label:not(.over):hover {
+          color: var(--_input-label-color-hover);
+          transform: translateY(-1px);
+          transition: all var(--_input-motion-duration-short) var(--_input-motion-easing-spring);
         }
 
         /* Enhanced hover states with consistent patterns */
         .input-field:hover:not(:disabled):not(:focus) {
-          box-shadow: var(--_input-container-elevation-hover);
+          transform: translateY(-0.5px);
           transition: all var(--_input-motion-duration-short) var(--_input-motion-easing);
         }
         
         .input-container.variant-outlined .input-field:hover:not(:disabled):not(:focus) {
           border-color: var(--_input-outlined-outline-color-hover);
+          background-color: var(--_input-outlined-container-color-hover);
+          box-shadow: var(--_input-container-elevation-hover);
         }
         
         .input-container.variant-filled .input-field:hover:not(:disabled):not(:focus) {
           background-color: var(--_input-filled-container-color-hover);
+          box-shadow: var(--_input-container-elevation-filled-hover);
         }
         
         .input-field:hover:not(:disabled):not(:focus)::before {
           opacity: var(--_input-state-layer-opacity-hover);
         }
         
-        /* Icon hover states */
+        /* Enhanced icon hover states with color transitions */
+        .leading-icon:hover,
+        .trailing-icon:hover {
+          color: var(--_input-icon-color-hover);
+          transform: translateY(-50%) scale(1.05);
+          transition: all var(--_input-motion-duration-short) var(--_input-motion-easing-spring);
+        }
+        
         .leading-icon:hover::before,
         .trailing-icon:hover::before {
           opacity: var(--_input-state-layer-opacity-hover);
@@ -1663,7 +1713,9 @@ class MyInput extends MyntUIBaseComponent {
         .input-container.variant-outlined .input-field.focused {
           border-color: var(--_input-outlined-outline-color-focus);
           border-width: 2px;
+          background-color: var(--_input-outlined-container-color-focus);
           box-shadow: var(--_input-container-elevation-focus);
+          transform: translateY(-1px);
         }
         
         /* Filled variant focus */
@@ -1672,6 +1724,8 @@ class MyInput extends MyntUIBaseComponent {
           background-color: var(--_input-filled-container-color-focus);
           border-bottom-color: var(--_input-filled-active-indicator-color);
           border-bottom-width: var(--_input-filled-active-indicator-height-focus);
+          box-shadow: var(--_input-container-elevation-filled-focus);
+          transform: translateY(-1px);
         }
         
         .input-container.variant-filled .input-field:focus::after,
@@ -1693,15 +1747,17 @@ class MyInput extends MyntUIBaseComponent {
         /* Enhanced container focus states with icon animations */
         .input-container.focused .label:not(.over) {
           color: var(--_input-label-color-focus);
-          transform: translateY(-1px);
-          transition: all var(--_input-motion-duration-short) var(--_input-motion-easing);
+          transform: translateY(-1px) scale(1.02);
+          transition: all var(--_input-motion-duration-short) var(--_input-motion-easing-spring);
+          text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.1);
         }
         
         .input-container.focused .leading-icon,
         .input-container.focused .trailing-icon {
           color: var(--_input-icon-color-focus);
           transform: translateY(-50%) scale(1.05);
-          transition: all var(--_input-motion-duration-short) var(--_input-motion-easing);
+          transition: all var(--_input-motion-duration-short) var(--_input-motion-easing-spring);
+          filter: brightness(1.1) saturate(1.2);
         }
         
         /* Enhanced focus states for icons */
@@ -1745,14 +1801,16 @@ class MyInput extends MyntUIBaseComponent {
           color: var(--_input-icon-color-disabled);
         }
 
-        /* Host-level disabled state */
+        /* Host-level disabled state with enhanced visual feedback */
         :host([disabled]) {
           pointer-events: none;
           cursor: not-allowed;
+          filter: grayscale(0.3);
         }
 
         :host([disabled]) .input-container {
           opacity: var(--_global-opacity-disabled);
+          transform: scale(0.99);
         }
 
         /* Enhanced Material Design 3 error states */
@@ -1816,64 +1874,86 @@ class MyInput extends MyntUIBaseComponent {
           transform: translateY(-50%) scale(1.02);
         }
         
-        /* Enhanced error animations */
+        /* Enhanced error animations with spring physics */
         .input-container.has-error .leading-icon,
         .input-container.has-error .trailing-icon {
-          animation: iconErrorPulse var(--_input-motion-duration-short) var(--_input-motion-easing) ease-out;
+          animation: iconErrorPulse var(--_input-motion-duration-medium) var(--_input-motion-easing-bounce);
+          filter: drop-shadow(0 0 2px var(--_input-icon-color-error));
         }
         
         @keyframes iconErrorPulse {
           0% {
             transform: translateY(-50%) scale(1);
           }
-          50% {
-            transform: translateY(-50%) scale(1.1);
+          30% {
+            transform: translateY(-50%) scale(1.15) rotate(2deg);
+          }
+          60% {
+            transform: translateY(-50%) scale(0.95) rotate(-1deg);
           }
           100% {
-            transform: translateY(-50%) scale(1.02);
+            transform: translateY(-50%) scale(1.02) rotate(0deg);
           }
         }
 
-        /* Enhanced error animations */
+        /* Enhanced error animations with better spring motion */
         .input-container.error-animation .input-field {
-          animation: inputErrorShake var(--_input-motion-duration-medium) var(--_input-motion-easing);
+          animation: inputErrorShake var(--_input-motion-duration-long) var(--_input-motion-easing-bounce);
         }
         
         .input-container.error-animation {
-          animation: containerErrorPulse var(--_input-motion-duration-medium) var(--_input-motion-easing);
+          animation: containerErrorPulse var(--_input-motion-duration-long) var(--_input-motion-easing-spring);
         }
 
         @keyframes inputErrorShake {
-          0%, 100% { transform: translateX(0); }
-          20% { transform: translateX(-3px); }
-          40% { transform: translateX(3px); }
-          60% { transform: translateX(-2px); }
-          80% { transform: translateX(2px); }
+          0%, 100% { transform: translateX(0) translateY(0); }
+          10% { transform: translateX(-4px) translateY(-1px); }
+          20% { transform: translateX(4px) translateY(1px); }
+          30% { transform: translateX(-3px) translateY(-0.5px); }
+          40% { transform: translateX(3px) translateY(0.5px); }
+          50% { transform: translateX(-2px) translateY(-0.25px); }
+          60% { transform: translateX(2px) translateY(0.25px); }
+          70% { transform: translateX(-1px) translateY(0); }
+          80% { transform: translateX(1px) translateY(0); }
         }
         
         @keyframes containerErrorPulse {
           0% { transform: scale(1); }
-          50% { transform: scale(1.02); }
+          25% { transform: scale(1.03); }
+          50% { transform: scale(0.98); }
+          75% { transform: scale(1.01); }
           100% { transform: scale(1); }
         }
         
-        /* Success flash animation */
+        /* Success flash animation with enhanced visual feedback */
         .input-field.success-flash {
-          animation: successFlash 0.4s var(--_input-motion-easing);
+          animation: successFlash var(--_input-motion-duration-long) var(--_input-motion-easing-spring);
         }
         
         @keyframes successFlash {
           0% {
             border-color: var(--_input-outline-color);
             background-color: var(--_input-container-color, transparent);
+            box-shadow: var(--_input-container-elevation);
+            transform: scale(1);
           }
-          50% {
+          30% {
             border-color: var(--_global-color-success);
-            background-color: color-mix(in srgb, var(--_global-color-success) 8%, transparent);
+            background-color: color-mix(in srgb, var(--_global-color-success) 12%, transparent);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--_global-color-success) 20%, transparent), var(--_input-container-elevation-hover);
+            transform: scale(1.02);
+          }
+          70% {
+            border-color: var(--_global-color-success);
+            background-color: color-mix(in srgb, var(--_global-color-success) 6%, transparent);
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--_global-color-success) 10%, transparent), var(--_input-container-elevation);
+            transform: scale(1.01);
           }
           100% {
             border-color: var(--_input-outline-color);
             background-color: var(--_input-container-color, transparent);
+            box-shadow: var(--_input-container-elevation);
+            transform: scale(1);
           }
         }
         
