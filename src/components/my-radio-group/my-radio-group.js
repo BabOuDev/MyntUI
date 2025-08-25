@@ -241,8 +241,10 @@ class MyRadioGroup extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define('my-radio-group', MyRadioGroup);
+// Register the custom element only if it hasn't been registered already
+if (!customElements.get('my-radio-group')) {
+  customElements.define('my-radio-group', MyRadioGroup);
+}
 
 /**
  * MyntUI my-radio Component  
@@ -489,5 +491,7 @@ class MyRadio extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define('my-radio', MyRadio);
+// Register the custom element only if it hasn't been registered already
+if (!customElements.get('my-radio')) {
+  customElements.define('my-radio', MyRadio);
+}

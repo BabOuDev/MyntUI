@@ -266,5 +266,7 @@ class MyCheckbox extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define('my-checkbox', MyCheckbox);
+// Register the custom element only if it hasn't been registered already
+if (!customElements.get('my-checkbox')) {
+  customElements.define('my-checkbox', MyCheckbox);
+}

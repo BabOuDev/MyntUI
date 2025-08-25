@@ -363,5 +363,7 @@ class MyTooltip extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define('my-tooltip', MyTooltip);
+// Register the custom element only if it hasn't been registered already
+if (!customElements.get('my-tooltip')) {
+  customElements.define('my-tooltip', MyTooltip);
+}

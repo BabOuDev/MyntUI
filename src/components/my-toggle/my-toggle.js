@@ -186,11 +186,11 @@ class MyToggle extends HTMLElement {
           background-color: var(--_toggle-thumb-color);
           border-radius: var(--_toggle-border-radius);
           transition: transform var(--_global-transition-fast);
-          box-shadow: var(--_global-shadow-sm);
+          box-shadow: var(--_global-elevation-1);
         }
 
         .toggle.checked .toggle-thumb {
-          transform: translateX(calc(var(--_toggle-width) - var(--_toggle-thumb-size) - 4px));
+          transform: translateX(calc(var(--_toggle-width) - var(--_toggle-thumb-size) - var(--_global-spacing-xs)));
         }
 
         .label {
@@ -241,5 +241,7 @@ class MyToggle extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define('my-toggle', MyToggle);
+// Register the custom element only if it hasn't been registered already
+if (!customElements.get('my-toggle')) {
+  customElements.define('my-toggle', MyToggle);
+}
