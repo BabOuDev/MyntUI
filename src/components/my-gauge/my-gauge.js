@@ -254,10 +254,11 @@ class MyGauge extends HTMLElement {
     this._max = parseFloat(this.getAttribute('max')) || 100;
   }
 
-  // Disconnected callback
+  // Standardized lifecycle cleanup - part of MyntUI component pattern
   disconnectedCallback() {
     if (this._animationId) {
       cancelAnimationFrame(this._animationId);
+      this._animationId = null;
     }
   }
 
@@ -448,6 +449,42 @@ class MyGauge extends HTMLElement {
           pointer-events: none;
         }
 
+        /* Accessibility improvements - High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          .gauge-track {
+            stroke: currentColor;
+            opacity: 0.5;
+            stroke-width: calc(var(--_gauge-stroke-width-bg) + 2px);
+          }
+          
+          .gauge-fill {
+            stroke-width: calc(var(--_gauge-stroke-width) + 2px);
+            filter: none;
+          }
+          
+          .gauge-needle {
+            stroke: currentColor;
+            stroke-width: 2px;
+            filter: none;
+          }
+          
+          .gauge-value,
+          .gauge-label {
+            font-weight: var(--_global-font-weight-bold);
+            text-shadow: none;
+          }
+        }
+
+        /* Accessibility improvements - Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+          .gauge-fill,
+          .gauge-needle,
+          .gauge-value {
+            animation: none;
+            transition: none;
+          }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 480px) {
           :host {
@@ -456,8 +493,15 @@ class MyGauge extends HTMLElement {
         }
       </style>
 
-      <div class="gauge-container">
-        <svg class="gauge-svg" viewBox="0 0 100 60">
+      <div class="gauge-container" 
+           role="meter" 
+           aria-valuenow="${this._value}"
+           aria-valuemin="${this.min}"
+           aria-valuemax="${this.max}"
+           aria-label="${this.label || 'gauge'} - ${this.formatValue(this._value)}${this.unit}"
+           ${this.getCurrentThreshold() ? `aria-describedby="threshold-${this.getCurrentThreshold().label || 'current'}"` : ''}
+      >
+        <svg class="gauge-svg" viewBox="0 0 100 60" aria-hidden="true">
           <defs>
             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" style="stop-color:${color};stop-opacity:0.8" />

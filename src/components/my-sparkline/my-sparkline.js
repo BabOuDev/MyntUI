@@ -304,6 +304,7 @@ class MySparkline extends HTMLElement {
   // Standardized lifecycle cleanup
   disconnectedCallback() {
     this.removeEventListeners();
+    this.stopAnimation();
   }
 
   // Animation frame
@@ -576,11 +577,6 @@ class MySparkline extends HTMLElement {
     }
   }
 
-  // Cleanup when component is removed
-  disconnectedCallback() {
-    this.stopAnimation();
-    window.removeEventListener('resize', this.handleResize);
-  }
 }
 
 // Register the custom element only if it hasn't been registered already
