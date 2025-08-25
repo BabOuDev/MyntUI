@@ -297,7 +297,7 @@ describe('Enhanced Components Visual Testing', () => {
         cy.screenshot('gauge-home-key-minimum', { overwrite: true })
         
         // Test End key
-        cy.get('my-gauge').shadow().find('.gauge-container').type('{end}')
+        cy.get('my-gauge').first().shadow().find('.gauge-container').type('{end}')
         cy.wait(200)
         cy.screenshot('gauge-end-key-maximum', { overwrite: true })
       })
