@@ -1,13 +1,19 @@
 # my-icon
 
-A flexible, accessible icon component for rendering Material Icons with interactive capabilities and full accessibility support.
+A modern, self-contained icon component with built-in SVG icons and optional Material Icons fallback. Provides interactive capabilities and full accessibility support with reduced external dependencies.
 
 ## Features
 
-✅ **Material Icons Integration**
-- Direct access to Google's Material Icons library
-- Scalable vector icons with crisp rendering
-- Consistent iconography across the design system
+✅ **Built-in SVG Icon Library**
+- 22 popular Material Design icons included as optimized SVG paths
+- Zero external dependencies for common icons
+- Crisp rendering at any size with perfect scaling
+- Uses currentColor for seamless theming
+
+✅ **Optional Material Icons Fallback**
+- Optional Google Fonts integration via `use-font-fallback` attribute
+- Automatic fallback for icons not in built-in library
+- Maintains compatibility with existing Material Icons usage
 
 ✅ **Multiple Sizes**
 - `xs` - Extra small (12px)
@@ -34,19 +40,45 @@ A flexible, accessible icon component for rendering Material Icons with interact
 - Size variants with consistent scaling
 - Seamless integration with design system
 
+## Built-in Icons
+
+The following icons are available as built-in SVGs (no external fonts required):
+
+| Category | Icons |
+|----------|-------|
+| **Navigation** | `home`, `menu`, `arrow_back`, `arrow_forward`, `close`, `expand_more`, `expand_less` |
+| **Actions** | `search`, `add`, `edit`, `delete`, `check` |
+| **User** | `person`, `settings` |
+| **Status & Feedback** | `favorite`, `star`, `visibility`, `visibility_off`, `error`, `warning`, `info`, `success` |
+
 ## Usage
 
-### Basic Icon
+### Basic Built-in Icons (Recommended)
 
 ```html
+<!-- Uses built-in SVG - no external dependencies -->
 <my-icon icon="home"></my-icon>
 <my-icon icon="settings"></my-icon>
 <my-icon icon="favorite"></my-icon>
+<my-icon icon="search"></my-icon>
+<my-icon icon="person"></my-icon>
+```
+
+### Material Icons with Fallback
+
+For icons not in the built-in library, enable font fallback:
+
+```html
+<!-- Enables Google Fonts fallback for non-built-in icons -->
+<my-icon icon="schedule" use-font-fallback="true"></my-icon>
+<my-icon icon="notifications" use-font-fallback="true"></my-icon>
+<my-icon icon="phone" use-font-fallback="true"></my-icon>
 ```
 
 ### Different Sizes
 
 ```html
+<!-- All sizes work with built-in icons -->
 <my-icon icon="star" size="xs"></my-icon>
 <my-icon icon="star" size="sm"></my-icon>
 <my-icon icon="star" size="md"></my-icon>
@@ -107,12 +139,15 @@ A flexible, accessible icon component for rendering Material Icons with interact
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `icon` | string | `""` | Material Icon name (e.g., "home", "settings", "favorite") |
+| `icon` | string | `""` | Icon name (e.g., "home", "settings", "favorite") |
 | `size` | string | `"md"` | Icon size (`xs`, `sm`, `md`, `lg`, `xl`) |
 | `color` | string | - | Custom color (CSS color value) |
 | `interactive` | boolean | `false` | Makes icon focusable and clickable |
 | `disabled` | boolean | `false` | Disables interactive functionality |
 | `aria-label` | string | icon name | Custom accessibility label |
+| `use-font-fallback` | boolean | `false` | Enable Material Icons font fallback for non-built-in icons |
+| `variant` | string | `"outlined"` | Material Icons variant (`symbols`, `outlined`, `rounded`, `sharp`) - only used with font fallback |
+| `filled` | boolean | `false` | Use filled variant of Material Icons - only used with font fallback |
 
 ## Events
 
@@ -215,7 +250,9 @@ settingsIcon.addEventListener('icon-click', () => {
 
 ### Finding Icons
 
-Visit [Material Icons Library](https://fonts.google.com/icons) to browse all available icons and their names.
+**Built-in Icons**: Use the icon names from the table above for zero-dependency icons.
+
+**Material Icons**: Visit [Material Icons Library](https://fonts.google.com/icons) to browse all available Material Icons (requires `use-font-fallback="true"`).
 
 ## Interactive vs Decorative Usage
 
@@ -383,6 +420,35 @@ export default {
 - Don't override focus indicators without providing alternatives
 - Don't use icons without labels for complex actions
 - Don't make icons too small for touch targets (minimum 44px)
+
+## Migration Guide
+
+### From Previous Versions
+
+The component now uses built-in SVG icons by default, which means:
+
+**✅ No changes needed** for these popular icons (they now use built-in SVGs):
+- `home`, `menu`, `arrow_back`, `arrow_forward`, `close`, `expand_more`, `expand_less`
+- `search`, `add`, `edit`, `delete`, `check`
+- `person`, `settings`
+- `favorite`, `star`, `visibility`, `visibility_off`, `error`, `warning`, `info`, `success`
+
+**🔄 Add `use-font-fallback="true"`** for other Material Icons:
+```html
+<!-- Before (still works but icon may not display) -->
+<my-icon icon="notifications"></my-icon>
+
+<!-- After (ensures icon displays) -->
+<my-icon icon="notifications" use-font-fallback="true"></my-icon>
+```
+
+### Benefits of the Update
+
+- **Faster loading**: Built-in icons load instantly with no external requests
+- **Better reliability**: No dependency on Google Fonts CDN availability
+- **Smaller bundle size**: Only loads font resources when explicitly needed
+- **Perfect scaling**: SVG icons are crisp at any resolution
+- **Better theming**: SVG icons use currentColor for seamless theme integration
 
 ## Design System Integration
 
