@@ -280,19 +280,32 @@ class MyGauge extends HTMLElement {
       <style>
         :host {
           /* Component-specific variables using global variables */
-          --_gauge-size-sm: 120px;
-          --_gauge-size-md: 160px;
-          --_gauge-size-lg: 200px;
+          --_gauge-size-sm: 140px;
+          --_gauge-size-md: 180px;
+          --_gauge-size-lg: 240px;
           --_gauge-size: var(--_gauge-size-md);
           --_gauge-stroke-width: 8;
-          --_gauge-needle-length: 35%;
-          --_gauge-bg-color: var(--_global-color-surface-container-high);
+          --_gauge-stroke-width-bg: 6;
+          --_gauge-needle-width: 2;
+          --_gauge-bg-color: var(--_global-color-surface-container);
           --_gauge-track-color: var(--_global-color-outline-variant);
-          --_gauge-text-color: var(--_global-color-text-primary);
+          --_gauge-fill-color: var(--_global-color-primary);
+          --_gauge-text-color: var(--_global-color-on-surface);
+          --_gauge-label-color: var(--_global-color-on-surface-variant);
+          --_gauge-range-color: var(--_global-color-on-surface-variant);
+          --_gauge-needle-color: var(--_global-color-on-surface);
+          --_gauge-shadow: var(--_global-elevation-1);
+          --_gauge-transition: all var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized);
           
           display: inline-block;
           width: var(--_gauge-size);
-          height: calc(var(--_gauge-size) * 0.6);
+          height: calc(var(--_gauge-size) * 0.7);
+          font-family: var(--_global-font-family-sans);
+          background: var(--_gauge-bg-color);
+          border-radius: var(--_global-border-radius-lg);
+          box-shadow: var(--_gauge-shadow);
+          padding: var(--_global-spacing-md);
+          box-sizing: border-box;
         }
 
         .gauge-container {
@@ -313,8 +326,9 @@ class MyGauge extends HTMLElement {
         .gauge-track {
           fill: none;
           stroke: var(--_gauge-track-color);
-          stroke-width: var(--_gauge-stroke-width);
+          stroke-width: var(--_gauge-stroke-width-bg);
           stroke-linecap: round;
+          opacity: 0.3;
         }
 
         .gauge-fill {
@@ -324,23 +338,30 @@ class MyGauge extends HTMLElement {
           stroke-linecap: round;
           stroke-dasharray: ${circumference};
           stroke-dashoffset: ${offset};
-          transition: stroke-dashoffset var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized),
-                      stroke var(--_global-motion-duration-short2) ease;
+          transition: var(--_gauge-transition);
           transform: rotate(-180deg);
           transform-origin: center;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+        
+        /* Gradient fill for more modern look */
+        .gauge-fill {
+          stroke: url(#gaugeGradient);
         }
 
         .gauge-center {
           fill: var(--_gauge-bg-color);
-          stroke: var(--_gauge-track-color);
-          stroke-width: 2;
+          stroke: var(--_gauge-needle-color);
+          stroke-width: var(--_gauge-needle-width);
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
         }
 
         .gauge-needle {
-          fill: var(--_gauge-text-color);
-          transform-origin: center bottom;
+          fill: var(--_gauge-needle-color);
+          transform-origin: 50px 50px;
           transform: rotate(${this.angle}deg);
-          transition: transform var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
+          transition: var(--_gauge-transition);
+          filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
         }
 
         .gauge-content {
@@ -353,31 +374,37 @@ class MyGauge extends HTMLElement {
         }
 
         .gauge-value {
-          font-size: calc(var(--_gauge-size) * 0.12);
+          font-size: calc(var(--_gauge-size) * 0.14);
           font-weight: var(--_global-font-weight-bold);
-          color: ${color};
+          color: var(--_gauge-text-color);
           line-height: 1;
           margin-bottom: var(--_global-spacing-xs);
           transition: color var(--_global-motion-duration-short2) ease;
+          font-variant-numeric: tabular-nums;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .gauge-label {
-          font-size: calc(var(--_gauge-size) * 0.08);
+          font-size: calc(var(--_gauge-size) * 0.09);
           font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-text-secondary);
+          color: var(--_gauge-label-color);
           line-height: 1;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .gauge-range {
           position: absolute;
-          bottom: 10%;
+          bottom: 8%;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
           justify-content: space-between;
-          width: 80%;
-          font-size: calc(var(--_gauge-size) * 0.06);
-          color: var(--_global-color-text-muted);
+          width: 85%;
+          font-size: calc(var(--_gauge-size) * 0.07);
+          font-weight: var(--_global-font-weight-medium);
+          color: var(--_gauge-range-color);
+          font-variant-numeric: tabular-nums;
         }
 
         .gauge-thresholds {
@@ -431,6 +458,20 @@ class MyGauge extends HTMLElement {
 
       <div class="gauge-container">
         <svg class="gauge-svg" viewBox="0 0 100 60">
+          <defs>
+            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:${color};stop-opacity:0.8" />
+              <stop offset="100%" style="stop-color:${color};stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge> 
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          
           <!-- Track (background arc) -->
           <path class="gauge-track" 
                 d="M 20,50 A 30,30 0 0,1 80,50" 
@@ -440,14 +481,15 @@ class MyGauge extends HTMLElement {
           <path class="gauge-fill" 
                 d="M 20,50 A 30,30 0 0,1 80,50"
                 stroke-dasharray="${circumference}"
-                stroke-dashoffset="${offset}"/>
+                stroke-dashoffset="${offset}"
+                filter="url(#glow)"/>
           
           <!-- Center circle -->
-          <circle class="gauge-center" cx="50" cy="50" r="3"/>
+          <circle class="gauge-center" cx="50" cy="50" r="4"/>
           
           <!-- Needle -->
           <polygon class="gauge-needle" 
-                   points="49,50 51,50 50,25"
+                   points="49.5,50 50.5,50 50,22"
                    transform="rotate(${this.angle} 50 50)"/>
         </svg>
 
