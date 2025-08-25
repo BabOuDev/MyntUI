@@ -131,7 +131,8 @@ describe('MyntUI Component Gallery Tests', () => {
     // Test dropdown open/close
     cy.get('my-dropdown').first().click()
     cy.wait(300)
-    cy.get('body').click() // Click outside to close
+    // Click on a safe area to close dropdown
+    cy.get('.header').click({ force: true })
     cy.wait(300)
     
     cy.takeFullPageScreenshot('component-interactions-test')
