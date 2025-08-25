@@ -196,38 +196,43 @@ class MyButton extends HTMLElement {
     }, 600);
   }
 
-  // Attach event listeners
+  // Attach event listeners - Standardized pattern for MyntUI components
   attachEventListeners() {
-    const button = this.shadowRoot.querySelector('button');
-    if (button) {
-      // Remove existing listeners
-      button.removeEventListener('click', this.handleClick);
-      button.removeEventListener('keydown', this.handleKeyDown);
-      button.removeEventListener('focus', this.handleFocus);
-      button.removeEventListener('blur', this.handleBlur);
-      
-      // Add new listeners
-      button.addEventListener('click', this.handleClick);
-      button.addEventListener('keydown', this.handleKeyDown);
-      button.addEventListener('focus', this.handleFocus);
-      button.addEventListener('blur', this.handleBlur);
-    }
+    // Clean up existing listeners first
+    this.removeEventListeners();
     
-    // Make the custom element focusable if not disabled
-    if (!this.disabled && !this.loading) {
-      this.setAttribute('tabindex', '0');
-      // Remove existing listeners
-      this.removeEventListener('keydown', this.handleKeyDown);
-      this.removeEventListener('focus', this.handleFocus);
-      this.removeEventListener('blur', this.handleBlur);
-      
-      // Add listeners to custom element too
-      this.addEventListener('keydown', this.handleKeyDown);
-      this.addEventListener('focus', this.handleFocus);
-      this.addEventListener('blur', this.handleBlur);
-    } else {
-      this.removeAttribute('tabindex');
+    const button = this.shadowRoot.querySelector('button');
+    if (!button) return;
+    
+    // Only attach listeners to the shadow DOM button element
+    // This prevents duplicate event handling and simplifies the pattern
+    button.addEventListener('click', this.handleClick);
+    button.addEventListener('keydown', this.handleKeyDown);
+    button.addEventListener('focus', this.handleFocus);
+    button.addEventListener('blur', this.handleBlur);
+    
+    // Store references for cleanup
+    this._eventTargets = [
+      { element: button, events: ['click', 'keydown', 'focus', 'blur'] }
+    ];
+  }
+
+  // Remove event listeners - part of standardized cleanup pattern
+  removeEventListeners() {
+    if (this._eventTargets) {
+      this._eventTargets.forEach(target => {
+        target.element.removeEventListener('click', this.handleClick);
+        target.element.removeEventListener('keydown', this.handleKeyDown);
+        target.element.removeEventListener('focus', this.handleFocus);
+        target.element.removeEventListener('blur', this.handleBlur);
+      });
+      this._eventTargets = null;
     }
+  }
+
+  // Cleanup on disconnect - part of standardized lifecycle
+  disconnectedCallback() {
+    this.removeEventListeners();
   }
 
   // Render the component
@@ -589,6 +594,55 @@ class MyButton extends HTMLElement {
         /* Ensure button is relatively positioned for ripple */
         button {
           overflow: hidden;
+        }
+
+        /* Accessibility improvements - High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          button {
+            border: 2px solid currentColor;
+          }
+          
+          button.variant-filled,
+          button.variant-primary,
+          button.variant-secondary {
+            border: 2px solid transparent;
+            outline: 2px solid;
+            outline-offset: 2px;
+          }
+          
+          .ripple {
+            display: none;
+          }
+        }
+
+        /* Accessibility improvements - Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+          button,
+          .loading-spinner,
+          .ripple {
+            animation: none;
+            transition: none;
+          }
+          
+          button:hover:not(:disabled),
+          button:active:not(:disabled),
+          :host(:focus) button,
+          button:focus,
+          button.focused {
+            transform: none;
+          }
+          
+          .ripple {
+            display: none;
+          }
+        }
+
+        /* Enhanced focus-visible for better keyboard navigation */
+        @supports selector(:focus-visible) {
+          button:focus:not(:focus-visible) {
+            box-shadow: var(--_button-elevation);
+            transform: none;
+          }
         }
       </style>
       <button 
