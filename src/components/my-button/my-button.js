@@ -267,8 +267,8 @@ class MyButton extends MyntUIBaseComponent {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          /* Enhanced Material Design 3 button variables with premium styling */
-          --_button-min-width: 64px;
+          /* Enhanced Material Design 3 button variables using global system */
+          --_button-min-width: var(--_global-button-min-width);
           --_button-state-layer-size: 40px;
           --_button-border-width: 1px;
           
@@ -279,11 +279,11 @@ class MyButton extends MyntUIBaseComponent {
           --_button-height-lg: var(--_global-component-height-lg);
           --_button-height-xl: 56px;
           
-          /* Padding system with improved spacing */
-          --_button-padding-xs: 0 var(--_global-spacing-sm);
-          --_button-padding-sm: 0 var(--_global-spacing-md);
-          --_button-padding-md: 0 var(--_global-spacing-lg);
-          --_button-padding-lg: 0 var(--_global-spacing-xl);
+          /* Padding system using global variables */
+          --_button-padding-xs: var(--_global-button-padding-xs);
+          --_button-padding-sm: var(--_global-button-padding-sm);
+          --_button-padding-md: var(--_global-button-padding-md);
+          --_button-padding-lg: var(--_global-button-padding-lg);
           --_button-padding-xl: 0 calc(var(--_global-spacing-xl) + 4px);
           
           /* Typography system with enhanced weights */
@@ -303,10 +303,10 @@ class MyButton extends MyntUIBaseComponent {
           --_button-border-radius-fab: var(--_global-border-radius-lg);
           --_button-gap: var(--_global-spacing-sm);
           
-          /* Advanced spring-based motion system */
-          --_button-spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-          --_button-spring-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          --_button-spring-snappy: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          /* Advanced spring-based motion system using global variables */
+          --_button-spring-bounce: var(--_global-spring-bounce);
+          --_button-spring-smooth: var(--_global-spring-smooth);
+          --_button-spring-snappy: var(--_global-spring-snappy);
           --_button-transition: 280ms var(--_button-spring-smooth);
           --_button-transition-fast: 180ms var(--_button-spring-smooth);
           --_button-transition-bounce: 320ms var(--_button-spring-bounce);
@@ -360,17 +360,17 @@ class MyButton extends MyntUIBaseComponent {
           --_button-elevation-elevated: 0 4px 16px color-mix(in srgb, var(--_global-color-shadow) 10%, transparent);
           --_button-elevation-elevated-hover: 0 8px 28px color-mix(in srgb, var(--_global-color-shadow) 16%, transparent), 0 4px 12px color-mix(in srgb, var(--_global-color-shadow) 12%, transparent);
           
-          /* Enhanced state layer system */
-          --_button-state-layer-hover: 0.08;
-          --_button-state-layer-focus: 0.12;
-          --_button-state-layer-pressed: 0.12;
-          --_button-state-layer-dragged: 0.16;
+          /* Enhanced state layer system using global variables */
+          --_button-state-layer-hover: var(--_global-state-layer-hover);
+          --_button-state-layer-focus: var(--_global-state-layer-focus);
+          --_button-state-layer-pressed: var(--_global-state-layer-pressed);
+          --_button-state-layer-dragged: var(--_global-state-layer-dragged);
           
-          /* Multi-layered focus ring system */
-          --_button-focus-ring-primary: 2px solid color-mix(in srgb, var(--_global-color-primary) 60%, transparent);
-          --_button-focus-ring-secondary: 4px solid color-mix(in srgb, var(--_global-color-primary) 20%, transparent);
-          --_button-focus-ring-offset: 2px;
-          --_button-focus-glow: 0 0 0 8px color-mix(in srgb, var(--_global-color-primary) 12%, transparent);
+          /* Multi-layered focus ring system using global variables */
+          --_button-focus-ring-primary: var(--_global-focus-ring-primary);
+          --_button-focus-ring-secondary: var(--_global-focus-ring-secondary);
+          --_button-focus-ring-offset: var(--_global-focus-ring-offset);
+          --_button-focus-glow: var(--_global-focus-glow);
           
           /* Enhanced ripple system */
           --_button-ripple-size: calc(var(--_button-state-layer-size) * 1.5);
@@ -444,47 +444,24 @@ class MyButton extends MyntUIBaseComponent {
           filter: brightness(1) contrast(1);
         }
 
-        /* Premium multi-layered state system */
+        /* Simplified state layer system */
         button::before {
           content: '';
           position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          inset: 0;
           border-radius: inherit;
-          background: radial-gradient(circle at center, var(--_button-filled-state-layer) 0%, transparent 70%);
+          background: var(--_global-state-layer-color-primary);
           opacity: 0;
-          transition: 
-            opacity var(--_button-transition-fast),
-            transform var(--_button-transition-fast);
+          transition: opacity var(--_button-transition-fast);
           pointer-events: none;
           z-index: 1;
-          transform: scale(0.8);
-        }
-
-        /* Secondary glow layer */
-        button::after {
-          content: '';
-          position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          border-radius: calc(var(--_button-border-radius) + 2px);
-          background: var(--_button-filled-state-layer);
-          opacity: 0;
-          transition: opacity var(--_button-transition-bounce);
-          pointer-events: none;
-          z-index: -1;
-          filter: blur(4px);
         }
 
         /* Enhanced hover state with spring physics */
         button.hovered:not(:disabled) {
-          transform: translateZ(0) scale(1.02) translateY(-2px);
+          transform: var(--_global-micro-scale-subtle) var(--_global-micro-translate-subtle);
           box-shadow: var(--_button-elevation-hover);
-          filter: brightness(1.05) contrast(1.05);
+          filter: brightness(1.05);
           transition: 
             transform var(--_button-transition-bounce),
             box-shadow var(--_button-transition-bounce),
@@ -493,56 +470,29 @@ class MyButton extends MyntUIBaseComponent {
 
         button.hovered:not(:disabled)::before {
           opacity: var(--_button-state-layer-hover);
-          transform: scale(1);
         }
 
-        button.hovered:not(:disabled)::after {
-          opacity: 0.06;
-        }
-
-        /* Sophisticated focus state with multi-layer rings */
+        /* Simplified focus state with global focus system */
         button.focused:not(:disabled) {
           outline: none;
-          box-shadow: 
-            var(--_button-focus-glow),
-            var(--_button-elevation-hover);
-          transform: translateZ(0) scale(1.01);
-          filter: brightness(1.08) saturate(1.1);
+          box-shadow: var(--_button-focus-glow);
+          filter: brightness(1.08);
         }
 
         button.focused:not(:disabled)::before {
           opacity: var(--_button-state-layer-focus);
-          transform: scale(1.1);
-          background: radial-gradient(circle at center, var(--_button-filled-state-layer) 0%, color-mix(in srgb, var(--_button-filled-state-layer) 60%, transparent) 100%);
         }
 
-        button.focused:not(:disabled)::after {
-          opacity: 0.12;
-          animation: focus-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes focus-pulse {
-          0%, 100% { opacity: 0.12; transform: scale(1); }
-          50% { opacity: 0.18; transform: scale(1.02); }
-        }
-
-        /* Enhanced pressed state with realistic spring bounce */
+        /* Simplified pressed state */
         button.pressed:not(:disabled) {
-          transform: translateZ(0) scale(0.96) translateY(-1px);
-          box-shadow: 
-            0 2px 8px color-mix(in srgb, var(--_global-color-shadow) 8%, transparent),
-            inset 0 1px 2px color-mix(in srgb, var(--_global-color-shadow) 10%, transparent);
-          filter: brightness(0.95) contrast(1.1);
-          transition: 
-            transform var(--_button-transition-snappy),
-            box-shadow var(--_button-transition-snappy),
-            filter var(--_button-transition-fast);
+          transform: scale(0.98) translateY(1px);
+          box-shadow: var(--_global-elevation-1);
+          filter: brightness(0.95);
+          transition: all var(--_button-transition-snappy);
         }
 
         button.pressed:not(:disabled)::before {
           opacity: var(--_button-state-layer-pressed);
-          transform: scale(1.2);
-          background: radial-gradient(circle at center, var(--_button-filled-state-layer) 20%, transparent 80%);
         }
 
         /* Enhanced size variants with proper scaling */
