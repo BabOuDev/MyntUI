@@ -574,10 +574,24 @@ class MyDropdown extends HTMLElement {
 
         .dropdown-icon {
           margin-left: var(--_global-spacing-sm);
-          font-size: 18px;
+          width: 18px;
+          height: 18px;
           color: var(--_dropdown-icon-color);
           transition: transform var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
           flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .dropdown-icon::before {
+          content: '';
+          width: 0;
+          height: 0;
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-top: 5px solid currentColor;
+          transition: inherit;
         }
 
         .dropdown-trigger.open .dropdown-icon {
@@ -650,15 +664,15 @@ class MyDropdown extends HTMLElement {
         }
 
         .dropdown-option:hover:not([disabled]) {
-          background-color: rgba(103, 80, 164, var(--_global-state-layer-hover));
+          background-color: color-mix(in srgb, var(--_global-color-primary) calc(var(--_global-state-layer-hover) * 100%), transparent);
         }
 
         .dropdown-option.focused {
-          background-color: rgba(103, 80, 164, var(--_global-state-layer-focus));
+          background-color: color-mix(in srgb, var(--_global-color-primary) calc(var(--_global-state-layer-focus) * 100%), transparent);
         }
 
         .dropdown-option.selected {
-          background-color: rgba(103, 80, 164, var(--_global-state-layer-selected));
+          background-color: color-mix(in srgb, var(--_global-color-primary) calc(var(--_global-state-layer-selected) * 100%), transparent);
           color: var(--_global-color-primary);
           font-weight: var(--_global-font-weight-medium);
         }
@@ -752,8 +766,6 @@ class MyDropdown extends HTMLElement {
         }
       </style>
 
-      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
       <button 
         class="dropdown-trigger ${this._isOpen ? 'open' : ''}"
         type="button"
@@ -767,7 +779,7 @@ class MyDropdown extends HTMLElement {
             ${this.getDisplayText()}
           </span>
         </slot>
-        <span class="material-icons dropdown-icon">expand_more</span>
+        <span class="dropdown-icon"></span>
       </button>
 
       <div 
@@ -790,7 +802,7 @@ class MyDropdown extends HTMLElement {
               aria-selected="${this._selectedIndex === index}"
               tabindex="-1"
             >
-              ${option.icon ? `<span class="material-icons dropdown-option-icon">${option.icon}</span>` : ''}
+              ${option.icon ? `<span class="dropdown-option-icon" aria-label="${option.icon}">${option.icon}</span>` : ''}
               ${option.label}
             </button>
           `;
