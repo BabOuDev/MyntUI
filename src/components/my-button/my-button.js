@@ -131,6 +131,64 @@ class MyButton extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
+          /* Button-specific variables using global semantic variables */
+          --_button-min-width: 64px;
+          --_button-height-sm: var(--_global-component-height-sm);
+          --_button-height-md: var(--_global-component-height-md);
+          --_button-height-lg: var(--_global-component-height-lg);
+          
+          --_button-padding-sm: 0 var(--_global-spacing-md);
+          --_button-padding-md: 0 var(--_global-spacing-lg);
+          --_button-padding-lg: 0 var(--_global-spacing-xl);
+          
+          --_button-font-family: var(--_global-font-family-sans);
+          --_button-font-size-sm: var(--_global-font-size-sm);
+          --_button-font-size-md: var(--_global-font-size-md);
+          --_button-font-size-lg: var(--_global-font-size-lg);
+          --_button-font-weight: var(--_global-font-weight-medium);
+          --_button-line-height: var(--_global-line-height-tight);
+          
+          --_button-border-radius: var(--_global-border-radius-full);
+          --_button-gap: var(--_global-spacing-sm);
+          
+          --_button-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_button-transition-fast: var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
+          
+          /* Primary colors */
+          --_button-primary-bg: var(--_global-color-primary);
+          --_button-primary-bg-hover: var(--_global-color-primary-hover);
+          --_button-primary-bg-active: var(--_global-color-primary-active);
+          --_button-primary-text: var(--_global-color-white);
+          
+          /* Secondary colors */
+          --_button-secondary-bg: var(--_global-color-secondary);
+          --_button-secondary-bg-hover: var(--_global-color-secondary-hover);
+          --_button-secondary-bg-active: var(--_global-color-secondary-active);
+          --_button-secondary-text: var(--_global-color-white);
+          
+          /* Status colors */
+          --_button-success-bg: var(--_global-color-success);
+          --_button-error-bg: var(--_global-color-error);
+          
+          /* Outlined variant */
+          --_button-outlined-border: 1px solid var(--_global-color-border);
+          --_button-outlined-text: var(--_global-color-primary);
+          --_button-outlined-bg-hover: rgba(0, 123, 255, 0.08);
+          
+          /* Text variant */
+          --_button-text-bg-hover: rgba(0, 123, 255, 0.08);
+          
+          /* Elevations */
+          --_button-elevation: var(--_global-elevation-1);
+          --_button-elevation-hover: var(--_global-elevation-2);
+          
+          /* Focus */
+          --_button-focus-ring: 0 0 0 2px var(--_global-color-border-focus);
+          
+          /* State layers */
+          --_button-state-hover: var(--_global-state-layer-hover);
+          --_button-state-pressed: var(--_global-state-layer-pressed);
+          
           display: inline-flex;
           position: relative;
         }
@@ -139,40 +197,40 @@ class MyButton extends HTMLElement {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: var(--_button-gap);
           position: relative;
           
-          min-width: 64px;
-          height: 40px;
-          padding: 0 24px;
+          min-width: var(--_button-min-width);
+          height: var(--_button-height-md);
+          padding: var(--_button-padding-md);
           
-          font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-          font-size: 16px;
-          font-weight: 500;
-          line-height: 1;
+          font-family: var(--_button-font-family);
+          font-size: var(--_button-font-size-md);
+          font-weight: var(--_button-font-weight);
+          line-height: var(--_button-line-height);
           text-align: center;
           white-space: nowrap;
           user-select: none;
           
           border: none;
-          border-radius: 24px;
+          border-radius: var(--_button-border-radius);
           cursor: pointer;
           
-          transition: all 150ms ease;
+          transition: all var(--_button-transition);
           outline: none;
         }
 
         /* Size variants */
         button.size-sm {
-          height: 32px;
-          padding: 0 16px;
-          font-size: 14px;
+          height: var(--_button-height-sm);
+          padding: var(--_button-padding-sm);
+          font-size: var(--_button-font-size-sm);
         }
 
         button.size-lg {
-          height: 48px;
-          padding: 0 32px;
-          font-size: 18px;
+          height: var(--_button-height-lg);
+          padding: var(--_button-padding-lg);
+          font-size: var(--_button-font-size-lg);
         }
 
         /* Density variants */
@@ -182,121 +240,123 @@ class MyButton extends HTMLElement {
         }
 
         button.density-compact.size-sm {
-          height: 24px;
-          padding: 0 12px;
+          height: var(--_global-component-height-sm-compact);
+          padding: 0 var(--_global-spacing-sm);
         }
 
         button.density-compact.size-md {
-          height: 32px;
-          padding: 0 16px;
+          height: var(--_global-component-height-md-compact);
+          padding: 0 var(--_global-spacing-md);
         }
 
         button.density-compact.size-lg {
-          height: 40px;
-          padding: 0 24px;
+          height: var(--_global-component-height-lg-compact);
+          padding: 0 var(--_global-spacing-lg);
         }
 
         /* Filled variant (default) */
         button.variant-filled,
         button.variant-primary {
-          background-color: #007bff;
-          color: #ffffff;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          background-color: var(--_button-primary-bg);
+          color: var(--_button-primary-text);
+          box-shadow: var(--_button-elevation);
         }
 
         button.variant-filled:hover:not(:disabled),
         button.variant-primary:hover:not(:disabled) {
-          background-color: #0056b3;
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+          background-color: var(--_button-primary-bg-hover);
+          box-shadow: var(--_button-elevation-hover);
           transform: translateY(-1px);
         }
 
         /* Secondary variant */
         button.variant-secondary {
-          background-color: #6c757d;
-          color: #ffffff;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          background-color: var(--_button-secondary-bg);
+          color: var(--_button-secondary-text);
+          box-shadow: var(--_button-elevation);
         }
 
         button.variant-secondary:hover:not(:disabled) {
-          background-color: #545b62;
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+          background-color: var(--_button-secondary-bg-hover);
+          box-shadow: var(--_button-elevation-hover);
           transform: translateY(-1px);
         }
 
         /* Outlined variant */
         button.variant-outlined {
           background-color: transparent;
-          color: #007bff;
-          border: 1px solid #dee2e6;
+          color: var(--_button-outlined-text);
+          border: var(--_button-outlined-border);
           box-shadow: none;
         }
 
         button.variant-outlined:hover:not(:disabled) {
-          background-color: #e3f2fd;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          background-color: var(--_button-outlined-bg-hover);
+          box-shadow: var(--_button-elevation);
         }
 
         /* Text variant */
         button.variant-text {
           background-color: transparent;
-          color: #007bff;
+          color: var(--_button-outlined-text);
           box-shadow: none;
           min-width: auto;
         }
 
         button.variant-text:hover:not(:disabled) {
-          background-color: #e3f2fd;
+          background-color: var(--_button-text-bg-hover);
         }
 
         /* Ghost variant (legacy) */
         button.variant-ghost {
           background-color: transparent;
-          color: #007bff;
-          border: 1px solid #007bff;
+          color: var(--_button-outlined-text);
+          border: 1px solid var(--_button-outlined-text);
           box-shadow: none;
         }
 
         button.variant-ghost:hover:not(:disabled) {
-          background-color: #e3f2fd;
+          background-color: var(--_button-text-bg-hover);
         }
 
         /* Success variant */
         button.variant-success {
-          background-color: #28a745;
-          color: #ffffff;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          background-color: var(--_button-success-bg);
+          color: var(--_global-color-white);
+          box-shadow: var(--_button-elevation);
         }
 
         button.variant-success:hover:not(:disabled) {
-          background-color: #218838;
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+          background-color: var(--_global-color-success);
+          filter: brightness(0.9);
+          box-shadow: var(--_button-elevation-hover);
           transform: translateY(-1px);
         }
 
         /* Danger variant */
         button.variant-danger {
-          background-color: #dc3545;
-          color: #ffffff;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          background-color: var(--_button-error-bg);
+          color: var(--_global-color-white);
+          box-shadow: var(--_button-elevation);
         }
 
         button.variant-danger:hover:not(:disabled) {
-          background-color: #c82333;
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+          background-color: var(--_global-color-error);
+          filter: brightness(0.9);
+          box-shadow: var(--_button-elevation-hover);
           transform: translateY(-1px);
         }
 
         /* Focus state */
         button:focus-visible {
-          box-shadow: 0 0 0 2px #80bdff;
+          box-shadow: var(--_button-focus-ring);
           outline: none;
         }
 
         /* Active state */
         button:active:not(:disabled) {
           transform: translateY(0) scale(0.98);
-          transition-duration: 75ms;
+          transition-duration: var(--_button-transition-fast);
         }
 
         /* Disabled state */
