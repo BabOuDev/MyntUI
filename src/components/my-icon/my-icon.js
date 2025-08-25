@@ -21,7 +21,7 @@ class MyIcon extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['icon', 'size', 'color', 'disabled', 'interactive', 'aria-label'];
+    return ['icon', 'size', 'color', 'disabled', 'interactive', 'aria-label', 'variant', 'filled'];
   }
 
   // Handle attribute changes
@@ -90,6 +90,30 @@ class MyIcon extends HTMLElement {
     }
   }
 
+  // Getter for variant
+  get variant() {
+    return this.getAttribute('variant') || 'outlined';
+  }
+
+  // Setter for variant
+  set variant(value) {
+    this.setAttribute('variant', value);
+  }
+
+  // Getter for filled
+  get filled() {
+    return this.hasAttribute('filled');
+  }
+
+  // Setter for filled
+  set filled(value) {
+    if (value) {
+      this.setAttribute('filled', '');
+    } else {
+      this.removeAttribute('filled');
+    }
+  }
+
   // Handle click events for interactive icons
   handleClick(event) {
     if (this.disabled || !this.interactive) {
@@ -146,33 +170,44 @@ class MyIcon extends HTMLElement {
   render() {
     this.shadowRoot.innerHTML = `
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
       <style>
         :host {
           /* Icon-specific variables using global semantic variables */
-          --_icon-color: ${this.color || 'var(--_global-color-text-primary)'};
-          --_icon-size-xs: var(--_global-font-size-xs);
-          --_icon-size-sm: var(--_global-font-size-md);
-          --_icon-size-md: var(--_global-font-size-lg);
-          --_icon-size-lg: var(--_global-font-size-xxl);
-          --_icon-size-xl: var(--_global-font-size-display);
+          --_icon-color: ${this.color || 'var(--_global-color-on-surface)'};
+          --_icon-size-xs: 16px;
+          --_icon-size-sm: 20px;
+          --_icon-size-md: 24px;
+          --_icon-size-lg: 32px;
+          --_icon-size-xl: 48px;
           --_icon-size: var(--_icon-size-${this.size});
           
           --_icon-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
-          --_icon-focus-ring: 2px solid var(--_global-color-border-focus);
+          --_icon-focus-ring: 2px solid var(--_global-color-primary);
           --_icon-focus-offset: 2px;
           --_icon-border-radius: var(--_global-border-radius-sm);
+          --_icon-state-layer-size: calc(var(--_icon-size) + 16px);
+          
+          /* Material Design 3 state layer colors */
+          --_icon-state-layer-color: var(--_global-color-on-surface);
+          --_icon-state-layer-opacity-hover: var(--_global-state-layer-hover);
+          --_icon-state-layer-opacity-pressed: var(--_global-state-layer-pressed);
+          --_icon-state-layer-opacity-focus: var(--_global-state-layer-focus);
           
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: var(--_icon-size);
-          height: var(--_icon-size);
+          min-width: var(--_icon-size);
+          min-height: var(--_icon-size);
           color: var(--_icon-color);
-          transition: color var(--_icon-transition);
+          transition: all var(--_icon-transition);
+          position: relative;
         }
 
-        .material-icons {
-          font-family: 'Material Icons';
+        .material-icons,
+        .material-symbols {
           font-weight: normal;
           font-style: normal;
           font-size: var(--_icon-size);
@@ -189,6 +224,35 @@ class MyIcon extends HTMLElement {
           user-select: none;
         }
 
+        .material-icons {
+          font-family: 'Material Icons';
+        }
+
+        .material-symbols.outlined {
+          font-family: 'Material Symbols Outlined';
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols.filled {
+          font-family: 'Material Symbols Outlined';
+          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols.rounded {
+          font-family: 'Material Symbols Rounded';
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols.sharp {
+          font-family: 'Material Symbols Sharp';
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Filled variants */
+        :host([filled]) .material-symbols {
+          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
         /* Size variants */
         :host([size="xs"]) { --_icon-size: var(--_icon-size-xs); }
         :host([size="sm"]) { --_icon-size: var(--_icon-size-sm); }
@@ -201,17 +265,41 @@ class MyIcon extends HTMLElement {
           cursor: pointer;
           border-radius: var(--_icon-border-radius);
           transition: all var(--_icon-transition);
+          min-width: var(--_icon-state-layer-size);
+          min-height: var(--_icon-state-layer-size);
+          position: relative;
         }
 
-        :host([interactive]:hover) {
-          opacity: 0.8;
-          transform: scale(1.05);
-          background-color: rgba(0, 0, 0, 0.04);
+        /* Material Design 3 State Layer */
+        :host([interactive])::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: var(--_icon-state-layer-size);
+          height: var(--_icon-state-layer-size);
+          border-radius: 50%;
+          background-color: var(--_icon-state-layer-color);
+          opacity: 0;
+          transform: translate(-50%, -50%);
+          transition: opacity var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
+          pointer-events: none;
+          z-index: -1;
         }
 
-        :host([interactive]:active) {
-          transform: scale(0.95);
+        :host([interactive]:hover)::before {
+          opacity: var(--_icon-state-layer-opacity-hover);
+        }
+
+        :host([interactive]:active)::before {
+          opacity: var(--_icon-state-layer-opacity-pressed);
+          transform: translate(-50%, -50%) scale(0.95);
           transition-duration: var(--_global-motion-duration-short1);
+        }
+
+        :host([interactive]:focus)::before,
+        :host([interactive]:focus-visible)::before {
+          opacity: var(--_icon-state-layer-opacity-focus);
         }
 
         /* Focus state for accessibility - only for interactive icons */
@@ -219,8 +307,6 @@ class MyIcon extends HTMLElement {
         :host([interactive]:focus-visible) {
           outline: var(--_icon-focus-ring);
           outline-offset: var(--_icon-focus-offset);
-          border-radius: var(--_icon-border-radius);
-          background-color: rgba(0, 0, 0, 0.08);
         }
 
         /* Make interactive icons focusable */
@@ -264,11 +350,11 @@ class MyIcon extends HTMLElement {
         }
       </style>
       <span 
-        class="material-icons" 
-        role="img" 
+        class="${this.variant === 'symbols' || this.variant === 'outlined' || this.variant === 'rounded' || this.variant === 'sharp' ? `material-symbols ${this.variant}` : 'material-icons'}" 
+        role="${this.interactive ? 'button' : 'img'}" 
         aria-label="${this.getAttribute('aria-label') || this.icon || 'icon'}"
         ${this.disabled ? 'aria-disabled="true"' : ''}
-        ${this.interactive ? 'tabindex="0"' : ''}
+        ${this.interactive && !this.disabled ? 'tabindex="0"' : ''}
       >${this.icon}</span>
     `;
   }
