@@ -182,12 +182,13 @@ class MyIcon extends HTMLElement {
           --_icon-size-md: 24px;
           --_icon-size-lg: 32px;
           --_icon-size-xl: 48px;
+          --_icon-size-xxl: 64px;
           --_icon-size: var(--_icon-size-${this.size});
           
           --_icon-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
           --_icon-focus-ring: 2px solid var(--_global-color-primary);
           --_icon-focus-offset: 2px;
-          --_icon-border-radius: var(--_global-border-radius-sm);
+          --_icon-border-radius: var(--_global-border-radius-full);
           --_icon-state-layer-size: calc(var(--_icon-size) + 16px);
           
           /* Material Design 3 state layer colors */
@@ -195,6 +196,14 @@ class MyIcon extends HTMLElement {
           --_icon-state-layer-opacity-hover: var(--_global-state-layer-hover);
           --_icon-state-layer-opacity-pressed: var(--_global-state-layer-pressed);
           --_icon-state-layer-opacity-focus: var(--_global-state-layer-focus);
+          
+          /* Semantic color variants */
+          --_icon-color-primary: var(--_global-color-primary);
+          --_icon-color-secondary: var(--_global-color-secondary);
+          --_icon-color-success: var(--_global-color-success);
+          --_icon-color-warning: var(--_global-color-warning);
+          --_icon-color-error: var(--_global-color-error);
+          --_icon-color-info: var(--_global-color-info);
           
           display: inline-flex;
           align-items: center;
@@ -204,6 +213,7 @@ class MyIcon extends HTMLElement {
           color: var(--_icon-color);
           transition: all var(--_icon-transition);
           position: relative;
+          box-sizing: border-box;
         }
 
         .material-icons,
@@ -259,6 +269,16 @@ class MyIcon extends HTMLElement {
         :host([size="md"]) { --_icon-size: var(--_icon-size-md); }
         :host([size="lg"]) { --_icon-size: var(--_icon-size-lg); }
         :host([size="xl"]) { --_icon-size: var(--_icon-size-xl); }
+        :host([size="xxl"]) { --_icon-size: var(--_icon-size-xxl); }
+
+        /* Color variants - semantic naming */
+        :host([color="primary"]) { --_icon-color: var(--_icon-color-primary); }
+        :host([color="secondary"]) { --_icon-color: var(--_icon-color-secondary); }
+        :host([color="success"]) { --_icon-color: var(--_icon-color-success); }
+        :host([color="warning"]) { --_icon-color: var(--_icon-color-warning); }
+        :host([color="error"]) { --_icon-color: var(--_icon-color-error); }
+        :host([color="info"]) { --_icon-color: var(--_icon-color-info); }
+        :host([color="muted"]) { --_icon-color: var(--_global-color-on-surface-variant); }
 
         /* Interactive states - only apply to interactive icons */
         :host([interactive]) {
