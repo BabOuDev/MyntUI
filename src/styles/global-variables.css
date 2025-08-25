@@ -101,11 +101,19 @@
   --_global-border-radius-xl: 16px;
   --_global-border-radius-full: 9999px;
 
-  /* Shadow System */
-  --_global-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --_global-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --_global-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --_global-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  /* Shadow System - Material Design Elevation */
+  --_global-elevation-0: none;
+  --_global-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --_global-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  --_global-elevation-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  --_global-elevation-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  --_global-elevation-5: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+  
+  /* Legacy shadow support (deprecated) */
+  --_global-shadow-sm: var(--_global-elevation-1);
+  --_global-shadow-md: var(--_global-elevation-2);
+  --_global-shadow-lg: var(--_global-elevation-3);
+  --_global-shadow-xl: var(--_global-elevation-4);
   --_global-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 
   /* Z-Index System for Layering */
@@ -118,10 +126,30 @@
   --_global-z-index-notification: 600;
   --_global-z-index-overlay-max: 999;
 
-  /* Transition System */
-  --_global-transition-fast: 150ms ease-in-out;
-  --_global-transition-normal: 250ms ease-in-out;
-  --_global-transition-slow: 350ms ease-in-out;
+  /* Transition System - Material Motion */
+  --_global-motion-duration-short1: 75ms;
+  --_global-motion-duration-short2: 150ms;
+  --_global-motion-duration-medium1: 250ms;
+  --_global-motion-duration-medium2: 300ms;
+  --_global-motion-duration-long1: 400ms;
+  --_global-motion-duration-long2: 500ms;
+  
+  --_global-motion-easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --_global-motion-easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --_global-motion-easing-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+  --_global-motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0, 1);
+  
+  /* Legacy transition support */
+  --_global-transition-fast: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+  --_global-transition-normal: var(--_global-motion-duration-medium1) var(--_global-motion-easing-standard);
+  --_global-transition-slow: var(--_global-motion-duration-long1) var(--_global-motion-easing-standard);
+  
+  /* State Layer System */
+  --_global-state-layer-hover: 0.08;
+  --_global-state-layer-focus: 0.12;
+  --_global-state-layer-pressed: 0.16;
+  --_global-state-layer-selected: 0.12;
+  --_global-state-layer-activated: 0.12;
 
   /* Breakpoints (for reference in JS) */
   --_global-breakpoint-sm: 576px;
@@ -136,8 +164,22 @@
   --_global-input-padding-x: 12px;
   --_global-input-padding-y: 8px;
 
-  /* Component Sizing */
-  --_global-component-height-sm: 28px;
-  --_global-component-height-md: 36px;
-  --_global-component-height-lg: 44px;
+  /* Component Sizing - Material Density System */
+  --_global-density-default: 0;
+  --_global-density-comfortable: -1;
+  --_global-density-compact: -2;
+  --_global-density-dense: -3;
+  
+  /* Component Heights per Density */
+  --_global-component-height-sm: 32px;
+  --_global-component-height-md: 40px;
+  --_global-component-height-lg: 48px;
+  
+  --_global-component-height-sm-comfortable: 28px;
+  --_global-component-height-md-comfortable: 36px;
+  --_global-component-height-lg-comfortable: 44px;
+  
+  --_global-component-height-sm-compact: 24px;
+  --_global-component-height-md-compact: 32px;
+  --_global-component-height-lg-compact: 40px;
 }
