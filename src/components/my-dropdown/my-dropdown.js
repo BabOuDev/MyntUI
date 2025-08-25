@@ -1,14 +1,14 @@
 /**
  * MyntUI my-dropdown Component
  * A component that displays a list of options when clicked, typically used for navigation or actions
+ * Enhanced version using MyntUIBaseComponent for improved memory management and consistency
  */
 
-class MyDropdown extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyDropdown extends MyntUIBaseComponent {
   constructor() {
     super();
-    
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
     
     // Internal state
     this._isOpen = false;
@@ -16,34 +16,45 @@ class MyDropdown extends HTMLElement {
     this._selectedValue = null;
     this._selectedIndex = -1;
     
-    // Bind event handlers
+    // Component-specific bindings
     this.handleTriggerClick = this.handleTriggerClick.bind(this);
     this.handleOptionClick = this.handleOptionClick.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleOutsideClick = this.handleOutsideClick.bind(this);
     this.handleTriggerKeyDown = this.handleTriggerKeyDown.bind(this);
     
-    // Initialize component
-    this.render();
-    this.attachEventListeners();
+    // Initialize with base component pattern
+    this.log('Dropdown component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['options', 'disabled', 'position', 'trigger-text', 'value', 'placeholder', 'size', 'error', 'multiple', 'search'];
+    return [
+      ...super.observedAttributes,
+      'options', 'position', 'trigger-text', 'value', 'placeholder', 'multiple', 'search'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      if (name === 'options') {
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'options':
         this.parseOptions();
-      }
-      if (name === 'value') {
+        break;
+      case 'value':
         this.updateSelectedOption();
-      }
-      this.render();
-      this.attachEventListeners();
+        break;
+      case 'disabled':
+        if (this.disabled && this._isOpen) {
+          this.close();
+        }
+        this.announceToScreenReader(
+          `Dropdown ${this.disabled ? 'disabled' : 'enabled'}`,
+          'polite'
+        );
+        break;
     }
   }
 
@@ -194,14 +205,14 @@ class MyDropdown extends HTMLElement {
       this.focusOption(optionToFocus);
     }
     
-    // Add outside click listener
-    document.addEventListener('click', this.handleOutsideClick);
+    // Re-attach event listeners to include document listener
+    this.attachEventListeners();
     
-    // Emit open event
-    this.dispatchEvent(new CustomEvent('open', {
-      detail: { isOpen: true },
-      bubbles: true
-    }));
+    // Use BaseComponent's standardized event emission
+    this.emit('open', { isOpen: true });
+    
+    // Screen reader announcement
+    this.announceToScreenReader('Dropdown menu opened', 'polite');
   }
 
   // Close dropdown
@@ -214,8 +225,8 @@ class MyDropdown extends HTMLElement {
       dropdown.classList.remove('open');
     }
     
-    // Remove outside click listener
-    document.removeEventListener('click', this.handleOutsideClick);
+    // Re-attach event listeners to remove document listener
+    this.attachEventListeners();
     
     // Return focus to trigger
     const trigger = this.shadowRoot.querySelector('.dropdown-trigger');
@@ -223,11 +234,11 @@ class MyDropdown extends HTMLElement {
       trigger.focus();
     }
     
-    // Emit close event
-    this.dispatchEvent(new CustomEvent('close', {
-      detail: { isOpen: false },
-      bubbles: true
-    }));
+    // Use BaseComponent's standardized event emission
+    this.emit('close', { isOpen: false });
+    
+    // Screen reader announcement
+    this.announceToScreenReader('Dropdown menu closed', 'polite');
   }
 
   // Toggle dropdown
@@ -396,53 +407,93 @@ class MyDropdown extends HTMLElement {
       option.action(option);
     }
     
-    // Emit select event
-    this.dispatchEvent(new CustomEvent('select', {
-      detail: {
-        value: this._selectedValue,
-        oldValue: oldValue,
-        option: option,
-        index: index
-      },
-      bubbles: true
-    }));
+    // Use BaseComponent's standardized event emission
+    this.emit('select', {
+      value: this._selectedValue,
+      oldValue: oldValue,
+      option: option,
+      index: index
+    });
   }
 
-  // Attach event listeners
+  // Standardized event listener attachment using BaseComponent patterns
   attachEventListeners() {
-    const trigger = this.shadowRoot.querySelector('.dropdown-trigger');
-    const dropdown = this.shadowRoot.querySelector('.dropdown-menu');
+    // Clean up existing listeners first
+    this.removeEventListeners();
     
+    const listeners = [];
+    
+    // Add trigger listeners
+    const trigger = this.shadowRoot.querySelector('.dropdown-trigger');
     if (trigger) {
-      // Remove existing listeners
-      trigger.removeEventListener('click', this.handleTriggerClick);
-      trigger.removeEventListener('keydown', this.handleTriggerKeyDown);
+      listeners.push({
+        element: trigger,
+        events: ['click'],
+        handler: this.handleTriggerClick
+      });
       
-      // Add new listeners
-      trigger.addEventListener('click', this.handleTriggerClick);
-      trigger.addEventListener('keydown', this.handleTriggerKeyDown);
+      listeners.push({
+        element: trigger,
+        events: ['keydown'],
+        handler: this.handleTriggerKeyDown
+      });
     }
     
+    // Add dropdown menu listeners
+    const dropdown = this.shadowRoot.querySelector('.dropdown-menu');
     if (dropdown) {
-      // Remove existing listeners
-      dropdown.removeEventListener('click', this.handleOptionClick);
-      dropdown.removeEventListener('keydown', this.handleKeyDown);
+      listeners.push({
+        element: dropdown,
+        events: ['click'],
+        handler: this.handleOptionClick
+      });
       
-      // Add new listeners
-      dropdown.addEventListener('click', this.handleOptionClick);
-      dropdown.addEventListener('keydown', this.handleKeyDown);
+      listeners.push({
+        element: dropdown,
+        events: ['keydown'],
+        handler: this.handleKeyDown
+      });
+    }
+    
+    // Add document-level listener when dropdown is open
+    if (this._isOpen) {
+      listeners.push({
+        element: document,
+        events: ['click'],
+        handler: this.handleOutsideClick
+      });
+    }
+    
+    // Use BaseComponent's addEventListeners method for proper cleanup
+    if (listeners.length > 0) {
+      this.addEventListeners(listeners);
     }
   }
 
-  // Connected callback
-  connectedCallback() {
+  // Lifecycle methods using BaseComponent patterns
+  onConnected() {
+    this.log('Dropdown connected to DOM');
     this.parseOptions();
     this.updateSelectedOption();
   }
 
-  // Disconnected callback
+  onDisconnected() {
+    this.log('Dropdown disconnected from DOM');
+    
+    // Close dropdown if open to prevent memory leaks
+    if (this._isOpen) {
+      this._isOpen = false;
+    }
+  }
+
+  // Override connectedCallback to ensure proper initialization
+  connectedCallback() {
+    super.connectedCallback();
+  }
+
+  // Override disconnectedCallback to ensure proper cleanup
   disconnectedCallback() {
-    document.removeEventListener('click', this.handleOutsideClick);
+    super.disconnectedCallback();
   }
 
   // Get display text for selected option
@@ -812,7 +863,5 @@ class MyDropdown extends HTMLElement {
   }
 }
 
-// Register the custom element only if it hasn't been registered already
-if (!customElements.get('my-dropdown')) {
-  customElements.define('my-dropdown', MyDropdown);
-}
+// Register the custom element using BaseComponent's registration helper
+MyDropdown.define('my-dropdown');

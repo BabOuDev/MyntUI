@@ -2,16 +2,16 @@
  * MyntUI my-modal Component
  * A dialog box that appears on top of the page, blocking interaction with main content
  * Follows Material Design 3 principles and is injected into body for proper z-index layering
+ * Enhanced version using MyntUIBaseComponent for improved memory management and consistency
  */
 
-class MyModal extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyModal extends MyntUIBaseComponent {
   constructor() {
     super();
     
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
-    
-    // Bind event handlers
+    // Component-specific bindings
     this.handleBackdropClick = this.handleBackdropClick.bind(this);
     this.handleEscapeKey = this.handleEscapeKey.bind(this);
     this.handleFocusTrap = this.handleFocusTrap.bind(this);
@@ -21,28 +21,34 @@ class MyModal extends HTMLElement {
     // Focus management
     this.previousActiveElement = null;
     
-    // Initialize component
-    this.render();
-    this.attachEventListeners();
+    // Initialize with base component pattern
+    this.log('Modal component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['open', 'title', 'size', 'close-on-backdrop-click', 'close-on-escape'];
+    return [
+      ...super.observedAttributes,
+      'open', 'title', 'close-on-backdrop-click', 'close-on-escape'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      if (name === 'open') {
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'open':
         if (this.open) {
           this.showModal();
         } else {
           this.hideModal();
         }
-      }
-      this.render();
-      this.attachEventListeners();
+        this.announceToScreenReader(
+          `Modal ${this.open ? 'opened' : 'closed'}`,
+          'polite'
+        );
+        break;
     }
   }
 
@@ -133,11 +139,11 @@ class MyModal extends HTMLElement {
       }
     }, 100);
 
-    // Emit open event
-    this.dispatchEvent(new CustomEvent('open', {
-      detail: { title: this.title, size: this.size },
-      bubbles: true
-    }));
+    // Use BaseComponent's standardized event emission
+    this.emit('open', {
+      title: this.title,
+      size: this.size
+    });
   }
 
   hideModal() {
@@ -155,11 +161,11 @@ class MyModal extends HTMLElement {
       document.body.removeChild(this);
     }
 
-    // Emit close event
-    this.dispatchEvent(new CustomEvent('close', {
-      detail: { title: this.title, size: this.size },
-      bubbles: true
-    }));
+    // Use BaseComponent's standardized event emission
+    this.emit('close', {
+      title: this.title,
+      size: this.size
+    });
   }
 
   // Event handlers
@@ -201,46 +207,85 @@ class MyModal extends HTMLElement {
     }
   }
 
-  // Attach event listeners
+  // Standardized event listener attachment using BaseComponent patterns
   attachEventListeners() {
-    // Remove existing listeners
-    document.removeEventListener('keydown', this.handleEscapeKey);
-    document.removeEventListener('keydown', this.handleFocusTrap);
+    // Clean up existing listeners first
+    this.removeEventListeners();
     
-    if (this.open) {
-      document.addEventListener('keydown', this.handleEscapeKey);
-      document.addEventListener('keydown', this.handleFocusTrap);
-    }
-
+    const listeners = [];
+    
+    // Add backdrop click listener
     const backdrop = this.shadowRoot.querySelector('.modal-backdrop');
     if (backdrop) {
-      backdrop.removeEventListener('click', this.handleBackdropClick);
-      backdrop.addEventListener('click', this.handleBackdropClick);
+      listeners.push({
+        element: backdrop,
+        events: ['click'],
+        handler: this.handleBackdropClick
+      });
     }
 
+    // Add close button listener
     const closeButton = this.shadowRoot.querySelector('.modal-close-button');
     if (closeButton) {
-      closeButton.removeEventListener('click', this.hide);
-      closeButton.addEventListener('click', this.hide);
+      listeners.push({
+        element: closeButton,
+        events: ['click'],
+        handler: this.hide
+      });
+    }
+    
+    // Add document-level listeners when modal is open
+    if (this.open) {
+      listeners.push({
+        element: document,
+        events: ['keydown'],
+        handler: this.handleEscapeKey
+      });
+      
+      listeners.push({
+        element: document,
+        events: ['keydown'],
+        handler: this.handleFocusTrap
+      });
+    }
+    
+    // Use BaseComponent's addEventListeners method for proper cleanup
+    if (listeners.length > 0) {
+      this.addEventListeners(listeners);
     }
   }
 
-  // Connected callback
-  connectedCallback() {
+  // Lifecycle methods using BaseComponent patterns
+  onConnected() {
+    this.log('Modal connected to DOM');
     if (this.open) {
       this.showModal();
     }
   }
 
-  // Disconnected callback
-  disconnectedCallback() {
-    document.removeEventListener('keydown', this.handleEscapeKey);
-    document.removeEventListener('keydown', this.handleFocusTrap);
+  onDisconnected() {
+    this.log('Modal disconnected from DOM');
     
     // Restore body scroll if modal is being removed
     if (this.open) {
       document.body.style.overflow = '';
     }
+    
+    // Restore focus if needed
+    if (this.previousActiveElement) {
+      this.previousActiveElement.focus();
+      this.previousActiveElement = null;
+    }
+  }
+
+  // Override connectedCallback to ensure proper initialization
+  connectedCallback() {
+    super.connectedCallback();
+  }
+
+  // Override disconnectedCallback to ensure proper cleanup
+  disconnectedCallback() {
+    super.disconnectedCallback();
   }
 
   // Render the component
@@ -478,7 +523,5 @@ class MyModal extends HTMLElement {
   }
 }
 
-// Register the custom element only if it hasn't been registered already
-if (!customElements.get('my-modal')) {
-  customElements.define('my-modal', MyModal);
-}
+// Register the custom element using BaseComponent's registration helper
+MyModal.define('my-modal');
