@@ -296,13 +296,13 @@ class MyButton extends MyntUIBaseComponent {
           --_button-font-weight: var(--_global-font-weight-medium);
           --_button-line-height: var(--_global-line-height-tight);
           
-          /* Border radius system */
+          /* Border radius system - Material Design 3 standard */
           --_button-border-radius: var(--_global-border-radius-full);
-          --_button-border-radius-fab: var(--_global-border-radius-lg);
+          --_button-border-radius-fab: var(--_global-border-radius-xl);
           --_button-gap: var(--_global-spacing-sm);
           
           /* Enhanced motion system */
-          --_button-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_button-transition: var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
           --_button-transition-fast: var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
           --_button-transition-emphasized: var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
           
@@ -351,8 +351,8 @@ class MyButton extends MyntUIBaseComponent {
           --_button-state-layer-pressed: var(--_global-state-layer-pressed);
           
           /* Focus ring system */
-          --_button-focus-ring: 2px solid var(--_global-color-primary);
-          --_button-focus-ring-offset: 2px;
+          --_button-focus-ring: var(--_global-focus-ring-width) var(--_global-focus-ring-style) var(--_global-focus-ring-color);
+          --_button-focus-ring-offset: var(--_global-focus-ring-offset);
           
           /* Ripple system */
           --_button-ripple-size: calc(var(--_button-state-layer-size) * 1.5);
