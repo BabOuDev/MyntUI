@@ -14,6 +14,8 @@ class MyProgress extends HTMLElement {
     this._value = 0;
     this._max = 100;
     this._min = 0;
+    this._animationId = null;
+    this._previousValue = 0;
     
     // Initialize component
     this.render();
@@ -21,7 +23,7 @@ class MyProgress extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['value', 'max', 'min', 'label', 'variant', 'size', 'indeterminate', 'show-value'];
+    return ['value', 'max', 'min', 'label', 'variant', 'size', 'indeterminate', 'show-value', 'animated', 'tooltip', 'buffer-value'];
   }
 
   // Handle attribute changes
@@ -38,7 +40,14 @@ class MyProgress extends HTMLElement {
 
   set value(value) {
     const numValue = Math.max(this.min, Math.min(this.max, parseFloat(value) || 0));
-    this._value = numValue;
+    
+    if (this.animated && Math.abs(numValue - this._value) > 0.01) {
+      this.animateToValue(numValue);
+    } else {
+      this._value = numValue;
+      this.updateProgressVisuals();
+    }
+    
     this.setAttribute('value', numValue.toString());
   }
 
@@ -112,10 +121,45 @@ class MyProgress extends HTMLElement {
     }
   }
 
+  get animated() {
+    return this.hasAttribute('animated');
+  }
+
+  set animated(value) {
+    if (value) {
+      this.setAttribute('animated', '');
+    } else {
+      this.removeAttribute('animated');
+    }
+  }
+
+  get tooltip() {
+    return this.getAttribute('tooltip') || '';
+  }
+
+  set tooltip(value) {
+    this.setAttribute('tooltip', value);
+  }
+
+  get bufferValue() {
+    return parseFloat(this.getAttribute('buffer-value')) || 0;
+  }
+
+  set bufferValue(value) {
+    this.setAttribute('buffer-value', value);
+  }
+
   // Calculate percentage
   get percentage() {
     if (this.max === this.min) return 0;
     return ((this._value - this.min) / (this.max - this.min)) * 100;
+  }
+  
+  // Calculate buffer percentage
+  get bufferPercentage() {
+    if (this.max === this.min) return 0;
+    const bufferValue = Math.max(this.min, Math.min(this.max, this.bufferValue));
+    return ((bufferValue - this.min) / (this.max - this.min)) * 100;
   }
 
   // Get display value
@@ -141,14 +185,82 @@ class MyProgress extends HTMLElement {
 
   // Standardized lifecycle cleanup - part of MyntUI component pattern
   disconnectedCallback() {
-    // Clean up any running timers or animations if needed
-    // Currently no cleanup needed for progress component, but following pattern
+    if (this._animationId) {
+      cancelAnimationFrame(this._animationId);
+      this._animationId = null;
+    }
+  }
+
+  // Animate value change
+  animateToValue(targetValue) {
+    if (this._animationId) {
+      cancelAnimationFrame(this._animationId);
+    }
+    
+    const startValue = this._value;
+    const startTime = performance.now();
+    const duration = 600; // ms
+    
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Ease-out cubic animation
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      
+      this._value = startValue + (targetValue - startValue) * easedProgress;
+      this.updateProgressVisuals();
+      
+      if (progress < 1) {
+        this._animationId = requestAnimationFrame(animate);
+      } else {
+        this._value = targetValue;
+        this._animationId = null;
+      }
+    };
+    
+    this._animationId = requestAnimationFrame(animate);
+  }
+
+  // Update progress visuals without full re-render
+  updateProgressVisuals() {
+    const progressFill = this.shadowRoot.querySelector('.progress-fill');
+    const circularProgress = this.shadowRoot.querySelector('.circular-progress');
+    const progressValue = this.shadowRoot.querySelector('.progress-value');
+    const circularText = this.shadowRoot.querySelector('.circular-text');
+    
+    if (progressFill && !this.indeterminate) {
+      progressFill.style.width = this.percentage + '%';
+    }
+    
+    if (circularProgress && !this.indeterminate) {
+      const circumference = 163.36;
+      const offset = circumference - (circumference * this.percentage) / 100;
+      circularProgress.style.strokeDashoffset = offset.toString();
+    }
+    
+    if (progressValue) {
+      progressValue.textContent = this.getDisplayValue();
+    }
+    
+    if (circularText) {
+      circularText.textContent = this.getDisplayValue();
+    }
   }
 
   // Public method to programmatically update progress
   updateProgress(newValue, emitEvent = true) {
     const oldValue = this._value;
-    this.value = newValue;
+    const targetValue = Math.max(this.min, Math.min(this.max, parseFloat(newValue) || 0));
+    
+    if (this.animated && Math.abs(targetValue - this._value) > 0.01) {
+      this.animateToValue(targetValue);
+    } else {
+      this._value = targetValue;
+      this.updateProgressVisuals();
+    }
+    
+    this.setAttribute('value', targetValue.toString());
     
     if (emitEvent && oldValue !== this._value) {
       // Emit progress update event for external listeners
@@ -163,8 +275,6 @@ class MyProgress extends HTMLElement {
         bubbles: true
       }));
     }
-    
-    this.render();
   }
 
   // Render the component
@@ -180,6 +290,9 @@ class MyProgress extends HTMLElement {
           --_progress-border-radius: var(--_global-border-radius-full);
           --_progress-track-bg: var(--_global-color-surface-container-highest);
           --_progress-track-border: 1px solid var(--_global-color-outline-variant);
+          --_progress-buffer-opacity: 0.3;
+          --_progress-tooltip-bg: var(--_global-color-inverse-surface);
+          --_progress-tooltip-text: var(--_global-color-inverse-on-surface);
           
           /* Variant colors - Material Design 3 semantic colors */
           --_progress-primary: var(--_global-color-primary);
@@ -240,6 +353,19 @@ class MyProgress extends HTMLElement {
           border-radius: var(--_progress-border-radius);
           overflow: hidden;
           box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+          cursor: pointer;
+        }
+        
+        .progress-buffer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          background-color: var(--_progress-primary);
+          opacity: var(--_progress-buffer-opacity);
+          border-radius: var(--_progress-border-radius);
+          transition: var(--_progress-transition);
+          width: ${this.bufferPercentage}%;
         }
 
         .progress-fill {
@@ -266,7 +392,7 @@ class MyProgress extends HTMLElement {
             rgba(255, 255, 255, 0.4),
             transparent
           );
-          animation: progress-shine 2s infinite;
+          animation: progress-shine 3s infinite;
         }
         
         @keyframes progress-shine {
@@ -277,6 +403,40 @@ class MyProgress extends HTMLElement {
           100% {
             left: 100%;
           }
+        }
+        
+        /* Tooltip styles */
+        .progress-tooltip {
+          position: absolute;
+          top: -40px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: var(--_progress-tooltip-bg);
+          color: var(--_progress-tooltip-text);
+          padding: var(--_global-spacing-xs) var(--_global-spacing-sm);
+          border-radius: var(--_global-border-radius-md);
+          font-size: var(--_global-font-size-xs);
+          font-weight: var(--_global-font-weight-medium);
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          z-index: 10;
+          box-shadow: var(--_global-elevation-2);
+        }
+        
+        .progress-tooltip::after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border: 4px solid transparent;
+          border-top-color: var(--_progress-tooltip-bg);
+        }
+        
+        .progress-track:hover .progress-tooltip {
+          opacity: 1;
         }
 
         /* Indeterminate animation */
@@ -519,9 +679,43 @@ class MyProgress extends HTMLElement {
           box-sizing: border-box;
         }
         
-        /* Better container states */
+        /* Enhanced hover and interaction states */
+        :host(:hover) {
+          --_progress-track-bg: var(--_global-color-surface-container);
+        }
+        
         :host(:hover) .progress-fill {
-          filter: brightness(1.05);
+          filter: brightness(1.08) saturate(1.1);
+          transform: scaleY(1.1);
+        }
+        
+        :host(:hover) .progress-buffer {
+          opacity: calc(var(--_progress-buffer-opacity) + 0.1);
+        }
+        
+        /* Focus states for accessibility */
+        .progress-track:focus {
+          outline: 2px solid var(--_global-color-primary);
+          outline-offset: 2px;
+        }
+        
+        .progress-track:focus-visible {
+          outline: 2px solid var(--_global-color-primary);
+          outline-offset: 2px;
+        }
+        
+        /* Enhanced animation states */
+        :host([animated]) .progress-fill {
+          animation: progress-pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes progress-pulse {
+          0% {
+            filter: brightness(1) saturate(1);
+          }
+          100% {
+            filter: brightness(1.05) saturate(1.05);
+          }
         }
         
         /* Enhanced circular progress with better centering */
@@ -545,7 +739,10 @@ class MyProgress extends HTMLElement {
              aria-valuemax="${this.max}"
              ${this.label ? `aria-label="${this.label}"` : ''}
              ${this.indeterminate ? 'aria-describedby="indeterminate-progress"' : ''}
+             ${this.tooltip ? `title="${this.tooltip}"` : ''}
         >
+          ${this.bufferValue > 0 ? `<div class="progress-buffer"></div>` : ''}
+          ${this.tooltip ? `<div class="progress-tooltip">${this.tooltip}</div>` : ''}
           ${this.getAttribute('type') === 'circular' ? `
             <svg class="circular-svg" viewBox="0 0 60 60">
               <circle class="circular-bg" cx="30" cy="30" r="26"></circle>

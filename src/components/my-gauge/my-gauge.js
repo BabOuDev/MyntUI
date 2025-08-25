@@ -22,7 +22,7 @@ class MyGauge extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['value', 'min', 'max', 'label', 'unit', 'size', 'variant', 'show-value', 'animated', 'thresholds'];
+    return ['value', 'min', 'max', 'label', 'unit', 'size', 'variant', 'show-value', 'animated', 'thresholds', 'tooltip', 'gradient'];
   }
 
   // Handle attribute changes
@@ -145,6 +145,26 @@ class MyGauge extends HTMLElement {
     this.setAttribute('thresholds', JSON.stringify(value || []));
   }
 
+  get tooltip() {
+    return this.getAttribute('tooltip') || '';
+  }
+
+  set tooltip(value) {
+    this.setAttribute('tooltip', value);
+  }
+
+  get gradient() {
+    return this.hasAttribute('gradient');
+  }
+
+  set gradient(value) {
+    if (value) {
+      this.setAttribute('gradient', '');
+    } else {
+      this.removeAttribute('gradient');
+    }
+  }
+
   // Calculate percentage
   get percentage() {
     if (this.max === this.min) return 0;
@@ -226,9 +246,11 @@ class MyGauge extends HTMLElement {
     const needle = this.shadowRoot.querySelector('.gauge-needle');
     const fill = this.shadowRoot.querySelector('.gauge-fill');
     const valueDisplay = this.shadowRoot.querySelector('.gauge-value');
+    const bufferFill = this.shadowRoot.querySelector('.gauge-buffer');
     
     if (needle) {
       needle.style.transform = `rotate(${this.angle}deg)`;
+      needle.style.filter = `drop-shadow(0 2px 4px ${this.getColor()}40)`;
     }
     
     if (fill) {
@@ -237,12 +259,19 @@ class MyGauge extends HTMLElement {
       const circumference = Math.PI * 40; // radius = 40
       const offset = circumference - (circumference * percentage) / 100;
       fill.style.strokeDashoffset = offset.toString();
-      fill.style.stroke = this.getColor();
+      fill.style.stroke = this.gradient ? 'url(#gaugeGradient)' : this.getColor();
     }
     
     if (valueDisplay) {
-      valueDisplay.textContent = `${Math.round(this._value)}${this.unit}`;
+      valueDisplay.textContent = `${this.formatValue(this._value)}${this.unit}`;
       valueDisplay.style.color = this.getColor();
+    }
+    
+    // Add subtle glow effect to the gauge
+    const gaugeContainer = this.shadowRoot.querySelector('.gauge-container');
+    if (gaugeContainer) {
+      const intensity = this.percentage / 100;
+      gaugeContainer.style.boxShadow = `0 4px 20px ${this.getColor()}${Math.round(intensity * 30).toString(16).padStart(2, '0')}, var(--_gauge-shadow)`;
     }
   }
 
@@ -295,8 +324,10 @@ class MyGauge extends HTMLElement {
           --_gauge-label-color: var(--_global-color-on-surface-variant);
           --_gauge-range-color: var(--_global-color-on-surface-variant);
           --_gauge-needle-color: var(--_global-color-on-surface);
-          --_gauge-shadow: var(--_global-elevation-1);
+          --_gauge-shadow: var(--_global-elevation-2);
           --_gauge-transition: all var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized);
+          --_gauge-tooltip-bg: var(--_global-color-inverse-surface);
+          --_gauge-tooltip-text: var(--_global-color-inverse-on-surface);
           
           display: inline-block;
           width: var(--_gauge-size);
@@ -307,6 +338,9 @@ class MyGauge extends HTMLElement {
           box-shadow: var(--_gauge-shadow);
           padding: var(--_global-spacing-md);
           box-sizing: border-box;
+          position: relative;
+          transition: var(--_gauge-transition);
+          cursor: pointer;
         }
 
         .gauge-container {
@@ -334,7 +368,7 @@ class MyGauge extends HTMLElement {
 
         .gauge-fill {
           fill: none;
-          stroke: ${color};
+          stroke: ${this.gradient ? 'url(#gaugeGradient)' : color};
           stroke-width: var(--_gauge-stroke-width);
           stroke-linecap: round;
           stroke-dasharray: ${circumference};
@@ -342,12 +376,7 @@ class MyGauge extends HTMLElement {
           transition: var(--_gauge-transition);
           transform: rotate(-180deg);
           transform-origin: center;
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-        }
-        
-        /* Gradient fill for more modern look */
-        .gauge-fill {
-          stroke: url(#gaugeGradient);
+          filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
         }
 
         .gauge-center {
@@ -362,7 +391,7 @@ class MyGauge extends HTMLElement {
           transform-origin: 50px 50px;
           transform: rotate(${this.angle}deg);
           transition: var(--_gauge-transition);
-          filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
         }
 
         .gauge-content {
@@ -486,6 +515,55 @@ class MyGauge extends HTMLElement {
         }
 
         /* Responsive adjustments */
+        /* Enhanced hover effects */
+        :host(:hover) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), var(--_gauge-shadow);
+        }
+        
+        :host(:hover) .gauge-needle {
+          filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+        }
+        
+        :host(:hover) .gauge-fill {
+          stroke-width: calc(var(--_gauge-stroke-width) + 1px);
+          filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.2)) brightness(1.05);
+        }
+        
+        /* Tooltip styles */
+        .gauge-tooltip {
+          position: absolute;
+          top: -45px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: var(--_gauge-tooltip-bg);
+          color: var(--_gauge-tooltip-text);
+          padding: var(--_global-spacing-xs) var(--_global-spacing-sm);
+          border-radius: var(--_global-border-radius-md);
+          font-size: var(--_global-font-size-xs);
+          font-weight: var(--_global-font-weight-medium);
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          z-index: 10;
+          box-shadow: var(--_global-elevation-2);
+        }
+        
+        .gauge-tooltip::after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border: 4px solid transparent;
+          border-top-color: var(--_gauge-tooltip-bg);
+        }
+        
+        :host(:hover) .gauge-tooltip {
+          opacity: 1;
+        }
+        
         @media (max-width: 480px) {
           :host {
             --_gauge-size: var(--_gauge-size-sm);
@@ -500,7 +578,9 @@ class MyGauge extends HTMLElement {
            aria-valuemax="${this.max}"
            aria-label="${this.label || 'gauge'} - ${this.formatValue(this._value)}${this.unit}"
            ${this.getCurrentThreshold() ? `aria-describedby="threshold-${this.getCurrentThreshold().label || 'current'}"` : ''}
+           ${this.tooltip ? `title="${this.tooltip}"` : ''}
       >
+        ${this.tooltip ? `<div class="gauge-tooltip">${this.tooltip}</div>` : ''}
         <svg class="gauge-svg" viewBox="0 0 100 60" aria-hidden="true">
           <defs>
             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">

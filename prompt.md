@@ -1,4 +1,11 @@
-Your job is update, enhance quality and consistency, and test the repository. Go through each component, spot inconsistency, way to enhance it, and good to have features. use the CONTRIBUTING.md file to know a bit more what needs to be done. Make the library look beautiful, a mix between material design, tailwind, and bulma. Keep it simple, sharp, and consistent. Follow guidelines from the CONTRIBUTING.md file.
+Design: Consistency is Key
+UX: Smooth, Neat and Accessible
+Code: Keep It Stupid Simple
+
+
+
+Your job is update, enhance quality and consistency, and test the repository. Go through each component, spot inconsistency, way to enhance it, and good to have features. use the CONTRIBUTING.md file to know a bit more what needs to be done. Make the library look beautiful. 
+Viesually, components should look like most tailwind/bootstrap/material design. Keep it simple, sharp, and consistent. Follow guidelines from the CONTRIBUTING.md file.
 
 If necessary, add/update README files for each component. You can also add/update storybook to showcase components.
 
