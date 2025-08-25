@@ -143,23 +143,33 @@ class MyProgress extends HTMLElement {
         :host {
           /* Component-specific variables using global variables */
           --_progress-height-sm: 4px;
-          --_progress-height-md: 8px;
-          --_progress-height-lg: 12px;
+          --_progress-height-md: 6px;
+          --_progress-height-lg: 8px;
           --_progress-height: var(--_progress-height-md);
           --_progress-border-radius: var(--_global-border-radius-full);
-          --_progress-bg: var(--_global-color-surface-container-high);
-          --_progress-track-color: var(--_global-color-outline-variant);
+          --_progress-track-bg: var(--_global-color-surface-container-highest);
+          --_progress-track-border: 1px solid var(--_global-color-outline-variant);
           
-          /* Variant colors */
+          /* Variant colors - Material Design 3 semantic colors */
           --_progress-primary: var(--_global-color-primary);
+          --_progress-primary-container: var(--_global-color-primary-container);
           --_progress-secondary: var(--_global-color-secondary);
+          --_progress-secondary-container: var(--_global-color-secondary-container);
           --_progress-success: var(--_global-color-success);
+          --_progress-success-container: var(--_global-color-success-container);
           --_progress-warning: var(--_global-color-warning);
+          --_progress-warning-container: var(--_global-color-warning-container);
           --_progress-error: var(--_global-color-error);
+          --_progress-error-container: var(--_global-color-error-container);
           --_progress-info: var(--_global-color-info);
+          --_progress-info-container: var(--_global-color-info-container);
+          
+          /* Transition and animation */
+          --_progress-transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
           
           display: block;
           width: 100%;
+          font-family: var(--_global-font-family-sans);
         }
 
         .progress-container {
@@ -178,52 +188,89 @@ class MyProgress extends HTMLElement {
         .progress-label {
           font-size: var(--_global-font-size-sm);
           font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-text-primary);
+          color: var(--_global-color-on-surface);
           line-height: var(--_global-line-height-tight);
         }
 
         .progress-value {
           font-size: var(--_global-font-size-sm);
           font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-text-secondary);
+          color: var(--_global-color-on-surface-variant);
           line-height: var(--_global-line-height-tight);
+          font-variant-numeric: tabular-nums;
         }
 
         .progress-track {
           position: relative;
           width: 100%;
           height: var(--_progress-height);
-          background-color: var(--_progress-track-color);
+          background-color: var(--_progress-track-bg);
+          border: var(--_progress-track-border);
           border-radius: var(--_progress-border-radius);
           overflow: hidden;
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .progress-fill {
           height: 100%;
           background-color: var(--_progress-primary);
           border-radius: var(--_progress-border-radius);
-          transition: width var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
+          transition: var(--_progress-transition);
           width: ${this.indeterminate ? '100%' : this.percentage + '%'};
+          position: relative;
+          overflow: hidden;
+        }
+        
+        /* Add subtle gradient and shine effect */
+        .progress-fill::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent
+          );
+          animation: progress-shine 2s infinite;
+        }
+        
+        @keyframes progress-shine {
+          0% {
+            left: -100%;
+          }
+          50%,
+          100% {
+            left: 100%;
+          }
         }
 
         /* Indeterminate animation */
         .progress-fill.indeterminate {
-          animation: progress-indeterminate 2s infinite;
+          animation: progress-indeterminate 2s infinite var(--_global-motion-easing-standard);
           background: linear-gradient(
             90deg, 
             transparent 0%,
-            var(--_progress-primary) 50%, 
+            var(--_progress-primary) 25%,
+            var(--_progress-primary) 75%, 
             transparent 100%
           );
-          width: 50%;
+          width: 40%;
+        }
+        
+        .progress-fill.indeterminate::before {
+          display: none;
         }
 
         @keyframes progress-indeterminate {
           0% { 
-            transform: translateX(-100%);
+            transform: translateX(-150%);
           }
           100% { 
-            transform: translateX(300%);
+            transform: translateX(400%);
           }
         }
 
@@ -311,12 +358,14 @@ class MyProgress extends HTMLElement {
 
         /* Circular progress variant */
         :host([type="circular"]) .progress-track {
-          height: 48px;
+          height: 56px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           background: none;
+          border: none;
+          box-shadow: none;
           position: relative;
         }
 
@@ -325,25 +374,48 @@ class MyProgress extends HTMLElement {
         }
 
         .circular-svg {
-          width: 48px;
-          height: 48px;
+          width: 56px;
+          height: 56px;
           transform: rotate(-90deg);
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .circular-bg {
           fill: none;
-          stroke: var(--_progress-track-color);
-          stroke-width: 4;
+          stroke: var(--_progress-track-bg);
+          stroke-width: 6;
+          opacity: 0.3;
         }
 
         .circular-progress {
           fill: none;
           stroke: var(--_progress-primary);
-          stroke-width: 4;
+          stroke-width: 6;
           stroke-linecap: round;
-          stroke-dasharray: 150.796;
-          stroke-dashoffset: ${150.796 - (150.796 * this.percentage) / 100};
-          transition: stroke-dashoffset var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
+          stroke-dasharray: 163.36;
+          stroke-dashoffset: ${163.36 - (163.36 * this.percentage) / 100};
+          transition: stroke-dashoffset var(--_progress-transition);
+        }
+        
+        /* Circular indeterminate animation */
+        .circular-progress.indeterminate {
+          stroke-dasharray: 40.84;
+          animation: circular-rotate 2s linear infinite;
+        }
+        
+        @keyframes circular-rotate {
+          0% {
+            stroke-dashoffset: 163.36;
+            transform: rotate(0deg);
+          }
+          50% {
+            stroke-dashoffset: 40.84;
+            transform: rotate(450deg);
+          }
+          100% {
+            stroke-dashoffset: 163.36;
+            transform: rotate(1080deg);
+          }
         }
 
         .circular-text {
@@ -352,8 +424,28 @@ class MyProgress extends HTMLElement {
           left: 50%;
           transform: translate(-50%, -50%);
           font-size: var(--_global-font-size-xs);
-          font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-text-primary);
+          font-weight: var(--_global-font-weight-semibold);
+          color: var(--_global-color-on-surface);
+          font-variant-numeric: tabular-nums;
+        }
+        
+        /* Circular size variants */
+        :host([type="circular"][size="sm"]) .progress-track {
+          height: 40px;
+        }
+        
+        :host([type="circular"][size="sm"]) .circular-svg {
+          width: 40px;
+          height: 40px;
+        }
+        
+        :host([type="circular"][size="lg"]) .progress-track {
+          height: 72px;
+        }
+        
+        :host([type="circular"][size="lg"]) .circular-svg {
+          width: 72px;
+          height: 72px;
         }
       </style>
 
@@ -373,10 +465,9 @@ class MyProgress extends HTMLElement {
              ${this.indeterminate ? 'aria-describedby="indeterminate-progress"' : ''}
         >
           ${this.getAttribute('type') === 'circular' ? `
-            <svg class="circular-svg" viewBox="0 0 52 52">
-              <circle class="circular-bg" cx="26" cy="26" r="24"></circle>
-              <circle class="circular-progress" cx="26" cy="26" r="24"
-                      ${this.indeterminate ? 'style="animation: circular-indeterminate 2s linear infinite"' : ''}></circle>
+            <svg class="circular-svg" viewBox="0 0 60 60">
+              <circle class="circular-bg" cx="30" cy="30" r="26"></circle>
+              <circle class="circular-progress ${this.indeterminate ? 'indeterminate' : ''}" cx="30" cy="30" r="26"></circle>
             </svg>
             ${this.showValue ? `<span class="circular-text">${this.getDisplayValue()}</span>` : ''}
           ` : `
