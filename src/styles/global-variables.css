@@ -64,6 +64,26 @@
   --_global-color-secondary-90: #E8DEF8;
   --_global-color-secondary-95: #F6EDFF;
 
+  /* Tertiary colors - Complete Material Design 3 spec */
+  --_global-color-tertiary: #7D5260;
+  --_global-color-tertiary-hover: #8E6372;
+  --_global-color-tertiary-active: #6C4354;
+  --_global-color-tertiary-container: #FFD8E4;
+  --_global-color-on-tertiary: #FFFFFF;
+  --_global-color-on-tertiary-container: #31111D;
+  
+  /* Tertiary variants */
+  --_global-color-tertiary-10: #31111D;
+  --_global-color-tertiary-20: #492532;
+  --_global-color-tertiary-30: #633B48;
+  --_global-color-tertiary-40: #7D5260;
+  --_global-color-tertiary-50: #986879;
+  --_global-color-tertiary-60: #B58392;
+  --_global-color-tertiary-70: #D29DAC;
+  --_global-color-tertiary-80: #F0B8C7;
+  --_global-color-tertiary-90: #FFD8E4;
+  --_global-color-tertiary-95: #FFECF1;
+
   /* Status colors - Material Design 3 style */
   --_global-color-success: #2e7d32;
   --_global-color-success-light: #e8f5e8;
@@ -376,6 +396,11 @@
   --_global-focus-ring: var(--_global-focus-ring-width) var(--_global-focus-ring-style) var(--_global-focus-ring-color);
   --_global-focus-ring-shadow: 0 0 0 var(--_global-focus-ring-width) color-mix(in srgb, var(--_global-color-primary) 20%, transparent);
   
+  /* Multi-layer focus system for premium look */
+  --_global-focus-ring-primary: 2px solid color-mix(in srgb, var(--_global-color-primary) 60%, transparent);
+  --_global-focus-ring-secondary: 4px solid color-mix(in srgb, var(--_global-color-primary) 20%, transparent);
+  --_global-focus-glow: 0 0 0 8px color-mix(in srgb, var(--_global-color-primary) 12%, transparent);
+  
   /* Enhanced interaction feedback with better visual consistency */
   --_global-interaction-feedback-duration: 200ms;
   --_global-interaction-feedback-easing: var(--_global-motion-easing-standard);
@@ -389,4 +414,26 @@
   --_global-component-gap-lg: var(--_global-spacing-md);
   --_global-component-transition: all var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
   --_global-component-shadow-focus: var(--_global-elevation-1), var(--_global-focus-ring-shadow);
+  
+  /* Enhanced button system variables for consistency */
+  --_global-button-min-width: 64px;
+  --_global-button-padding-xs: 0 var(--_global-spacing-sm);
+  --_global-button-padding-sm: 0 var(--_global-spacing-md);
+  --_global-button-padding-md: 0 var(--_global-spacing-lg);
+  --_global-button-padding-lg: 0 var(--_global-spacing-xl);
+  
+  /* Enhanced state layer system for all components */
+  --_global-state-layer-color-light: rgba(255, 255, 255, 0.12);
+  --_global-state-layer-color-dark: rgba(0, 0, 0, 0.08);
+  --_global-state-layer-color-primary: color-mix(in srgb, var(--_global-color-primary) 12%, transparent);
+  --_global-state-layer-color-secondary: color-mix(in srgb, var(--_global-color-secondary) 12%, transparent);
+  --_global-state-layer-color-tertiary: color-mix(in srgb, var(--_global-color-tertiary) 12%, transparent);
+  --_global-state-layer-color-error: color-mix(in srgb, var(--_global-color-error) 12%, transparent);
+  --_global-state-layer-color-success: color-mix(in srgb, var(--_global-color-success) 12%, transparent);
+  
+  /* Advanced spring physics for consistent animations */
+  --_global-spring-quick: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --_global-spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --_global-spring-snappy: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --_global-spring-smooth: cubic-bezier(0.23, 1, 0.32, 1);
 }
