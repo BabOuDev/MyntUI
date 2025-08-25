@@ -13,6 +13,7 @@ class MyCheckbox extends HTMLElement {
     // Bind event handlers
     this.handleClick = this.handleClick.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.createRipple = this.createRipple.bind(this);
     
     // Initialize component
     this.render();
@@ -21,7 +22,7 @@ class MyCheckbox extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['checked', 'indeterminate', 'disabled', 'label', 'name', 'value'];
+    return ['checked', 'indeterminate', 'disabled', 'label', 'name', 'value', 'size', 'error'];
   }
 
   // Handle attribute changes
@@ -95,6 +96,26 @@ class MyCheckbox extends HTMLElement {
     this.setAttribute('value', value);
   }
 
+  get size() {
+    return this.getAttribute('size') || 'md';
+  }
+
+  set size(value) {
+    this.setAttribute('size', value);
+  }
+
+  get error() {
+    return this.hasAttribute('error');
+  }
+
+  set error(value) {
+    if (value) {
+      this.setAttribute('error', '');
+    } else {
+      this.removeAttribute('error');
+    }
+  }
+
   // Event handlers
   handleClick(event) {
     if (this.disabled) {
@@ -102,6 +123,7 @@ class MyCheckbox extends HTMLElement {
       return;
     }
 
+    this.createRipple(event);
     this.toggle();
   }
 
@@ -110,8 +132,52 @@ class MyCheckbox extends HTMLElement {
 
     if (event.key === ' ') {
       event.preventDefault();
+      this.createRipple();
       this.toggle();
     }
+  }
+
+  // Create ripple effect for Material Design 3
+  createRipple(event) {
+    const container = this.shadowRoot.querySelector('.checkbox-container');
+    if (!container || this.disabled) return;
+
+    // Remove existing ripples
+    const existingRipples = container.querySelectorAll('.ripple');
+    existingRipples.forEach(ripple => ripple.remove());
+
+    // Create ripple element
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+
+    // Calculate ripple position and size
+    const rect = container.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const radius = size / 2;
+
+    let x, y;
+    if (event && event.clientX !== undefined) {
+      // Mouse click - position ripple at click point
+      x = event.clientX - rect.left - radius;
+      y = event.clientY - rect.top - radius;
+    } else {
+      // Keyboard activation - center ripple
+      x = rect.width / 2 - radius;
+      y = rect.height / 2 - radius;
+    }
+
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+
+    container.appendChild(ripple);
+
+    // Remove ripple after animation
+    setTimeout(() => {
+      if (ripple.parentNode) {
+        ripple.parentNode.removeChild(ripple);
+      }
+    }, 600);
   }
 
   // Toggle the checked state
@@ -198,6 +264,7 @@ class MyCheckbox extends HTMLElement {
           padding: calc((var(--_checkbox-state-layer-size) - var(--_checkbox-size)) / 2);
           margin: calc((var(--_checkbox-state-layer-size) - var(--_checkbox-size)) / -2);
           border-radius: 50%;
+          overflow: hidden;
         }
         
         /* State layer for Material Design 3 */
@@ -301,6 +368,32 @@ class MyCheckbox extends HTMLElement {
           border-color: var(--_global-color-on-surface);
         }
 
+        /* Ripple effect styles */
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple-animation var(--_global-ripple-duration) var(--_global-ripple-easing);
+          background-color: currentColor;
+          opacity: var(--_global-ripple-opacity-pressed);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        @keyframes ripple-animation {
+          0% {
+            transform: scale(0);
+            opacity: var(--_global-ripple-opacity-pressed);
+          }
+          50% {
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.5);
+          }
+          100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+
         /* Size variants */
         :host([size="sm"]) {
           --_checkbox-size: 16px;
@@ -310,6 +403,23 @@ class MyCheckbox extends HTMLElement {
         :host([size="lg"]) {
           --_checkbox-size: 24px;
           --_checkbox-state-layer-size: 48px;
+        }
+
+        /* Error state */
+        :host([error]) {
+          --_checkbox-color: var(--_global-color-error);
+          --_checkbox-border: 2px solid var(--_global-color-error);
+          --_checkbox-background-checked: var(--_global-color-error);
+        }
+
+        :host([error]) .checkbox-input.checked,
+        :host([error]) .checkbox-input.indeterminate {
+          background-color: var(--_global-color-error);
+          border-color: var(--_global-color-error);
+        }
+
+        :host([error]) .label {
+          color: var(--_global-color-error);
         }
 
         /* Disabled state */
