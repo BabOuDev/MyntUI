@@ -1,91 +1,65 @@
 /**
  * MyntUI my-button Component
  * A Material Design 3 button component with enhanced state layers, accessibility, and consistency
+ * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
  */
 
-class MyButton extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyButton extends MyntUIBaseComponent {
   constructor() {
     super();
     
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
-    
-    // Bind event handlers
+    // Component-specific bindings (base class handles common ones)
     this.handleClick = this.handleClick.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
-    this.createRipple = this.createRipple.bind(this);
     
-    // Initialize component
-    this.render();
-    this.attachEventListeners();
+    // Initialize with base component pattern
+    this.log('Button component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['label', 'variant', 'disabled', 'loading', 'size', 'density', 'fab', 'icon-only', 'elevated', 'filled-tonal'];
+    return [
+      ...super.observedAttributes,
+      'label', 'density', 'fab', 'icon-only', 'elevated', 'filled-tonal'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.render();
-      this.attachEventListeners();
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'disabled':
+      case 'loading':
+        this.announceToScreenReader(
+          `Button ${name} ${newValue !== null ? 'enabled' : 'disabled'}`,
+          'polite'
+        );
+        break;
+      case 'label':
+        this.announceToScreenReader(
+          `Button label changed to ${newValue}`,
+          'polite'
+        );
+        break;
     }
   }
 
-  // Getters and setters for properties
+  // Enhanced getters and setters with validation (inherits common ones from base)
   get label() {
     return this.getAttribute('label') || '';
   }
 
   set label(value) {
-    this.setAttribute('label', value);
-  }
-
-  get variant() {
-    return this.getAttribute('variant') || 'filled';
-  }
-
-  set variant(value) {
-    this.setAttribute('variant', value);
-  }
-
-  get disabled() {
-    return this.hasAttribute('disabled');
-  }
-
-  set disabled(value) {
-    if (value) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
+    if (this.validateAttribute('label', value, (v) => typeof v === 'string')) {
+      this.setAttribute('label', value);
+      this.log('Label changed:', value);
     }
-  }
-
-  get loading() {
-    return this.hasAttribute('loading');
-  }
-
-  set loading(value) {
-    if (value) {
-      this.setAttribute('loading', '');
-    } else {
-      this.removeAttribute('loading');
-    }
-  }
-
-  get size() {
-    return this.getAttribute('size') || 'md';
-  }
-
-  set size(value) {
-    this.setAttribute('size', value);
   }
 
   get density() {
@@ -93,7 +67,10 @@ class MyButton extends HTMLElement {
   }
 
   set density(value) {
-    this.setAttribute('density', value);
+    const validDensities = ['default', 'compact', 'comfortable'];
+    if (this.validateAttribute('density', value, validDensities)) {
+      this.setAttribute('density', value);
+    }
   }
 
   get fab() {
@@ -101,11 +78,7 @@ class MyButton extends HTMLElement {
   }
 
   set fab(value) {
-    if (value) {
-      this.setAttribute('fab', '');
-    } else {
-      this.removeAttribute('fab');
-    }
+    this.toggleAttribute('fab', Boolean(value));
   }
 
   get iconOnly() {
@@ -113,11 +86,7 @@ class MyButton extends HTMLElement {
   }
 
   set iconOnly(value) {
-    if (value) {
-      this.setAttribute('icon-only', '');
-    } else {
-      this.removeAttribute('icon-only');
-    }
+    this.toggleAttribute('icon-only', Boolean(value));
   }
 
   get elevated() {
@@ -125,11 +94,7 @@ class MyButton extends HTMLElement {
   }
 
   set elevated(value) {
-    if (value) {
-      this.setAttribute('elevated', '');
-    } else {
-      this.removeAttribute('elevated');
-    }
+    this.toggleAttribute('elevated', Boolean(value));
   }
 
   get filledTonal() {
@@ -137,11 +102,7 @@ class MyButton extends HTMLElement {
   }
 
   set filledTonal(value) {
-    if (value) {
-      this.setAttribute('filled-tonal', '');
-    } else {
-      this.removeAttribute('filled-tonal');
-    }
+    this.toggleAttribute('filled-tonal', Boolean(value));
   }
 
   // Handle click events
@@ -152,30 +113,28 @@ class MyButton extends HTMLElement {
       return;
     }
 
-    // Create ripple effect
+    // Create ripple effect using base component method
     this.createRipple(event);
 
-    // Emit custom click event
-    this.dispatchEvent(new CustomEvent('click', {
-      detail: {
-        variant: this.variant,
-        label: this.label,
-        size: this.size,
-        density: this.density
-      },
-      bubbles: true,
-      cancelable: true
-    }));
+    // Emit click event using base component method
+    this.emit('click', {
+      variant: this.variant,
+      label: this.label,
+      size: this.size,
+      density: this.density
+    });
   }
 
-  // Handle keyboard events
+  // Handle keyboard events (extends base class)
   handleKeyDown(event) {
+    super.handleKeyDown(event); // Handle common key patterns
+    
     if (this.disabled || this.loading) {
       event.preventDefault();
       return;
     }
 
-    // Handle Enter and Space keys
+    // Handle Enter and Space keys for button activation
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       
@@ -187,8 +146,9 @@ class MyButton extends HTMLElement {
     }
   }
 
-  // Handle focus events
-  handleFocus(event) {
+  // Override base focus/blur handling for button-specific behavior
+  handleFocus() {
+    super.handleFocus(); // Call base class behavior
     if (this.disabled || this.loading) return;
     
     const button = this.shadowRoot.querySelector('button');
@@ -197,8 +157,8 @@ class MyButton extends HTMLElement {
     }
   }
 
-  // Handle blur events  
-  handleBlur(event) {
+  handleBlur() {
+    super.handleBlur(); // Call base class behavior
     const button = this.shadowRoot.querySelector('button');
     if (button) {
       button.classList.remove('focused', 'hovered', 'pressed');
@@ -241,93 +201,57 @@ class MyButton extends HTMLElement {
     }
   }
 
-  // Create ripple effect
-  createRipple(event) {
-    const button = this.shadowRoot.querySelector('button');
-    if (!button || this.disabled || this.loading) return;
 
-    // Remove existing ripples
-    const existingRipples = button.querySelectorAll('.ripple');
-    existingRipples.forEach(ripple => ripple.remove());
-
-    // Create ripple element
-    const ripple = document.createElement('span');
-    ripple.classList.add('ripple');
-
-    // Calculate ripple position and size
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const radius = size / 2;
-
-    let x, y;
-    if (event && event.clientX !== undefined) {
-      // Mouse click - position ripple at click point
-      x = event.clientX - rect.left - radius;
-      y = event.clientY - rect.top - radius;
-    } else {
-      // Keyboard activation - center ripple
-      x = rect.width / 2 - radius;
-      y = rect.height / 2 - radius;
-    }
-
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-
-    button.appendChild(ripple);
-
-    // Remove ripple after animation
-    setTimeout(() => {
-      if (ripple.parentNode) {
-        ripple.parentNode.removeChild(ripple);
-      }
-    }, 600);
-  }
-
-  // Attach event listeners - Enhanced for Material Design 3 state management
+  // Attach event listeners using base component pattern
   attachEventListeners() {
-    // Clean up existing listeners first
-    this.removeEventListeners();
+    this.removeEventListeners(); // Clean up existing listeners
     
     const button = this.shadowRoot.querySelector('button');
     if (!button) return;
     
-    // Attach all event listeners for enhanced state management
-    button.addEventListener('click', this.handleClick);
-    button.addEventListener('keydown', this.handleKeyDown);
-    button.addEventListener('focus', this.handleFocus);
-    button.addEventListener('blur', this.handleBlur);
-    button.addEventListener('mouseenter', this.handleMouseEnter);
-    button.addEventListener('mouseleave', this.handleMouseLeave);
-    button.addEventListener('mousedown', this.handleMouseDown);
-    button.addEventListener('mouseup', this.handleMouseUp);
-    
-    // Store references for cleanup
-    this._eventTargets = [
-      { element: button, events: ['click', 'keydown', 'focus', 'blur', 'mouseenter', 'mouseleave', 'mousedown', 'mouseup'] }
-    ];
-  }
-
-  // Remove event listeners - Enhanced cleanup pattern
-  removeEventListeners() {
-    if (this._eventTargets) {
-      this._eventTargets.forEach(target => {
-        target.element.removeEventListener('click', this.handleClick);
-        target.element.removeEventListener('keydown', this.handleKeyDown);
-        target.element.removeEventListener('focus', this.handleFocus);
-        target.element.removeEventListener('blur', this.handleBlur);
-        target.element.removeEventListener('mouseenter', this.handleMouseEnter);
-        target.element.removeEventListener('mouseleave', this.handleMouseLeave);
-        target.element.removeEventListener('mousedown', this.handleMouseDown);
-        target.element.removeEventListener('mouseup', this.handleMouseUp);
-      });
-      this._eventTargets = null;
-    }
-  }
-
-  // Cleanup on disconnect - part of standardized lifecycle
-  disconnectedCallback() {
-    this.removeEventListeners();
+    // Use base component's standardized event listener management
+    this.addEventListeners([
+      {
+        element: button,
+        events: ['click'],
+        handler: this.handleClick
+      },
+      {
+        element: button,
+        events: ['keydown'],
+        handler: this.handleKeyDown
+      },
+      {
+        element: button,
+        events: ['focus'],
+        handler: this.handleFocus
+      },
+      {
+        element: button,
+        events: ['blur'],
+        handler: this.handleBlur
+      },
+      {
+        element: button,
+        events: ['mouseenter'],
+        handler: this.handleMouseEnter
+      },
+      {
+        element: button,
+        events: ['mouseleave'],
+        handler: this.handleMouseLeave
+      },
+      {
+        element: button,
+        events: ['mousedown'],
+        handler: this.handleMouseDown
+      },
+      {
+        element: button,
+        events: ['mouseup'],
+        handler: this.handleMouseUp
+      }
+    ]);
   }
 
   // Render the component
