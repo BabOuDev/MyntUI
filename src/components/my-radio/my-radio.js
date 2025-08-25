@@ -1,61 +1,59 @@
 /**
  * MyntUI my-radio Component  
  * Individual radio button component that works with my-radio-group
+ * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
  */
 
-class MyRadio extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyRadio extends MyntUIBaseComponent {
   constructor() {
     super();
     
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
-    
-    // Bind event handlers
+    // Component-specific bindings
     this.handleClick = this.handleClick.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.createRipple = this.createRipple.bind(this);
+    this.select = this.select.bind(this);
     
-    // Initialize component
-    this.render();
-    this.attachEventListeners();
+    // Initialize with base component pattern
+    this.log('Radio component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['checked', 'disabled', 'label', 'name', 'value', 'size', 'error'];
+    return [
+      ...super.observedAttributes,
+      'checked', 'label', 'name', 'value'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.render();
-      this.attachEventListeners();
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'checked':
+        this.announceToScreenReader(
+          `Radio ${this.checked ? 'selected' : 'unselected'}`,
+          'polite'
+        );
+        break;
+      case 'disabled':
+        this.announceToScreenReader(
+          `Radio ${this.disabled ? 'disabled' : 'enabled'}`,
+          'polite'
+        );
+        break;
     }
   }
 
-  // Getters and setters
+  // Component-specific getters and setters (inherits common ones from BaseComponent)
   get checked() {
     return this.hasAttribute('checked');
   }
 
   set checked(value) {
-    if (value) {
-      this.setAttribute('checked', '');
-    } else {
-      this.removeAttribute('checked');
-    }
-  }
-
-  get disabled() {
-    return this.hasAttribute('disabled');
-  }
-
-  set disabled(value) {
-    if (value) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
-    }
+    this.toggleAttribute('checked', Boolean(value));
   }
 
   get label() {
@@ -82,104 +80,45 @@ class MyRadio extends HTMLElement {
     this.setAttribute('value', value);
   }
 
-  get size() {
-    return this.getAttribute('size') || 'md';
-  }
-
-  set size(value) {
-    this.setAttribute('size', value);
-  }
-
-  get error() {
-    return this.hasAttribute('error');
-  }
-
-  set error(value) {
-    if (value) {
-      this.setAttribute('error', '');
-    } else {
-      this.removeAttribute('error');
-    }
-  }
-
-  // Event handlers
+  // Component-specific event handlers
   handleClick(event) {
-    if (this.disabled) {
+    if (this.disabled || this.loading) {
       event.preventDefault();
       return;
     }
 
-    this.createRipple(event);
+    // Use BaseComponent's standardized ripple
+    const container = this.shadowRoot.querySelector('.radio-container');
+    this.createRipple(event, container);
     this.select();
   }
 
   handleKeyDown(event) {
-    if (this.disabled) return;
+    // Call parent handler first for common patterns
+    super.handleKeyDown(event);
+    
+    if (this.disabled || this.loading) return;
 
     if (event.key === ' ') {
       event.preventDefault();
-      this.createRipple();
+      const container = this.shadowRoot.querySelector('.radio-container');
+      this.createRipple(null, container);
       this.select();
     }
   }
 
-  // Create ripple effect for Material Design 3
-  createRipple(event) {
-    const container = this.shadowRoot.querySelector('.radio-container');
-    if (!container || this.disabled) return;
-
-    // Remove existing ripples
-    const existingRipples = container.querySelectorAll('.ripple');
-    existingRipples.forEach(ripple => ripple.remove());
-
-    // Create ripple element
-    const ripple = document.createElement('span');
-    ripple.classList.add('ripple');
-
-    // Calculate ripple position and size
-    const rect = container.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const radius = size / 2;
-
-    let x, y;
-    if (event && event.clientX !== undefined) {
-      // Mouse click - position ripple at click point
-      x = event.clientX - rect.left - radius;
-      y = event.clientY - rect.top - radius;
-    } else {
-      // Keyboard activation - center ripple
-      x = rect.width / 2 - radius;
-      y = rect.height / 2 - radius;
-    }
-
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-
-    container.appendChild(ripple);
-
-    // Remove ripple after animation
-    setTimeout(() => {
-      if (ripple.parentNode) {
-        ripple.parentNode.removeChild(ripple);
-      }
-    }, 600);
-  }
 
   // Select this radio
   select() {
     if (!this.checked) {
       this.checked = true;
       
-      // Emit change event that the radio group will handle
-      this.dispatchEvent(new CustomEvent('change', {
-        detail: {
-          checked: true,
-          value: this.value,
-          name: this.name
-        },
-        bubbles: true
-      }));
+      // Use BaseComponent's standardized event emission
+      this.emit('change', {
+        checked: true,
+        value: this.value,
+        name: this.name
+      });
     }
   }
 
@@ -191,18 +130,39 @@ class MyRadio extends HTMLElement {
     }
   }
 
-  // Attach event listeners
+  // Standardized event listener attachment using BaseComponent patterns
   attachEventListeners() {
+    // Clean up existing listeners first
+    this.removeEventListeners();
+    
     const radioContainer = this.shadowRoot.querySelector('.radio-container');
-    if (radioContainer) {
-      // Remove existing listeners
-      radioContainer.removeEventListener('click', this.handleClick);
-      radioContainer.removeEventListener('keydown', this.handleKeyDown);
-      
-      // Add new listeners
-      radioContainer.addEventListener('click', this.handleClick);
-      radioContainer.addEventListener('keydown', this.handleKeyDown);
-    }
+    if (!radioContainer) return;
+    
+    // Use BaseComponent's addEventListeners method
+    this.addEventListeners([
+      {
+        element: radioContainer,
+        events: ['click', 'keydown'],
+        handler: (event) => {
+          if (event.type === 'click') {
+            this.handleClick(event);
+          } else if (event.type === 'keydown') {
+            this.handleKeyDown(event);
+          }
+        }
+      }
+    ]);
+  }
+
+  // Lifecycle methods using BaseComponent patterns
+  onConnected() {
+    this.log('Radio connected to DOM');
+    // Any additional connection logic can go here
+  }
+
+  onDisconnected() {
+    this.log('Radio disconnected from DOM');
+    // Any additional disconnection logic can go here
   }
 
   // Render the component
@@ -416,13 +376,13 @@ class MyRadio extends HTMLElement {
           transition: var(--_radio-transition-fast);
         }
 
-        /* Enhanced ripple effect styles */
+        /* Enhanced ripple effect styles - using BaseComponent standardized ripple */
         .ripple {
           position: absolute;
           border-radius: 50%;
           transform: scale(0);
-          animation: ripple-animation var(--_radio-ripple-duration) var(--_radio-ripple-easing);
-          background-color: var(--_radio-state-layer-unchecked);
+          animation: ripple-animation var(--_global-ripple-duration) var(--_global-ripple-easing);
+          background-color: var(--_global-ripple-color-light);
           opacity: var(--_global-ripple-opacity-pressed);
           pointer-events: none;
           z-index: 1;
@@ -628,7 +588,5 @@ class MyRadio extends HTMLElement {
   }
 }
 
-// Register the custom element only if it hasn't been registered already
-if (!customElements.get('my-radio')) {
-  customElements.define('my-radio', MyRadio);
-}
+// Register the custom element using BaseComponent's registration helper
+MyRadio.define('my-radio');
