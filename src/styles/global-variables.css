@@ -1,0 +1,143 @@
+/**
+ * MyntUI Global Design System Variables
+ * Two-level variable system: Global semantic variables used by component-specific variables
+ */
+
+:root {
+  /* Spacing System */
+  --_global-spacing-xs: 4px;
+  --_global-spacing-sm: 8px;
+  --_global-spacing-md: 16px;
+  --_global-spacing-lg: 24px;
+  --_global-spacing-xl: 32px;
+  --_global-spacing-xxl: 48px;
+
+  /* Color System */
+  /* Primary colors */
+  --_global-color-primary: #007bff;
+  --_global-color-primary-hover: #0056b3;
+  --_global-color-primary-active: #004085;
+  --_global-color-primary-light: #b3d4ff;
+  --_global-color-primary-dark: #003d7a;
+
+  /* Secondary colors */
+  --_global-color-secondary: #6c757d;
+  --_global-color-secondary-hover: #545b62;
+  --_global-color-secondary-active: #495057;
+  --_global-color-secondary-light: #e2e3e5;
+  --_global-color-secondary-dark: #383d41;
+
+  /* Status colors */
+  --_global-color-success: #28a745;
+  --_global-color-success-light: #d4edda;
+  --_global-color-warning: #ffc107;
+  --_global-color-warning-light: #fff3cd;
+  --_global-color-error: #dc3545;
+  --_global-color-error-light: #f8d7da;
+  --_global-color-info: #17a2b8;
+  --_global-color-info-light: #d1ecf1;
+
+  /* Neutral colors */
+  --_global-color-white: #ffffff;
+  --_global-color-black: #000000;
+  --_global-color-gray-100: #f8f9fa;
+  --_global-color-gray-200: #e9ecef;
+  --_global-color-gray-300: #dee2e6;
+  --_global-color-gray-400: #ced4da;
+  --_global-color-gray-500: #adb5bd;
+  --_global-color-gray-600: #6c757d;
+  --_global-color-gray-700: #495057;
+  --_global-color-gray-800: #343a40;
+  --_global-color-gray-900: #212529;
+
+  /* Text colors */
+  --_global-color-text-primary: #212529;
+  --_global-color-text-secondary: #6c757d;
+  --_global-color-text-muted: #868e96;
+  --_global-color-text-light: #ffffff;
+  --_global-color-text-dark: #212529;
+
+  /* Background colors */
+  --_global-color-background-light: #f8f9fa;
+  --_global-color-background-white: #ffffff;
+  --_global-color-background-dark: #343a40;
+  --_global-color-background-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Border colors */
+  --_global-color-border: #dee2e6;
+  --_global-color-border-focus: #80bdff;
+  --_global-color-border-error: #dc3545;
+
+  /* Typography System */
+  --_global-font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --_global-font-family-mono: "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+
+  /* Font sizes */
+  --_global-font-size-xs: 12px;
+  --_global-font-size-sm: 14px;
+  --_global-font-size-md: 16px;
+  --_global-font-size-lg: 18px;
+  --_global-font-size-xl: 20px;
+  --_global-font-size-xxl: 24px;
+  --_global-font-size-display: 32px;
+
+  /* Font weights */
+  --_global-font-weight-light: 300;
+  --_global-font-weight-normal: 400;
+  --_global-font-weight-medium: 500;
+  --_global-font-weight-semibold: 600;
+  --_global-font-weight-bold: 700;
+
+  /* Line heights */
+  --_global-line-height-tight: 1.2;
+  --_global-line-height-normal: 1.5;
+  --_global-line-height-relaxed: 1.75;
+
+  /* Border Radius System */
+  --_global-border-radius-none: 0;
+  --_global-border-radius-sm: 4px;
+  --_global-border-radius-md: 8px;
+  --_global-border-radius-lg: 12px;
+  --_global-border-radius-xl: 16px;
+  --_global-border-radius-full: 9999px;
+
+  /* Shadow System */
+  --_global-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --_global-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --_global-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --_global-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --_global-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Z-Index System for Layering */
+  --_global-z-index-base: 1;
+  --_global-z-index-dropdown: 100;
+  --_global-z-index-sticky-header: 200;
+  --_global-z-index-tooltip: 300;
+  --_global-z-index-drawer: 400;
+  --_global-z-index-modal: 500;
+  --_global-z-index-notification: 600;
+  --_global-z-index-overlay-max: 999;
+
+  /* Transition System */
+  --_global-transition-fast: 150ms ease-in-out;
+  --_global-transition-normal: 250ms ease-in-out;
+  --_global-transition-slow: 350ms ease-in-out;
+
+  /* Breakpoints (for reference in JS) */
+  --_global-breakpoint-sm: 576px;
+  --_global-breakpoint-md: 768px;
+  --_global-breakpoint-lg: 992px;
+  --_global-breakpoint-xl: 1200px;
+
+  /* Form Elements */
+  --_global-input-height: 40px;
+  --_global-input-height-sm: 32px;
+  --_global-input-height-lg: 48px;
+  --_global-input-padding-x: 12px;
+  --_global-input-padding-y: 8px;
+
+  /* Component Sizing */
+  --_global-component-height-sm: 28px;
+  --_global-component-height-md: 36px;
+  --_global-component-height-lg: 44px;
+}

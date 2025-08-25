@@ -1,0 +1,115 @@
+/**
+ * MyntUI Utility Classes
+ * Common helper classes for consistent styling across components
+ */
+
+/* Spacing utilities */
+.u-margin-none { margin: 0; }
+.u-margin-xs { margin: var(--_global-spacing-xs); }
+.u-margin-sm { margin: var(--_global-spacing-sm); }
+.u-margin-md { margin: var(--_global-spacing-md); }
+.u-margin-lg { margin: var(--_global-spacing-lg); }
+
+.u-padding-none { padding: 0; }
+.u-padding-xs { padding: var(--_global-spacing-xs); }
+.u-padding-sm { padding: var(--_global-spacing-sm); }
+.u-padding-md { padding: var(--_global-spacing-md); }
+.u-padding-lg { padding: var(--_global-spacing-lg); }
+
+/* Text utilities */
+.u-text-left { text-align: left; }
+.u-text-center { text-align: center; }
+.u-text-right { text-align: right; }
+
+.u-text-primary { color: var(--_global-color-text-primary); }
+.u-text-secondary { color: var(--_global-color-text-secondary); }
+.u-text-muted { color: var(--_global-color-text-muted); }
+.u-text-success { color: var(--_global-color-success); }
+.u-text-warning { color: var(--_global-color-warning); }
+.u-text-error { color: var(--_global-color-error); }
+
+.u-font-weight-light { font-weight: var(--_global-font-weight-light); }
+.u-font-weight-normal { font-weight: var(--_global-font-weight-normal); }
+.u-font-weight-medium { font-weight: var(--_global-font-weight-medium); }
+.u-font-weight-semibold { font-weight: var(--_global-font-weight-semibold); }
+.u-font-weight-bold { font-weight: var(--_global-font-weight-bold); }
+
+.u-font-size-xs { font-size: var(--_global-font-size-xs); }
+.u-font-size-sm { font-size: var(--_global-font-size-sm); }
+.u-font-size-md { font-size: var(--_global-font-size-md); }
+.u-font-size-lg { font-size: var(--_global-font-size-lg); }
+.u-font-size-xl { font-size: var(--_global-font-size-xl); }
+
+/* Display utilities */
+.u-display-block { display: block; }
+.u-display-inline { display: inline; }
+.u-display-inline-block { display: inline-block; }
+.u-display-flex { display: flex; }
+.u-display-grid { display: grid; }
+.u-display-none { display: none; }
+
+/* Flex utilities */
+.u-flex-row { flex-direction: row; }
+.u-flex-column { flex-direction: column; }
+.u-flex-wrap { flex-wrap: wrap; }
+.u-flex-nowrap { flex-wrap: nowrap; }
+
+.u-justify-start { justify-content: flex-start; }
+.u-justify-center { justify-content: center; }
+.u-justify-end { justify-content: flex-end; }
+.u-justify-between { justify-content: space-between; }
+.u-justify-around { justify-content: space-around; }
+
+.u-align-start { align-items: flex-start; }
+.u-align-center { align-items: center; }
+.u-align-end { align-items: flex-end; }
+.u-align-stretch { align-items: stretch; }
+
+/* Position utilities */
+.u-position-relative { position: relative; }
+.u-position-absolute { position: absolute; }
+.u-position-fixed { position: fixed; }
+.u-position-sticky { position: sticky; }
+
+/* Border utilities */
+.u-border-none { border: none; }
+.u-border { border: 1px solid var(--_global-color-border); }
+.u-border-radius-none { border-radius: var(--_global-border-radius-none); }
+.u-border-radius-sm { border-radius: var(--_global-border-radius-sm); }
+.u-border-radius-md { border-radius: var(--_global-border-radius-md); }
+.u-border-radius-lg { border-radius: var(--_global-border-radius-lg); }
+.u-border-radius-full { border-radius: var(--_global-border-radius-full); }
+
+/* Shadow utilities */
+.u-shadow-none { box-shadow: none; }
+.u-shadow-sm { box-shadow: var(--_global-shadow-sm); }
+.u-shadow-md { box-shadow: var(--_global-shadow-md); }
+.u-shadow-lg { box-shadow: var(--_global-shadow-lg); }
+
+/* State utilities */
+.u-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.u-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Interactive utilities */
+.u-cursor-pointer { cursor: pointer; }
+.u-cursor-default { cursor: default; }
+.u-cursor-not-allowed { cursor: not-allowed; }
+
+.u-transition-fast { transition: all var(--_global-transition-fast); }
+.u-transition-normal { transition: all var(--_global-transition-normal); }
+.u-transition-slow { transition: all var(--_global-transition-slow); }

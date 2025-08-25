@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyntUI - Component Library Testing</title>
+    <link rel="stylesheet" href="../src/styles/base.css">
+    <link rel="stylesheet" href="../src/styles/utilities.css">
+    <style>
+        body {
+            padding: var(--_global-spacing-lg);
+            background-color: var(--_global-color-background-light);
+        }
+        
+        .demo-section {
+            background: var(--_global-color-white);
+            border-radius: var(--_global-border-radius-lg);
+            padding: var(--_global-spacing-lg);
+            margin-bottom: var(--_global-spacing-lg);
+            box-shadow: var(--_global-shadow-sm);
+        }
+        
+        .demo-title {
+            font-size: var(--_global-font-size-xl);
+            font-weight: var(--_global-font-weight-semibold);
+            margin-bottom: var(--_global-spacing-md);
+            color: var(--_global-color-text-primary);
+            border-bottom: 1px solid var(--_global-color-border);
+            padding-bottom: var(--_global-spacing-sm);
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--_global-spacing-md);
+        }
+        
+        .demo-item {
+            padding: var(--_global-spacing-md);
+            border: 1px solid var(--_global-color-border);
+            border-radius: var(--_global-border-radius-md);
+            background: var(--_global-color-background-white);
+        }
+        
+        .demo-label {
+            display: block;
+            font-size: var(--_global-font-size-sm);
+            color: var(--_global-color-text-secondary);
+            margin-bottom: var(--_global-spacing-xs);
+            font-weight: var(--_global-font-weight-medium);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: var(--_global-spacing-xxl);
+        }
+        
+        .header h1 {
+            font-size: var(--_global-font-size-display);
+            font-weight: var(--_global-font-weight-bold);
+            margin: 0 0 var(--_global-spacing-sm) 0;
+            color: var(--_global-color-primary);
+        }
+        
+        .header p {
+            font-size: var(--_global-font-size-lg);
+            color: var(--_global-color-text-secondary);
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MyntUI Component Library</h1>
+        <p>Testing and development environment for all components</p>
+    </div>
+
+    <!-- Basic Components -->
+    <section class="demo-section">
+        <h2 class="demo-title">Basic Components</h2>
+        <div class="demo-grid">
+            <div class="demo-item">
+                <span class="demo-label">Icons - Various Sizes</span>
+                <my-icon icon="home" size="xs"></my-icon>
+                <my-icon icon="settings" size="sm"></my-icon>
+                <my-icon icon="favorite" size="md"></my-icon>
+                <my-icon icon="star" size="lg"></my-icon>
+                <my-icon icon="face" size="xl"></my-icon>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Icons - Different Colors</span>
+                <my-icon icon="home" color="#007bff"></my-icon>
+                <my-icon icon="settings" color="#28a745"></my-icon>
+                <my-icon icon="favorite" color="#dc3545"></my-icon>
+                <my-icon icon="star" color="#ffc107"></my-icon>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Button Variants</span>
+                <my-button label="Primary" variant="primary"></my-button>
+                <my-button label="Secondary" variant="secondary"></my-button>
+                <my-button label="Ghost" variant="ghost"></my-button>
+                <my-button label="Danger" variant="danger"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Button States</span>
+                <my-button label="Normal" variant="primary"></my-button>
+                <my-button label="Disabled" variant="primary" disabled></my-button>
+                <my-button label="Loading" variant="primary" loading></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Button Sizes</span>
+                <my-button label="Small" variant="primary" size="sm"></my-button>
+                <my-button label="Medium" variant="primary" size="md"></my-button>
+                <my-button label="Large" variant="primary" size="lg"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Buttons with Icons</span>
+                <my-button variant="primary">
+                    <my-icon icon="home"></my-icon>
+                    Home
+                </my-button>
+                <my-button variant="secondary">
+                    <my-icon icon="settings"></my-icon>
+                    Settings
+                </my-button>
+                <my-button variant="ghost">
+                    Save
+                    <my-icon icon="save"></my-icon>
+                </my-button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form Components -->
+    <section class="demo-section">
+        <h2 class="demo-title">Form Components</h2>
+        <div class="demo-grid">
+            <div class="demo-item">
+                <span class="demo-label">Text Inputs</span>
+                <my-input label="First Name" name="firstName" type="text" placeholder="Enter your first name" required minlength="2"></my-input>
+                <my-input label="Password" name="password" type="password" placeholder="Enter password" required minlength="8"></my-input>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Email & URL</span>
+                <my-input label="Email Address" name="email" type="email" required>
+                    <my-icon slot="left" icon="mail"></my-icon>
+                </my-input>
+                <my-input label="Website" name="website" type="url" placeholder="https://example.com"></my-input>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Numbers & Dates</span>
+                <my-input label="Age" name="age" type="number" min="0" max="120" placeholder="Enter your age"></my-input>
+                <my-input label="Birth Date" name="birthDate" type="date"></my-input>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Textarea & Select</span>
+                <my-input label="Comments" name="comments" type="textarea" placeholder="Enter your comments"></my-input>
+                <my-input 
+                    label="Country" 
+                    name="country" 
+                    type="select" 
+                    schema='{"options": [{"label": "United States", "value": "US"}, {"label": "Canada", "value": "CA"}, {"label": "Mexico", "value": "MX"}]}'
+                ></my-input>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Label Positions</span>
+                <my-input label="Label Top" name="labelTop" type="text" label-position="top"></my-input>
+                <my-input label="Label Left" name="labelLeft" type="text" label-position="left"></my-input>
+                <my-input label="Label Over" name="labelOver" type="text" label-position="over" placeholder="Type here..."></my-input>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">With Slots</span>
+                <my-input label="Price" name="price" type="number" placeholder="0.00">
+                    <span slot="left">$</span>
+                    <span slot="right">.00</span>
+                </my-input>
+                <my-input label="Search" name="search" type="text" placeholder="Search...">
+                    <my-icon slot="left" icon="search"></my-icon>
+                    <my-icon slot="right" icon="clear"></my-icon>
+                </my-input>
+            </div>
+        </div>
+    </section>
+
+    <!-- Boolean Input Components -->
+    <section class="demo-section">
+        <h2 class="demo-title">Boolean Input Components</h2>
+        <div class="demo-grid">
+            <div class="demo-item">
+                <span class="demo-label">Toggles</span>
+                <my-toggle label="Enable notifications"></my-toggle>
+                <my-toggle label="Dark mode" checked></my-toggle>
+                <my-toggle label="Disabled toggle" disabled></my-toggle>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Checkboxes</span>
+                <my-checkbox label="Accept terms"></my-checkbox>
+                <my-checkbox label="Subscribe to newsletter" checked></my-checkbox>
+                <my-checkbox label="Indeterminate state" indeterminate></my-checkbox>
+                <my-checkbox label="Disabled checkbox" disabled></my-checkbox>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Radio Groups</span>
+                <my-radio-group name="size" label="Choose size:">
+                    <my-radio value="small" label="Small"></my-radio>
+                    <my-radio value="medium" label="Medium"></my-radio>
+                    <my-radio value="large" label="Large"></my-radio>
+                </my-radio-group>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Horizontal Radio Group</span>
+                <my-radio-group name="color" label="Choose color:" layout="horizontal">
+                    <my-radio value="red" label="Red"></my-radio>
+                    <my-radio value="green" label="Green"></my-radio>
+                    <my-radio value="blue" label="Blue" checked></my-radio>
+                </my-radio-group>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Components -->
+    <section class="demo-section">
+        <h2 class="demo-title">Interactive Components</h2>
+        <div class="demo-grid">
+            <div class="demo-item">
+                <span class="demo-label">Tooltip Positions</span>
+                <div style="display: flex; gap: var(--_global-spacing-md); flex-wrap: wrap;">
+                    <my-tooltip text="Tooltip on top" position="top">
+                        <my-button label="Top"></my-button>
+                    </my-tooltip>
+                    <my-tooltip text="Tooltip on bottom" position="bottom">
+                        <my-button label="Bottom"></my-button>
+                    </my-tooltip>
+                    <my-tooltip text="Tooltip on left" position="left">
+                        <my-button label="Left"></my-button>
+                    </my-tooltip>
+                    <my-tooltip text="Tooltip on right" position="right">
+                        <my-button label="Right"></my-button>
+                    </my-tooltip>
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Auto Positioning</span>
+                <my-tooltip text="This tooltip will auto-position based on available space" position="auto">
+                    <my-button label="Auto Position"></my-button>
+                </my-tooltip>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Tooltips on Icons</span>
+                <div style="display: flex; gap: var(--_global-spacing-md);">
+                    <my-tooltip text="Home page">
+                        <my-icon icon="home" size="lg"></my-icon>
+                    </my-tooltip>
+                    <my-tooltip text="Settings">
+                        <my-icon icon="settings" size="lg"></my-icon>
+                    </my-tooltip>
+                    <my-tooltip text="Help and support">
+                        <my-icon icon="help" size="lg"></my-icon>
+                    </my-tooltip>
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Rich Content Tooltip</span>
+                <my-tooltip size="large">
+                    <my-button label="Rich Tooltip"></my-button>
+                    <div slot="content">
+                        <strong>Rich Content</strong><br>
+                        This tooltip can contain HTML content<br>
+                        <em>like emphasis and line breaks</em>
+                    </div>
+                </my-tooltip>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Dropdown (Coming Soon)</span>
+                <p style="color: var(--_global-color-text-muted);">Will be implemented next</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Visualization -->
+    <section class="demo-section">
+        <h2 class="demo-title">Data Visualization (Coming Soon)</h2>
+        <div class="demo-grid">
+            <div class="demo-item">
+                <span class="demo-label">Progress, Gauge, Sparkline</span>
+                <p style="color: var(--_global-color-text-muted);">These components will be implemented after the core components are complete.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Load all components -->
+    <script type="module">
+        // Import implemented components
+        import '../src/components/my-icon/my-icon.js';
+        import '../src/components/my-button/my-button.js';
+        import '../src/components/my-input/my-input.js';
+        import '../src/components/my-toggle/my-toggle.js';
+        import '../src/components/my-checkbox/my-checkbox.js';
+        import '../src/components/my-radio-group/my-radio-group.js';
+        import '../src/components/my-tooltip/my-tooltip.js';
+        
+        console.log('MyntUI Test Environment Loaded');
+        
+        // Event listeners for testing
+        document.addEventListener('change', (e) => {
+            if (e.target.tagName.toLowerCase().startsWith('my-')) {
+                console.log('Component changed:', e.target.tagName, e.detail);
+            }
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase().startsWith('my-')) {
+                console.log('Component clicked:', e.target.tagName, e.detail);
+            }
+        });
+    </script>
+</body>
+</html>

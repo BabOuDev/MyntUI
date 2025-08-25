@@ -1,0 +1,86 @@
+/**
+ * MyntUI Base Styles
+ * Provides consistent foundation for all components
+ */
+
+/* Import global design system variables */
+@import './global-variables.css';
+
+/* Import Material Icons for my-icon component */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* CSS Reset and Base Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Base document styles */
+html {
+  font-size: var(--_global-font-size-md);
+  line-height: var(--_global-line-height-normal);
+  font-family: var(--_global-font-family-sans);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--_global-color-text-primary);
+  background-color: var(--_global-color-background-white);
+  font-size: var(--_global-font-size-md);
+  font-weight: var(--_global-font-weight-normal);
+}
+
+/* Form element reset */
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+button,
+input {
+  overflow: visible;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+/* Focus management */
+:focus {
+  outline: 2px solid var(--_global-color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

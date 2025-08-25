@@ -1,0 +1,23 @@
+{
+  "name": "mynt-ui",
+  "version": "1.0.0",
+  "description": "A library-agnostic web component library built with native Web APIs",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "python3 start-dev.py",
+    "serve": "node examples/serve.js",
+    "test": "echo \"Tests will be added during development\" && exit 0"
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "shadow-dom",
+    "framework-agnostic",
+    "ui-library"
+  ],
+  "author": "Mynt UI Team",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}
