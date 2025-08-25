@@ -217,7 +217,7 @@ class MyCheckbox extends MyntUIBaseComponent {
           --_checkbox-state-layer-error: var(--_checkbox-color-error);
           
           /* Improved motion and transitions */
-          --_checkbox-transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_checkbox-transition: all var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
           --_checkbox-transition-fast: all var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
           --_checkbox-transition-emphasized: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
           

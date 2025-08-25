@@ -198,7 +198,7 @@ class MyToggle extends MyntUIBaseComponent {
           --_toggle-state-layer-error: var(--_global-color-error);
           
           /* Improved motion and transitions */
-          --_toggle-transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          --_toggle-transition: all var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
           --_toggle-transition-fast: all var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
           --_toggle-transition-thumb: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized-decelerate);
           
