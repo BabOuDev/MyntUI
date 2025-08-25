@@ -29,7 +29,7 @@ class MyTooltip extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['text', 'position', 'delay', 'disabled'];
+    return ['text', 'position', 'delay', 'disabled', 'size', 'variant', 'multiline'];
   }
 
   // Handle attribute changes
@@ -74,6 +74,34 @@ class MyTooltip extends HTMLElement {
       this.setAttribute('disabled', '');
     } else {
       this.removeAttribute('disabled');
+    }
+  }
+
+  get size() {
+    return this.getAttribute('size') || 'md';
+  }
+
+  set size(value) {
+    this.setAttribute('size', value);
+  }
+
+  get variant() {
+    return this.getAttribute('variant') || 'dark';
+  }
+
+  set variant(value) {
+    this.setAttribute('variant', value);
+  }
+
+  get multiline() {
+    return this.hasAttribute('multiline');
+  }
+
+  set multiline(value) {
+    if (value) {
+      this.setAttribute('multiline', '');
+    } else {
+      this.removeAttribute('multiline');
     }
   }
 
@@ -244,17 +272,32 @@ class MyTooltip extends HTMLElement {
       <style>
         :host {
           /* Component-specific variables using global variables */
-          --_tooltip-bg: var(--_global-color-gray-800);
-          --_tooltip-text-color: var(--_global-color-white);
-          --_tooltip-border-radius: var(--_global-border-radius-md);
-          --_tooltip-padding: var(--_global-spacing-xs) var(--_global-spacing-sm);
-          --_tooltip-font-size: var(--_global-font-size-sm);
-          --_tooltip-max-width: 200px;
+          --_tooltip-bg-dark: var(--_global-color-on-surface);
+          --_tooltip-text-color-dark: var(--_global-color-surface);
+          --_tooltip-bg-light: var(--_global-color-surface);
+          --_tooltip-text-color-light: var(--_global-color-on-surface);
+          --_tooltip-bg-primary: var(--_global-color-primary);
+          --_tooltip-text-color-primary: var(--_global-color-on-primary);
+          --_tooltip-bg-error: var(--_global-color-error);
+          --_tooltip-text-color-error: var(--_global-color-on-error);
+          
+          --_tooltip-border-radius: var(--_global-border-radius-sm);
+          --_tooltip-padding-sm: var(--_global-spacing-xs) calc(var(--_global-spacing-sm) * 0.75);
+          --_tooltip-padding-md: var(--_global-spacing-xs) var(--_global-spacing-sm);
+          --_tooltip-padding-lg: var(--_global-spacing-sm) var(--_global-spacing-md);
+          --_tooltip-font-size-sm: var(--_global-font-size-xs);
+          --_tooltip-font-size-md: var(--_global-font-size-sm);
+          --_tooltip-font-size-lg: var(--_global-font-size-md);
+          --_tooltip-max-width-sm: 180px;
+          --_tooltip-max-width-md: 240px;
+          --_tooltip-max-width-lg: 320px;
           --_tooltip-z-index: var(--_global-z-index-tooltip);
-          --_tooltip-arrow-size: 4px;
+          --_tooltip-arrow-size: 6px;
+          --_tooltip-elevation: var(--_global-elevation-2);
           
           display: inline-block;
           position: relative;
+          font-family: var(--_global-font-family-sans);
         }
 
         :host([disabled]) {
@@ -268,25 +311,28 @@ class MyTooltip extends HTMLElement {
 
         .tooltip {
           position: absolute;
-          background-color: var(--_tooltip-bg);
-          color: var(--_tooltip-text-color);
-          padding: var(--_tooltip-padding);
+          background-color: var(--_tooltip-bg-dark);
+          color: var(--_tooltip-text-color-dark);
+          padding: var(--_tooltip-padding-md);
           border-radius: var(--_tooltip-border-radius);
-          font-size: var(--_tooltip-font-size);
-          font-weight: var(--_global-font-weight-normal);
-          line-height: var(--_global-line-height-normal);
-          max-width: var(--_tooltip-max-width);
+          font-size: var(--_tooltip-font-size-md);
+          font-weight: var(--_global-font-weight-medium);
+          line-height: var(--_global-line-height-tight);
+          max-width: var(--_tooltip-max-width-md);
           z-index: var(--_tooltip-z-index);
           opacity: 0;
           pointer-events: none;
-          transition: opacity var(--_global-transition-fast);
+          transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          box-shadow: var(--_tooltip-elevation);
+          transform: scale(0.8);
         }
 
         .tooltip.visible {
           opacity: 1;
+          transform: scale(1);
         }
 
         /* Arrow styling */
@@ -303,7 +349,7 @@ class MyTooltip extends HTMLElement {
           top: 100%;
           left: 50%;
           transform: translateX(-50%);
-          border-top-color: var(--_tooltip-bg);
+          border-top-color: var(--_tooltip-bg-dark);
           border-bottom: none;
         }
 
@@ -312,7 +358,7 @@ class MyTooltip extends HTMLElement {
           bottom: 100%;
           left: 50%;
           transform: translateX(-50%);
-          border-bottom-color: var(--_tooltip-bg);
+          border-bottom-color: var(--_tooltip-bg-dark);
           border-top: none;
         }
 
@@ -321,7 +367,7 @@ class MyTooltip extends HTMLElement {
           top: 50%;
           left: 100%;
           transform: translateY(-50%);
-          border-left-color: var(--_tooltip-bg);
+          border-left-color: var(--_tooltip-bg-dark);
           border-right: none;
         }
 
@@ -330,7 +376,7 @@ class MyTooltip extends HTMLElement {
           top: 50%;
           right: 100%;
           transform: translateY(-50%);
-          border-right-color: var(--_tooltip-bg);
+          border-right-color: var(--_tooltip-bg-dark);
           border-left: none;
         }
 
@@ -341,10 +387,88 @@ class MyTooltip extends HTMLElement {
           text-overflow: clip;
         }
 
-        /* Larger tooltips for rich content */
-        :host([size="large"]) {
-          --_tooltip-max-width: 300px;
-          --_tooltip-padding: var(--_global-spacing-sm) var(--_global-spacing-md);
+        /* Size variants */
+        :host([size="sm"]) {
+          --_tooltip-padding-md: var(--_tooltip-padding-sm);
+          --_tooltip-font-size-md: var(--_tooltip-font-size-sm);
+          --_tooltip-max-width-md: var(--_tooltip-max-width-sm);
+          --_tooltip-arrow-size: 4px;
+        }
+
+        :host([size="lg"]) {
+          --_tooltip-padding-md: var(--_tooltip-padding-lg);
+          --_tooltip-font-size-md: var(--_tooltip-font-size-lg);
+          --_tooltip-max-width-md: var(--_tooltip-max-width-lg);
+          --_tooltip-arrow-size: 8px;
+        }
+
+        /* Variant styles */
+        :host([variant="light"]) .tooltip {
+          background-color: var(--_tooltip-bg-light);
+          color: var(--_tooltip-text-color-light);
+          border: 1px solid var(--_global-color-outline-variant);
+        }
+
+        :host([variant="light"]) .tooltip::before {
+          border-top-color: var(--_tooltip-bg-light);
+          border-bottom-color: var(--_tooltip-bg-light);
+          border-left-color: var(--_tooltip-bg-light);
+          border-right-color: var(--_tooltip-bg-light);
+        }
+
+        :host([variant="primary"]) .tooltip {
+          background-color: var(--_tooltip-bg-primary);
+          color: var(--_tooltip-text-color-primary);
+        }
+
+        :host([variant="primary"]) .tooltip::before {
+          border-top-color: var(--_tooltip-bg-primary);
+          border-bottom-color: var(--_tooltip-bg-primary);
+          border-left-color: var(--_tooltip-bg-primary);
+          border-right-color: var(--_tooltip-bg-primary);
+        }
+
+        :host([variant="error"]) .tooltip {
+          background-color: var(--_tooltip-bg-error);
+          color: var(--_tooltip-text-color-error);
+        }
+
+        :host([variant="error"]) .tooltip::before {
+          border-top-color: var(--_tooltip-bg-error);
+          border-bottom-color: var(--_tooltip-bg-error);
+          border-left-color: var(--_tooltip-bg-error);
+          border-right-color: var(--_tooltip-bg-error);
+        }
+
+        /* Enhanced multiline support */
+        :host([multiline]) .tooltip {
+          white-space: normal;
+          word-wrap: break-word;
+          text-overflow: clip;
+          line-height: var(--_global-line-height-normal);
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+          .tooltip {
+            transition: opacity var(--_global-motion-duration-short1) ease;
+            transform: none !important;
+          }
+          
+          .tooltip.visible {
+            transform: none !important;
+          }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+          .tooltip {
+            border: 2px solid currentColor;
+          }
+          
+          :host([variant="light"]) .tooltip {
+            border: 2px solid var(--_global-color-on-surface);
+          }
         }
       </style>
 
@@ -353,9 +477,10 @@ class MyTooltip extends HTMLElement {
       </div>
       
       <div 
-        class="tooltip ${this.position}"
+        class="tooltip ${this.position} ${this.multiline ? 'multiline' : ''}"
         role="tooltip"
-        aria-hidden="true"
+        aria-hidden="${!this._isVisible}"
+        id="tooltip-${Math.random().toString(36).substr(2, 9)}"
       >
         ${this.text ? this.text : '<slot name="content"></slot>'}
       </div>
