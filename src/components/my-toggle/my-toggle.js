@@ -435,7 +435,16 @@ class MyToggle extends MyntUIBaseComponent {
           cursor: not-allowed;
         }
 
-        /* Enhanced size variants */
+        /* Enhanced size variants with improved scaling */
+        :host([size="xs"]) {
+          --_toggle-width: 36px;
+          --_toggle-track-height: 12px;
+          --_toggle-thumb-size: 16px;
+          --_toggle-thumb-size-pressed: 20px;
+          --_toggle-thumb-size-expanded: 24px;
+          --_toggle-state-layer-size: 32px;
+        }
+
         :host([size="sm"]) {
           --_toggle-width: 44px;
           --_toggle-track-height: 14px;
