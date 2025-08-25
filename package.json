@@ -1,23 +1,62 @@
 {
-  "name": "mynt-ui",
+  "name": "@mynt/ui",
   "version": "1.0.0",
-  "description": "A library-agnostic web component library built with native Web APIs",
+  "description": "A beautiful, framework-agnostic web component library blending Material Design 3, Tailwind, and Bulma aesthetics",
   "main": "src/index.js",
   "type": "module",
+  "files": [
+    "src/",
+    "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "python3 start-dev.py",
     "serve": "node examples/serve.js",
-    "test": "echo \"Tests will be added during development\" && exit 0"
+    "test": "npm run test:e2e",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
+    "test:visual": "cypress run --spec 'cypress/e2e/component-gallery.cy.js'",
+    "build": "echo 'Build step not needed - components are native ES modules'",
+    "lint": "echo 'Linting with browser-native validation'",
+    "start": "npm run dev"
   },
   "keywords": [
     "web-components",
     "custom-elements",
     "shadow-dom",
     "framework-agnostic",
-    "ui-library"
+    "ui-library",
+    "material-design",
+    "material-design-3",
+    "tailwind",
+    "bulma",
+    "vanilla-javascript",
+    "responsive",
+    "accessibility",
+    "a11y",
+    "design-system",
+    "component-library"
   ],
-  "author": "Mynt UI Team",
+  "author": "MyntUI Team",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/mynt-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/mynt-ui/issues"
+  },
+  "homepage": "https://github.com/your-org/mynt-ui#readme",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "cypress": "^15.0.0"
   }
