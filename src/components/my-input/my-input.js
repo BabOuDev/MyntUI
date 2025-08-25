@@ -2,52 +2,68 @@
  * MyntUI my-input Component
  * A Material Design 3 input component with enhanced state layers, floating labels, validation, and accessibility
  * Supports both outlined and filled variants with consistent styling and behavior patterns
+ * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
  */
 
-class MyInput extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyInput extends MyntUIBaseComponent {
   constructor() {
     super();
     
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
-    
-    // Internal state
+    // Component-specific internal state
     this._schema = {};
     this._value = '';
     this._errors = [];
     
-    // Bind event handlers
+    // Component-specific bindings
     this.handleInput = this.handleInput.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.validateInput = this.validateInput.bind(this);
     
     // Debounced validation for better performance 
     this._validationTimer = null;
     
-    // Initialize component
+    // Initialize with base component pattern
+    this.log('Input component initializing...');
     this.parseAttributes();
-    this.render();
-    this.attachEventListeners();
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
     return [
-      'type', 'label', 'name', 'placeholder', 'value', 'required', 'disabled', 'readonly',
+      ...super.observedAttributes,
+      'type', 'label', 'name', 'placeholder', 'value', 'required', 'readonly',
       'min', 'max', 'minlength', 'maxlength', 'pattern', 'step', 'autocomplete',
       'label-position', 'schema', 'aria-label', 'aria-describedby', 'aria-invalid',
-      'variant', 'size', 'leading-icon', 'trailing-icon', 'helper-text', 'character-count'
+      'leading-icon', 'trailing-icon', 'helper-text', 'character-count'
     ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.parseAttributes();
-      this.render();
-      this.attachEventListeners();
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    // Re-parse attributes for complex input components
+    this.parseAttributes();
+    
+    switch (name) {
+      case 'disabled':
+        this.announceToScreenReader(
+          `Input ${this.disabled ? 'disabled' : 'enabled'}`,
+          'polite'
+        );
+        break;
+      case 'value':
+        this._value = newValue || '';
+        this.validateInput();
+        break;
+      case 'required':
+        this.announceToScreenReader(
+          `Input is ${newValue !== null ? 'required' : 'optional'}`,
+          'polite'
+        );
+        break;
     }
   }
 
