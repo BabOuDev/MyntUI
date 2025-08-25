@@ -117,17 +117,38 @@ class MyToggle extends HTMLElement {
   }
 
   // Attach event listeners
+  // Standardized event handling pattern for MyntUI components
   attachEventListeners() {
+    // Clean up existing listeners first
+    this.removeEventListeners();
+    
     const toggleContainer = this.shadowRoot.querySelector('.toggle-container');
-    if (toggleContainer) {
-      // Remove existing listeners
-      toggleContainer.removeEventListener('click', this.handleClick);
-      toggleContainer.removeEventListener('keydown', this.handleKeyDown);
-      
-      // Add new listeners
-      toggleContainer.addEventListener('click', this.handleClick);
-      toggleContainer.addEventListener('keydown', this.handleKeyDown);
+    if (!toggleContainer) return;
+    
+    // Only attach listeners to the shadow DOM container element
+    toggleContainer.addEventListener('click', this.handleClick);
+    toggleContainer.addEventListener('keydown', this.handleKeyDown);
+    
+    // Store references for cleanup
+    this._eventTargets = [
+      { element: toggleContainer, events: ['click', 'keydown'] }
+    ];
+  }
+
+  // Standardized event listener cleanup
+  removeEventListeners() {
+    if (this._eventTargets) {
+      this._eventTargets.forEach(target => {
+        target.element.removeEventListener('click', this.handleClick);
+        target.element.removeEventListener('keydown', this.handleKeyDown);
+      });
+      this._eventTargets = null;
     }
+  }
+
+  // Standardized lifecycle cleanup
+  disconnectedCallback() {
+    this.removeEventListeners();
   }
 
   // Render the component
@@ -315,6 +336,41 @@ class MyToggle extends HTMLElement {
           .toggle-thumb,
           .toggle-container::before {
             transition: none;
+          }
+        }
+
+        /* Accessibility improvements - High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          .toggle-container {
+            border: 2px solid currentColor;
+            outline: 2px solid;
+            outline-offset: 2px;
+          }
+          
+          .toggle-thumb {
+            border: 2px solid currentColor;
+            background: var(--_global-color-surface);
+          }
+          
+          :host([checked]) .toggle-thumb {
+            background: var(--_global-color-primary);
+          }
+        }
+
+        /* Accessibility improvements - Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+          .toggle-container,
+          .toggle-thumb,
+          .toggle-container::before {
+            animation: none;
+            transition: none;
+          }
+        }
+
+        /* Enhanced focus-visible for better keyboard navigation */
+        @supports selector(:focus-visible) {
+          .toggle-container:focus:not(:focus-visible) {
+            box-shadow: none;
           }
         }
       </style>
