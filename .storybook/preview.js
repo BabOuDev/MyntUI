@@ -1,6 +1,7 @@
 import '../src/styles/global-variables.css';
 import '../src/styles/base.css';
 import '../src/styles/utilities.css';
+import '../src/styles/component-commons.css';
 
 /** @type { import('@storybook/html-vite').Preview } */
 const preview = {

@@ -1,0 +1,9 @@
+/**
+ * MyntUI Styles - Complete Import
+ * Import this single file to get all MyntUI styles
+ */
+
+@import './global-variables.css';
+@import './base.css';
+@import './utilities.css';
+@import './component-commons.css';
