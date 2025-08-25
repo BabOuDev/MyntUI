@@ -415,20 +415,32 @@ class MyDropdown extends HTMLElement {
       <style>
         :host {
           /* Component-specific variables using global variables */
-          --_dropdown-min-width: 120px;
-          --_dropdown-max-width: 320px;
+          --_dropdown-min-width: 112px;
+          --_dropdown-max-width: 280px;
           --_dropdown-trigger-height: var(--_global-input-height);
-          --_dropdown-trigger-padding: var(--_global-input-padding-y) var(--_global-input-padding-x);
-          --_dropdown-border-radius: var(--_global-border-radius-md);
+          --_dropdown-trigger-padding: var(--_global-spacing-sm) var(--_global-spacing-md);
+          --_dropdown-border-radius: var(--_global-border-radius-sm);
+          --_dropdown-menu-border-radius: var(--_global-border-radius-xs);
           --_dropdown-border-color: var(--_global-color-outline-variant);
-          --_dropdown-bg: var(--_global-color-surface-container);
+          --_dropdown-border-color-hover: var(--_global-color-outline);
+          --_dropdown-border-color-focus: var(--_global-color-primary);
+          --_dropdown-trigger-bg: var(--_global-color-surface-container-low);
+          --_dropdown-trigger-bg-hover: var(--_global-color-surface-container);
+          --_dropdown-trigger-bg-focus: var(--_global-color-surface-container-high);
+          --_dropdown-menu-bg: var(--_global-color-surface-container);
           --_dropdown-text-color: var(--_global-color-on-surface);
-          --_dropdown-shadow: var(--_global-elevation-2);
+          --_dropdown-placeholder-color: var(--_global-color-on-surface-variant);
+          --_dropdown-icon-color: var(--_global-color-on-surface-variant);
+          --_dropdown-elevation: var(--_global-elevation-1);
+          --_dropdown-elevation-hover: var(--_global-elevation-2);
+          --_dropdown-menu-elevation: var(--_global-elevation-3);
           --_dropdown-z-index: var(--_global-z-index-dropdown);
+          --_dropdown-transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
           
           display: inline-block;
           position: relative;
           min-width: var(--_dropdown-min-width);
+          font-family: var(--_global-font-family-sans);
         }
 
         :host([disabled]) {
@@ -446,29 +458,62 @@ class MyDropdown extends HTMLElement {
           padding: var(--_dropdown-trigger-padding);
           border: 1px solid var(--_dropdown-border-color);
           border-radius: var(--_dropdown-border-radius);
-          background-color: var(--_global-color-surface);
+          background-color: var(--_dropdown-trigger-bg);
           color: var(--_dropdown-text-color);
-          font-size: var(--_global-font-size-md);
+          font-size: var(--_global-font-size-sm);
+          font-weight: var(--_global-font-weight-medium);
           font-family: var(--_global-font-family-sans);
           cursor: pointer;
           outline: none;
-          transition: all var(--_global-transition-fast);
+          transition: var(--_dropdown-transition);
           user-select: none;
+          box-shadow: var(--_dropdown-elevation);
+          position: relative;
+          z-index: 1;
+        }
+        
+        /* State layer for Material Design 3 */
+        .dropdown-trigger::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: currentColor;
+          opacity: 0;
+          transition: opacity var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
+          pointer-events: none;
+          border-radius: inherit;
+        }
+
+        .dropdown-trigger:hover:not(:disabled)::before {
+          opacity: var(--_global-state-layer-hover);
         }
 
         .dropdown-trigger:hover:not(:disabled) {
-          border-color: var(--_global-color-outline);
-          background-color: var(--_global-color-surface-container-low);
+          border-color: var(--_dropdown-border-color-hover);
+          background-color: var(--_dropdown-trigger-bg-hover);
+          box-shadow: var(--_dropdown-elevation-hover);
+        }
+        
+        .dropdown-trigger:active:not(:disabled)::before {
+          opacity: var(--_global-state-layer-pressed);
         }
 
         .dropdown-trigger:focus-visible {
-          border-color: var(--_global-color-border-focus);
-          box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.2);
+          border-color: var(--_dropdown-border-color-focus);
+          border-width: 2px;
+          background-color: var(--_dropdown-trigger-bg-focus);
+          outline: 2px solid var(--_dropdown-border-color-focus);
+          outline-offset: 2px;
         }
 
         .dropdown-trigger.open {
-          border-color: var(--_global-color-border-focus);
-          box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.2);
+          border-color: var(--_dropdown-border-color-focus);
+          border-width: 2px;
+          background-color: var(--_dropdown-trigger-bg-focus);
+          box-shadow: var(--_dropdown-elevation-hover);
         }
 
         .trigger-text {
@@ -480,14 +525,15 @@ class MyDropdown extends HTMLElement {
         }
 
         .trigger-text.placeholder {
-          color: var(--_global-color-text-muted);
+          color: var(--_dropdown-placeholder-color);
         }
 
         .dropdown-icon {
           margin-left: var(--_global-spacing-sm);
           font-size: 18px;
-          color: var(--_global-color-on-surface-variant);
-          transition: transform var(--_global-transition-fast);
+          color: var(--_dropdown-icon-color);
+          transition: transform var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          flex-shrink: 0;
         }
 
         .dropdown-trigger.open .dropdown-icon {
@@ -501,36 +547,37 @@ class MyDropdown extends HTMLElement {
           right: 0;
           min-width: 100%;
           max-width: var(--_dropdown-max-width);
-          margin-top: 4px;
-          background-color: var(--_dropdown-bg);
+          margin-top: var(--_global-spacing-xs);
+          background-color: var(--_dropdown-menu-bg);
           border: 1px solid var(--_dropdown-border-color);
-          border-radius: var(--_dropdown-border-radius);
-          box-shadow: var(--_dropdown-shadow);
+          border-radius: var(--_dropdown-menu-border-radius);
+          box-shadow: var(--_dropdown-menu-elevation);
           z-index: var(--_dropdown-z-index);
           opacity: 0;
           visibility: hidden;
-          transform: translateY(-8px);
-          transition: all var(--_global-transition-fast);
-          max-height: 256px;
+          transform: translateY(-8px) scale(0.95);
+          transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
+          max-height: 320px;
           overflow-y: auto;
+          padding: var(--_global-spacing-xs) 0;
         }
 
         .dropdown-menu.open {
           opacity: 1;
           visibility: visible;
-          transform: translateY(0);
+          transform: translateY(0) scale(1);
         }
 
         .dropdown-menu.position-top {
           top: auto;
           bottom: 100%;
           margin-top: 0;
-          margin-bottom: 4px;
-          transform: translateY(8px);
+          margin-bottom: var(--_global-spacing-xs);
+          transform: translateY(8px) scale(0.95);
         }
 
         .dropdown-menu.position-top.open {
-          transform: translateY(0);
+          transform: translateY(0) scale(1);
         }
 
         .dropdown-menu.align-right {
@@ -543,14 +590,19 @@ class MyDropdown extends HTMLElement {
           align-items: center;
           padding: var(--_global-spacing-sm) var(--_global-spacing-md);
           color: var(--_global-color-on-surface);
-          font-size: var(--_global-font-size-md);
+          font-size: var(--_global-font-size-sm);
+          font-weight: var(--_global-font-weight-normal);
           cursor: pointer;
-          transition: background-color var(--_global-transition-fast);
+          transition: background-color var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
           outline: none;
           border: none;
           background: none;
           width: 100%;
           text-align: left;
+          min-height: 32px;
+          border-radius: var(--_global-border-radius-xs);
+          margin: 0 var(--_global-spacing-xs);
+          position: relative;
         }
 
         .dropdown-option:hover:not([disabled]) {
@@ -564,6 +616,7 @@ class MyDropdown extends HTMLElement {
         .dropdown-option.selected {
           background-color: rgba(103, 80, 164, var(--_global-state-layer-selected));
           color: var(--_global-color-primary);
+          font-weight: var(--_global-font-weight-medium);
         }
 
         .dropdown-option[disabled] {
