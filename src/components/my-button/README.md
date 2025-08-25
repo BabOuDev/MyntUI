@@ -32,6 +32,8 @@ A Material Design 3 compliant button component built with native Web APIs and Sh
 - Disabled state
 - Hover/focus effects with proper accessibility
 - Active press feedback
+- **Material Design ripple effects** for click feedback
+- Enhanced keyboard navigation (Enter/Space key support)
 
 ## Usage
 
@@ -141,11 +143,13 @@ my-button[variant="custom"] {
 
 ## Accessibility
 
-- ✅ Proper ARIA labeling
-- ✅ Keyboard navigation support
-- ✅ Focus indicators
-- ✅ Screen reader compatible
-- ✅ Disabled state handling
+- ✅ **Enhanced ARIA labeling** with dynamic states
+- ✅ **Full keyboard navigation** (Enter/Space key activation)
+- ✅ **Visible focus indicators** with high contrast support
+- ✅ **Screen reader compatible** with state announcements
+- ✅ **Disabled state handling** with proper cursor states
+- ✅ **Reduced motion support** - respects user preferences
+- ✅ **Tabindex management** for proper focus flow
 
 ## Browser Support
 
