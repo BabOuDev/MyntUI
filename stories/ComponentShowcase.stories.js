@@ -323,6 +323,22 @@ export const AllComponents = () => {
             <my-data-list id="demo-list" style="height: 200px; width: 100%;"></my-data-list>
           </div>
         </div>
+        
+        <div class="component-demo" style="grid-column: 1 / -1;">
+          <h4>Data Table</h4>
+          <div class="demo-content demo-vertical">
+            <my-data-table 
+              id="demo-table" 
+              selectable
+              searchable
+              paginated
+              page-size="5"
+              dense
+              striped
+              style="width: 100%;"
+            ></my-data-table>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -334,6 +350,37 @@ export const AllComponents = () => {
           { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
           { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
           { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Editor' }
+        ];
+      }
+      
+      // Initialize demo data table
+      const dataTable = document.getElementById('demo-table');
+      if (dataTable) {
+        dataTable.columns = [
+          { key: 'id', label: 'ID', type: 'number', sortable: true },
+          { key: 'name', label: 'Name', sortable: true },
+          { key: 'email', label: 'Email', sortable: true },
+          { key: 'department', label: 'Department', sortable: true },
+          { 
+            key: 'status', 
+            label: 'Status',
+            render: (value, row) => row.active 
+              ? '<span style="color: var(--_global-color-success); font-weight: bold;">●</span>' 
+              : '<span style="color: var(--_global-color-error); font-weight: bold;">●</span>'
+          }
+        ];
+        
+        dataTable.data = [
+          { id: 1, name: 'John Doe', email: 'john@example.com', department: 'Engineering', active: true },
+          { id: 2, name: 'Jane Smith', email: 'jane@example.com', department: 'Marketing', active: true },
+          { id: 3, name: 'Bob Johnson', email: 'bob@example.com', department: 'Sales', active: false },
+          { id: 4, name: 'Alice Brown', email: 'alice@example.com', department: 'HR', active: true },
+          { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', department: 'Engineering', active: true },
+          { id: 6, name: 'Diana Davis', email: 'diana@example.com', department: 'Marketing', active: false },
+          { id: 7, name: 'Eve Miller', email: 'eve@example.com', department: 'Operations', active: true },
+          { id: 8, name: 'Frank Garcia', email: 'frank@example.com', department: 'Sales', active: true },
+          { id: 9, name: 'Grace Lee', email: 'grace@example.com', department: 'Engineering', active: true },
+          { id: 10, name: 'Henry Kim', email: 'henry@example.com', department: 'Finance', active: false }
         ];
       }
       
