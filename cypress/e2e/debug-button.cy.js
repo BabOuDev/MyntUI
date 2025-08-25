@@ -1,6 +1,6 @@
 describe('Debug Button Test', () => {
   it('captures debug button page', () => {
-    cy.visit('/debug-button.html')
+    cy.visit('/examples/debug-button.html')
     cy.wait(2000) // Wait for component to load
     
     // Take screenshot regardless of visibility
