@@ -1352,8 +1352,8 @@ class MyInput extends MyntUIBaseComponent {
           
           /* Enhanced shape system */
           --_input-container-shape-small: var(--_global-border-radius-sm);
-          --_input-container-shape-medium: var(--_global-border-radius-md);
-          --_input-container-shape-large: var(--_global-border-radius-lg);
+          --_input-container-shape-medium: var(--_global-border-radius-sm);
+          --_input-container-shape-large: var(--_global-border-radius-md);
           --_input-container-shape: var(--_input-container-shape-medium);
           --_input-state-layer-shape: var(--_global-border-radius-full);
           
