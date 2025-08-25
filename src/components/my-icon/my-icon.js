@@ -259,12 +259,12 @@ class MyIcon extends HTMLElement {
         :host {
           /* Icon-specific variables using global semantic variables */
           --_icon-color: ${this.color || 'var(--_global-color-on-surface)'};
-          --_icon-size-xs: 16px;
-          --_icon-size-sm: 20px;
-          --_icon-size-md: 24px;
-          --_icon-size-lg: 32px;
-          --_icon-size-xl: 48px;
-          --_icon-size-xxl: 64px;
+          --_icon-size-xs: 12px;
+          --_icon-size-sm: 16px;
+          --_icon-size-md: 20px;
+          --_icon-size-lg: 24px;
+          --_icon-size-xl: 32px;
+          --_icon-size-xxl: 48px;
           --_icon-size: var(--_icon-size-${this.size});
           
           --_icon-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
