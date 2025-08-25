@@ -139,6 +139,34 @@ class MyProgress extends HTMLElement {
     this.render();
   }
 
+  // Standardized lifecycle cleanup - part of MyntUI component pattern
+  disconnectedCallback() {
+    // Clean up any running timers or animations if needed
+    // Currently no cleanup needed for progress component, but following pattern
+  }
+
+  // Public method to programmatically update progress
+  updateProgress(newValue, emitEvent = true) {
+    const oldValue = this._value;
+    this.value = newValue;
+    
+    if (emitEvent && oldValue !== this._value) {
+      // Emit progress update event for external listeners
+      this.dispatchEvent(new CustomEvent('progress-change', {
+        detail: {
+          value: this._value,
+          percentage: this.percentage,
+          oldValue: oldValue,
+          min: this.min,
+          max: this.max
+        },
+        bubbles: true
+      }));
+    }
+    
+    this.render();
+  }
+
   // Render the component
   render() {
     this.shadowRoot.innerHTML = `
@@ -350,12 +378,33 @@ class MyProgress extends HTMLElement {
           }
         }
 
-        /* Accessibility */
+        /* Accessibility improvements - High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          .progress-track {
+            border: 2px solid currentColor;
+            background-color: var(--_global-color-surface);
+          }
+          
+          .progress-fill {
+            outline: 2px solid;
+            outline-offset: -2px;
+          }
+          
+          .progress-label,
+          .progress-value {
+            font-weight: var(--_global-font-weight-bold);
+          }
+        }
+
+        /* Accessibility improvements - Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
           .progress-fill,
-          .progress-fill.indeterminate {
-            transition: none;
+          .progress-fill.indeterminate,
+          .progress-fill::before,
+          .circular-progress,
+          .circular-progress.indeterminate {
             animation: none;
+            transition: none;
           }
         }
 
@@ -442,6 +491,11 @@ class MyProgress extends HTMLElement {
           height: 40px;
         }
         
+        :host([type="circular"][size="sm"]) .circular-bg,
+        :host([type="circular"][size="sm"]) .circular-progress {
+          stroke-width: 4;
+        }
+        
         :host([type="circular"][size="lg"]) .progress-track {
           height: 72px;
         }
@@ -449,6 +503,31 @@ class MyProgress extends HTMLElement {
         :host([type="circular"][size="lg"]) .circular-svg {
           width: 72px;
           height: 72px;
+        }
+        
+        :host([type="circular"][size="lg"]) .circular-bg,
+        :host([type="circular"][size="lg"]) .circular-progress {
+          stroke-width: 8;
+        }
+
+        /* Enhanced styling for better Material Design 3 alignment */
+        .progress-container {
+          position: relative;
+        }
+        
+        .progress-track {
+          box-sizing: border-box;
+        }
+        
+        /* Better container states */
+        :host(:hover) .progress-fill {
+          filter: brightness(1.05);
+        }
+        
+        /* Enhanced circular progress with better centering */
+        :host([type="circular"]) .circular-text {
+          font-feature-settings: 'tnum';
+          letter-spacing: -0.02em;
         }
       </style>
 
