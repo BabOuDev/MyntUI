@@ -171,7 +171,7 @@ class MyNotification extends HTMLElement {
     const horizontal = positions[1] || 'right'; // left, right, center
     
     this.style.position = 'fixed';
-    this.style.zIndex = var('--_global-z-index-notification');
+    this.style.zIndex = '600'; // Use the notification z-index value
     
     if (vertical === 'top') {
       this.style.top = `${16 + offset}px`;
