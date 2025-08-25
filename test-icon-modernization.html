@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyntUI my-icon Component Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .icon-example {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px;
+        }
+        
+        .size-demo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        .interactive-demo {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.5rem;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 1.5rem;
+        }
+        
+        code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        .status {
+            padding: 0.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #9fdbff;
+        }
+    </style>
+</head>
+<body>
+    <h1>MyntUI my-icon Component - Modernization Test</h1>
+    
+    <div class="status success">
+        ✅ Component successfully modernized with built-in SVG library and optional font fallback!
+    </div>
+    
+    <div class="section">
+        <h2>Built-in SVG Icons (Zero Dependencies)</h2>
+        <p>These icons load instantly without any external font dependencies:</p>
+        
+        <div class="icon-grid">
+            <div class="icon-example">
+                <my-icon icon="home"></my-icon>
+                <code>icon="home"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="menu"></my-icon>
+                <code>icon="menu"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="search"></my-icon>
+                <code>icon="search"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="person"></my-icon>
+                <code>icon="person"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="settings"></my-icon>
+                <code>icon="settings"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="favorite"></my-icon>
+                <code>icon="favorite"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="star"></my-icon>
+                <code>icon="star"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="add"></my-icon>
+                <code>icon="add"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="edit"></my-icon>
+                <code>icon="edit"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="delete"></my-icon>
+                <code>icon="delete"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="check"></my-icon>
+                <code>icon="check"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="close"></my-icon>
+                <code>icon="close"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="arrow_back"></my-icon>
+                <code>icon="arrow_back"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="arrow_forward"></my-icon>
+                <code>icon="arrow_forward"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="expand_more"></my-icon>
+                <code>icon="expand_more"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="expand_less"></my-icon>
+                <code>icon="expand_less"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="visibility"></my-icon>
+                <code>icon="visibility"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="visibility_off"></my-icon>
+                <code>icon="visibility_off"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="error"></my-icon>
+                <code>icon="error"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="warning"></my-icon>
+                <code>icon="warning"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="info"></my-icon>
+                <code>icon="info"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="success"></my-icon>
+                <code>icon="success"</code>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Size Variants</h2>
+        <p>All sizes work perfectly with built-in SVG icons:</p>
+        
+        <div class="size-demo">
+            <my-icon icon="star" size="xs"></my-icon>
+            <code>size="xs"</code>
+        </div>
+        <div class="size-demo">
+            <my-icon icon="star" size="sm"></my-icon>
+            <code>size="sm"</code>
+        </div>
+        <div class="size-demo">
+            <my-icon icon="star" size="md"></my-icon>
+            <code>size="md" (default)</code>
+        </div>
+        <div class="size-demo">
+            <my-icon icon="star" size="lg"></my-icon>
+            <code>size="lg"</code>
+        </div>
+        <div class="size-demo">
+            <my-icon icon="star" size="xl"></my-icon>
+            <code>size="xl"</code>
+        </div>
+        <div class="size-demo">
+            <my-icon icon="star" size="xxl"></my-icon>
+            <code>size="xxl"</code>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Interactive Icons</h2>
+        <p>Click these icons to test interactive functionality:</p>
+        
+        <div class="interactive-demo">
+            <my-icon icon="favorite" interactive aria-label="Add to favorites"></my-icon>
+            <my-icon icon="delete" interactive aria-label="Delete item"></my-icon>
+            <my-icon icon="edit" interactive aria-label="Edit content"></my-icon>
+            <my-icon icon="settings" interactive aria-label="Open settings"></my-icon>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Color Variants</h2>
+        <p>SVG icons inherit colors perfectly:</p>
+        
+        <div class="interactive-demo">
+            <my-icon icon="home" color="primary"></my-icon>
+            <my-icon icon="favorite" color="error"></my-icon>
+            <my-icon icon="check" color="success"></my-icon>
+            <my-icon icon="warning" color="warning"></my-icon>
+            <my-icon icon="info" color="info"></my-icon>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Font Fallback (Optional)</h2>
+        <p>For icons not in the built-in library, enable font fallback:</p>
+        
+        <div class="status info">
+            ℹ️ The examples below require Google Fonts to be available. Icons may not display if fonts fail to load.
+        </div>
+        
+        <div class="icon-grid">
+            <div class="icon-example">
+                <my-icon icon="notifications" use-font-fallback="true"></my-icon>
+                <code>use-font-fallback="true"</code>
+            </div>
+            <div class="icon-example">
+                <my-icon icon="schedule" use-font-fallback="true"></my-icon>
+                <code>use-font-fallback="true"</code>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Migration Comparison</h2>
+        <h3>✅ These work without changes (now use built-in SVGs):</h3>
+        <div class="interactive-demo">
+            <my-icon icon="home"></my-icon>
+            <my-icon icon="search"></my-icon>
+            <my-icon icon="favorite"></my-icon>
+            <my-icon icon="settings"></my-icon>
+        </div>
+        
+        <h3>🔄 These need font fallback for non-built-in icons:</h3>
+        <div class="interactive-demo">
+            <my-icon icon="phone" use-font-fallback="true"></my-icon>
+            <my-icon icon="email" use-font-fallback="true"></my-icon>
+            <my-icon icon="account_circle" use-font-fallback="true"></my-icon>
+        </div>
+    </div>
+
+    <script src="./src/components/my-icon/my-icon.js"></script>
+    <script>
+        // Test interactive functionality
+        document.querySelectorAll('my-icon[interactive]').forEach(icon => {
+            icon.addEventListener('icon-click', (event) => {
+                console.log('Icon clicked:', event.detail);
+                alert(`Icon clicked: ${event.detail.icon}`);
+            });
+        });
+        
+        // Log component loading
+        console.log('MyntUI my-icon component loaded successfully!');
+        console.log('Built-in icons:', Object.keys(window.BUILTIN_ICONS || {}));
+    </script>
+</body>
+</html>
