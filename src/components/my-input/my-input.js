@@ -22,6 +22,9 @@ class MyInput extends HTMLElement {
     this.handleFocus = this.handleFocus.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     
+    // Debounced validation for better performance 
+    this._validationTimer = null;
+    
     // Initialize component
     this.parseAttributes();
     this.render();
@@ -213,12 +216,26 @@ class MyInput extends HTMLElement {
     return this.valid;
   }
 
+  // Debounced validation for better performance - part of standardized pattern
+  debouncedValidate() {
+    if (this._validationTimer) {
+      clearTimeout(this._validationTimer);
+    }
+    
+    this._validationTimer = setTimeout(() => {
+      this.validate();
+      this.updateErrorDisplay();
+    }, 300); // 300ms debounce for performance
+  }
+
   // Event handlers
   handleInput(event) {
     this._value = event.target.value;
-    this.validate();
+    
+    // Use debounced validation instead of immediate validation for better performance
+    this.debouncedValidate();
 
-    // Emit custom input event
+    // Emit custom input event immediately for responsiveness
     this.dispatchEvent(new CustomEvent('input', {
       detail: {
         value: this._value,
@@ -228,8 +245,6 @@ class MyInput extends HTMLElement {
       },
       bubbles: true
     }));
-
-    this.updateErrorDisplay();
   }
 
   handleChange(event) {
@@ -355,39 +370,50 @@ class MyInput extends HTMLElement {
   }
 
   // Attach event listeners
+  // Standardized event handling pattern for MyntUI components
   attachEventListeners() {
+    // Clean up existing listeners first
+    this.removeEventListeners();
+    
     const inputElement = this.shadowRoot.querySelector('input, textarea, select');
-    if (inputElement) {
-      // Remove existing listeners
-      inputElement.removeEventListener('input', this.handleInput);
-      inputElement.removeEventListener('change', this.handleChange);
-      inputElement.removeEventListener('blur', this.handleBlur);
-      inputElement.removeEventListener('focus', this.handleFocus);
-      inputElement.removeEventListener('keydown', this.handleKeyDown);
-      
-      // Add new listeners
-      inputElement.addEventListener('input', this.handleInput);
-      inputElement.addEventListener('change', this.handleChange);
-      inputElement.addEventListener('blur', this.handleBlur);
-      inputElement.addEventListener('focus', this.handleFocus);
-      inputElement.addEventListener('keydown', this.handleKeyDown);
-    }
+    if (!inputElement) return;
+    
+    // Only attach listeners to the shadow DOM input element to avoid duplication
+    inputElement.addEventListener('input', this.handleInput);
+    inputElement.addEventListener('change', this.handleChange);
+    inputElement.addEventListener('blur', this.handleBlur);
+    inputElement.addEventListener('focus', this.handleFocus);
+    inputElement.addEventListener('keydown', this.handleKeyDown);
+    
+    // Store references for cleanup
+    this._eventTargets = [
+      { element: inputElement, events: ['input', 'change', 'blur', 'focus', 'keydown'] }
+    ];
+  }
 
-    // Make the custom element focusable if not disabled
-    if (!this._schema.disabled) {
-      this.setAttribute('tabindex', '0');
-      // Remove existing listeners
-      this.removeEventListener('focus', this.handleFocus);
-      this.removeEventListener('blur', this.handleBlur);
-      this.removeEventListener('keydown', this.handleKeyDown);
-      
-      // Add listeners to custom element for keyboard navigation
-      this.addEventListener('focus', this.handleFocus);
-      this.addEventListener('blur', this.handleBlur);
-      this.addEventListener('keydown', this.handleKeyDown);
-    } else {
-      this.removeAttribute('tabindex');
+  // Standardized event listener cleanup
+  removeEventListeners() {
+    if (this._eventTargets) {
+      this._eventTargets.forEach(target => {
+        target.element.removeEventListener('input', this.handleInput);
+        target.element.removeEventListener('change', this.handleChange);
+        target.element.removeEventListener('blur', this.handleBlur);
+        target.element.removeEventListener('focus', this.handleFocus);
+        target.element.removeEventListener('keydown', this.handleKeyDown);
+      });
+      this._eventTargets = null;
     }
+    
+    // Clear validation timer
+    if (this._validationTimer) {
+      clearTimeout(this._validationTimer);
+      this._validationTimer = null;
+    }
+  }
+
+  // Standardized lifecycle cleanup
+  disconnectedCallback() {
+    this.removeEventListeners();
   }
 
   // Generate input element based on type with accessibility attributes
@@ -770,6 +796,53 @@ class MyInput extends HTMLElement {
         .input-field:focus ~ .label.over,
         .input-field:not(:placeholder-shown) ~ .label.over {
           z-index: 3;
+        }
+        /* Accessibility improvements - High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          .input-field {
+            border: 2px solid currentColor;
+            background-color: var(--_global-color-surface);
+          }
+          
+          .input-field:focus {
+            outline: 3px solid;
+            outline-offset: 2px;
+          }
+          
+          .label {
+            font-weight: var(--_global-font-weight-bold);
+          }
+        }
+
+        /* Accessibility improvements - Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+          .input-field,
+          .label,
+          .error-message {
+            animation: none;
+            transition: none;
+          }
+          
+          .label.over {
+            transform: none;
+            top: var(--_input-padding-y);
+            font-size: var(--_global-font-size-sm);
+            color: var(--_global-color-text-secondary);
+          }
+          
+          .input-field:focus + .label.over {
+            transform: none;
+            top: calc(-1 * var(--_global-spacing-sm));
+            font-size: var(--_global-font-size-xs);
+          }
+        }
+
+        /* Enhanced focus-visible for better keyboard navigation */
+        @supports selector(:focus-visible) {
+          .input-field:focus:not(:focus-visible) {
+            box-shadow: none;
+            border-color: var(--_input-border);
+          }
         }
       </style>
 
