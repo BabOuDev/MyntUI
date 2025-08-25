@@ -298,7 +298,7 @@ class MyButton extends MyntUIBaseComponent {
           
           /* Border radius system - Material Design 3 standard */
           --_button-border-radius: var(--_global-border-radius-full);
-          --_button-border-radius-fab: var(--_global-border-radius-xl);
+          --_button-border-radius-fab: var(--_global-border-radius-lg);
           --_button-gap: var(--_global-spacing-sm);
           
           /* Enhanced motion system */
