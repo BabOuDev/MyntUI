@@ -120,30 +120,93 @@
   --_global-color-border-focus: var(--_global-color-primary);
   --_global-color-border-error: var(--_global-color-error);
 
-  /* Typography System */
+  /* Enhanced Typography System - Material Design 3 + Modern Web Standards */
   --_global-font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --_global-font-family-mono: "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+  --_global-font-family-mono: "JetBrains Mono", "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+  --_global-font-family-serif: "Playfair Display", Georgia, serif;
 
-  /* Font sizes */
-  --_global-font-size-xs: 12px;
-  --_global-font-size-sm: 14px;
-  --_global-font-size-md: 16px;
-  --_global-font-size-lg: 18px;
-  --_global-font-size-xl: 20px;
-  --_global-font-size-xxl: 24px;
-  --_global-font-size-display: 32px;
+  /* Material Design 3 Typography Scale - Enhanced */
+  /* Display styles for hero sections and major headings */
+  --_global-font-size-display-large: clamp(3.5rem, 8vw, 8rem);     /* 56-128px */
+  --_global-font-size-display-medium: clamp(2.8rem, 6vw, 6rem);    /* 45-96px */
+  --_global-font-size-display-small: clamp(2.25rem, 4vw, 4.5rem);  /* 36-72px */
+  
+  /* Headline styles for section headers */
+  --_global-font-size-headline-large: clamp(2rem, 3.5vw, 3.5rem);  /* 32-56px */
+  --_global-font-size-headline-medium: clamp(1.75rem, 3vw, 3rem);  /* 28-48px */
+  --_global-font-size-headline-small: clamp(1.5rem, 2.5vw, 2.5rem); /* 24-40px */
+  
+  /* Title styles for card headers and component titles */
+  --_global-font-size-title-large: clamp(1.375rem, 2vw, 2rem);     /* 22-32px */
+  --_global-font-size-title-medium: clamp(1.25rem, 1.75vw, 1.75rem); /* 20-28px */
+  --_global-font-size-title-small: clamp(1.125rem, 1.5vw, 1.5rem); /* 18-24px */
+  
+  /* Label styles for component labels and form elements */
+  --_global-font-size-label-large: 1rem;    /* 16px */
+  --_global-font-size-label-medium: 0.875rem; /* 14px */
+  --_global-font-size-label-small: 0.75rem; /* 12px */
+  
+  /* Body styles for content and descriptions */
+  --_global-font-size-body-large: 1.125rem; /* 18px */
+  --_global-font-size-body-medium: 1rem;    /* 16px */
+  --_global-font-size-body-small: 0.875rem; /* 14px */
+  
+  /* Legacy size system (maintained for backward compatibility) */
+  --_global-font-size-xs: var(--_global-font-size-label-small);
+  --_global-font-size-sm: var(--_global-font-size-label-medium);
+  --_global-font-size-md: var(--_global-font-size-body-medium);
+  --_global-font-size-lg: var(--_global-font-size-body-large);
+  --_global-font-size-xl: var(--_global-font-size-title-small);
+  --_global-font-size-xxl: var(--_global-font-size-title-medium);
+  --_global-font-size-display: var(--_global-font-size-headline-large);
 
-  /* Font weights */
+  /* Enhanced Font Weight System */
+  --_global-font-weight-thin: 100;
+  --_global-font-weight-extra-light: 200;
   --_global-font-weight-light: 300;
   --_global-font-weight-normal: 400;
   --_global-font-weight-medium: 500;
   --_global-font-weight-semibold: 600;
   --_global-font-weight-bold: 700;
+  --_global-font-weight-extra-bold: 800;
+  --_global-font-weight-black: 900;
 
-  /* Line heights */
-  --_global-line-height-tight: 1.2;
-  --_global-line-height-normal: 1.5;
-  --_global-line-height-relaxed: 1.75;
+  /* Enhanced Line Height System */
+  --_global-line-height-tight: 1.2;      /* For headlines and display text */
+  --_global-line-height-snug: 1.375;     /* For titles and large text */
+  --_global-line-height-normal: 1.5;     /* For body text and labels */
+  --_global-line-height-relaxed: 1.625;  /* For comfortable reading */
+  --_global-line-height-loose: 1.75;     /* For very readable content */
+
+  /* Letter Spacing System */
+  --_global-letter-spacing-tighter: -0.05em;
+  --_global-letter-spacing-tight: -0.025em;
+  --_global-letter-spacing-normal: 0;
+  --_global-letter-spacing-wide: 0.025em;
+  --_global-letter-spacing-wider: 0.05em;
+  --_global-letter-spacing-widest: 0.1em;
+
+  /* Typography Utility Classes */
+  /* These can be used directly in components for consistent typography */
+  --_global-typography-display-large: var(--_global-font-weight-normal) var(--_global-font-size-display-large)/var(--_global-line-height-tight) var(--_global-font-family-sans);
+  --_global-typography-display-medium: var(--_global-font-weight-normal) var(--_global-font-size-display-medium)/var(--_global-line-height-tight) var(--_global-font-family-sans);
+  --_global-typography-display-small: var(--_global-font-weight-normal) var(--_global-font-size-display-small)/var(--_global-line-height-tight) var(--_global-font-family-sans);
+  
+  --_global-typography-headline-large: var(--_global-font-weight-semibold) var(--_global-font-size-headline-large)/var(--_global-line-height-tight) var(--_global-font-family-sans);
+  --_global-typography-headline-medium: var(--_global-font-weight-semibold) var(--_global-font-size-headline-medium)/var(--_global-line-height-snug) var(--_global-font-family-sans);
+  --_global-typography-headline-small: var(--_global-font-weight-semibold) var(--_global-font-size-headline-small)/var(--_global-line-height-snug) var(--_global-font-family-sans);
+  
+  --_global-typography-title-large: var(--_global-font-weight-medium) var(--_global-font-size-title-large)/var(--_global-line-height-snug) var(--_global-font-family-sans);
+  --_global-typography-title-medium: var(--_global-font-weight-medium) var(--_global-font-size-title-medium)/var(--_global-line-height-normal) var(--_global-font-family-sans);
+  --_global-typography-title-small: var(--_global-font-weight-medium) var(--_global-font-size-title-small)/var(--_global-line-height-normal) var(--_global-font-family-sans);
+  
+  --_global-typography-label-large: var(--_global-font-weight-medium) var(--_global-font-size-label-large)/var(--_global-line-height-normal) var(--_global-font-family-sans);
+  --_global-typography-label-medium: var(--_global-font-weight-medium) var(--_global-font-size-label-medium)/var(--_global-line-height-normal) var(--_global-font-family-sans);
+  --_global-typography-label-small: var(--_global-font-weight-medium) var(--_global-font-size-label-small)/var(--_global-line-height-normal) var(--_global-font-family-sans);
+  
+  --_global-typography-body-large: var(--_global-font-weight-normal) var(--_global-font-size-body-large)/var(--_global-line-height-relaxed) var(--_global-font-family-sans);
+  --_global-typography-body-medium: var(--_global-font-weight-normal) var(--_global-font-size-body-medium)/var(--_global-line-height-normal) var(--_global-font-family-sans);
+  --_global-typography-body-small: var(--_global-font-weight-normal) var(--_global-font-size-body-small)/var(--_global-line-height-normal) var(--_global-font-family-sans);
 
   /* Border Radius System */
   --_global-border-radius-none: 0;
