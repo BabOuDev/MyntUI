@@ -12,6 +12,10 @@ class MyButton extends HTMLElement {
     
     // Bind event handlers
     this.handleClick = this.handleClick.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
+    this.createRipple = this.createRipple.bind(this);
     
     // Initialize component
     this.render();
@@ -96,6 +100,9 @@ class MyButton extends HTMLElement {
       return;
     }
 
+    // Create ripple effect
+    this.createRipple(event);
+
     // Emit custom click event
     this.dispatchEvent(new CustomEvent('click', {
       detail: {
@@ -109,14 +116,117 @@ class MyButton extends HTMLElement {
     }));
   }
 
+  // Handle keyboard events
+  handleKeyDown(event) {
+    if (this.disabled || this.loading) {
+      event.preventDefault();
+      return;
+    }
+
+    // Handle Enter and Space keys
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      
+      // Create ripple effect centered
+      this.createRipple();
+      
+      // Trigger click
+      this.handleClick(event);
+    }
+  }
+
+  // Handle focus events
+  handleFocus(event) {
+    if (this.disabled || this.loading) return;
+    
+    const button = this.shadowRoot.querySelector('button');
+    if (button) {
+      button.classList.add('focused');
+    }
+  }
+
+  // Handle blur events  
+  handleBlur(event) {
+    const button = this.shadowRoot.querySelector('button');
+    if (button) {
+      button.classList.remove('focused');
+    }
+  }
+
+  // Create ripple effect
+  createRipple(event) {
+    const button = this.shadowRoot.querySelector('button');
+    if (!button || this.disabled || this.loading) return;
+
+    // Remove existing ripples
+    const existingRipples = button.querySelectorAll('.ripple');
+    existingRipples.forEach(ripple => ripple.remove());
+
+    // Create ripple element
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+
+    // Calculate ripple position and size
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const radius = size / 2;
+
+    let x, y;
+    if (event && event.clientX !== undefined) {
+      // Mouse click - position ripple at click point
+      x = event.clientX - rect.left - radius;
+      y = event.clientY - rect.top - radius;
+    } else {
+      // Keyboard activation - center ripple
+      x = rect.width / 2 - radius;
+      y = rect.height / 2 - radius;
+    }
+
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+
+    button.appendChild(ripple);
+
+    // Remove ripple after animation
+    setTimeout(() => {
+      if (ripple.parentNode) {
+        ripple.parentNode.removeChild(ripple);
+      }
+    }, 600);
+  }
+
   // Attach event listeners
   attachEventListeners() {
     const button = this.shadowRoot.querySelector('button');
     if (button) {
       // Remove existing listeners
       button.removeEventListener('click', this.handleClick);
+      button.removeEventListener('keydown', this.handleKeyDown);
+      button.removeEventListener('focus', this.handleFocus);
+      button.removeEventListener('blur', this.handleBlur);
+      
       // Add new listeners
       button.addEventListener('click', this.handleClick);
+      button.addEventListener('keydown', this.handleKeyDown);
+      button.addEventListener('focus', this.handleFocus);
+      button.addEventListener('blur', this.handleBlur);
+    }
+    
+    // Make the custom element focusable if not disabled
+    if (!this.disabled && !this.loading) {
+      this.setAttribute('tabindex', '0');
+      // Remove existing listeners
+      this.removeEventListener('keydown', this.handleKeyDown);
+      this.removeEventListener('focus', this.handleFocus);
+      this.removeEventListener('blur', this.handleBlur);
+      
+      // Add listeners to custom element too
+      this.addEventListener('keydown', this.handleKeyDown);
+      this.addEventListener('focus', this.handleFocus);
+      this.addEventListener('blur', this.handleBlur);
+    } else {
+      this.removeAttribute('tabindex');
     }
   }
 
@@ -400,6 +510,85 @@ class MyButton extends HTMLElement {
         /* Hide content when loading */
         button.loading .content {
           visibility: hidden;
+        }
+
+        /* Ripple effect styles */
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple-animation var(--_global-ripple-duration) var(--_global-ripple-easing);
+          background-color: var(--_global-ripple-color-light);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        /* Dark ripple for light backgrounds */
+        button.variant-outlined .ripple,
+        button.variant-text .ripple,
+        button.variant-ghost .ripple {
+          background-color: var(--_global-ripple-color-dark);
+        }
+
+        @keyframes ripple-animation {
+          0% {
+            transform: scale(0);
+            opacity: 0.8;
+          }
+          50% {
+            opacity: 0.4;
+          }
+          100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+
+        /* Enhanced focus styles */
+        :host(:focus),
+        :host(:focus-visible),
+        button:focus,
+        button:focus-visible,
+        button.focused {
+          outline: none;
+        }
+
+        :host(:focus) button,
+        :host(:focus-visible) button,
+        button:focus,
+        button:focus-visible,
+        button.focused {
+          box-shadow: var(--_button-focus-ring), var(--_button-elevation);
+          transform: translateY(-1px);
+        }
+
+        :host(:focus) button.variant-outlined,
+        :host(:focus-visible) button.variant-outlined,
+        button:focus.variant-outlined,
+        button:focus-visible.variant-outlined,
+        button.focused.variant-outlined {
+          box-shadow: var(--_button-focus-ring);
+        }
+
+        /* Better disabled state */
+        :host([disabled]),
+        :host([loading]) {
+          pointer-events: none;
+          cursor: not-allowed;
+        }
+
+        :host([disabled]) button,
+        :host([loading]) button {
+          opacity: 0.6;
+          cursor: not-allowed;
+          pointer-events: none;
+          transform: none !important;
+          box-shadow: none !important;
+        }
+
+        /* Ensure button is relatively positioned for ripple */
+        button {
+          overflow: hidden;
         }
       </style>
       <button 
