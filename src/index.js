@@ -22,5 +22,9 @@ import './components/my-dropdown/my-dropdown.js';
 import './components/my-gauge/my-gauge.js';
 import './components/my-progress/my-progress.js';
 
+// Overlay components
+import './components/my-modal/my-modal.js';
+import './components/my-notification/my-notification.js';
+
 console.log('MyntUI: Available components loaded successfully');
-console.log('Components ready: my-icon, my-button, my-input, my-toggle, my-checkbox, my-radio, my-radio-group, my-tooltip, my-dropdown, my-gauge, my-progress');
+console.log('Components ready: my-icon, my-button, my-input, my-toggle, my-checkbox, my-radio, my-radio-group, my-tooltip, my-dropdown, my-gauge, my-progress, my-modal, my-notification');

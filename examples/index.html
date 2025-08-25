@@ -412,6 +412,64 @@
         </div>
     </section>
 
+    <!-- Overlay Components -->
+    <section class="demo-section">
+        <h2 class="demo-title">Overlay Components</h2>
+        <div class="demo-grid">
+            <div class="demo-item">
+                <span class="demo-label">Modal Dialogs</span>
+                <my-button label="Open Small Modal" onclick="openModal('small')"></my-button>
+                <my-button label="Open Large Modal" onclick="openModal('large')"></my-button>
+                <my-button label="Open Modal with Footer" onclick="openModal('footer')"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Notifications</span>
+                <my-button label="Success" variant="success" onclick="showNotification('success')"></my-button>
+                <my-button label="Error" variant="danger" onclick="showNotification('error')"></my-button>
+                <my-button label="Warning" onclick="showNotification('warning')"></my-button>
+                <my-button label="Info" variant="outlined" onclick="showNotification('info')"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Notification Positions</span>
+                <my-button label="Top Left" onclick="showPositionedNotification('top-left')"></my-button>
+                <my-button label="Top Right" onclick="showPositionedNotification('top-right')"></my-button>
+                <my-button label="Bottom Left" onclick="showPositionedNotification('bottom-left')"></my-button>
+                <my-button label="Bottom Right" onclick="showPositionedNotification('bottom-right')"></my-button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hidden Modal Templates -->
+    <my-modal id="smallModal" size="sm" title="Small Modal" close-on-backdrop-click close-on-escape>
+        <p>This is a small modal dialog. It will close when you click outside or press Escape.</p>
+        <div slot="footer">
+            <my-button variant="text" onclick="closeModal('small')">Close</my-button>
+        </div>
+    </my-modal>
+
+    <my-modal id="largeModal" size="lg" title="Large Modal Settings" close-on-escape>
+        <div slot="body">
+            <my-input label="Username" name="username" placeholder="Enter username"></my-input>
+            <my-input label="Email" name="email" type="email" placeholder="Enter email"></my-input>
+            <my-checkbox label="Send notifications"></my-checkbox>
+            <my-toggle label="Dark mode"></my-toggle>
+        </div>
+        <div slot="footer">
+            <my-button variant="text" onclick="closeModal('large')">Cancel</my-button>
+            <my-button variant="filled" onclick="saveAndClose()">Save Changes</my-button>
+        </div>
+    </my-modal>
+
+    <my-modal id="footerModal" title="Confirmation Required">
+        <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+        <div slot="footer">
+            <my-button variant="text" onclick="closeModal('footer')">Cancel</my-button>
+            <my-button variant="danger" onclick="confirmDelete()">Delete</my-button>
+        </div>
+    </my-modal>
+
     <!-- Load all components -->
     <script type="module">
         // Import all implemented components
@@ -425,6 +483,8 @@
         import '../src/components/my-dropdown/my-dropdown.js';
         import '../src/components/my-progress/my-progress.js';
         import '../src/components/my-gauge/my-gauge.js';
+        import '../src/components/my-modal/my-modal.js';
+        import '../src/components/my-notification/my-notification.js';
         
         console.log('MyntUI Test Environment Loaded - All Components Available');
         
@@ -471,6 +531,94 @@
                 console.log('Component closed:', e.target.tagName, e.detail);
             }
         });
+        
+        // Modal functions
+        window.openModal = function(type) {
+            const modals = {
+                'small': 'smallModal',
+                'large': 'largeModal', 
+                'footer': 'footerModal'
+            };
+            const modal = document.getElementById(modals[type]);
+            if (modal) {
+                modal.show();
+            }
+        };
+        
+        window.closeModal = function(type) {
+            const modals = {
+                'small': 'smallModal',
+                'large': 'largeModal',
+                'footer': 'footerModal'
+            };
+            const modal = document.getElementById(modals[type]);
+            if (modal) {
+                modal.hide();
+            }
+        };
+        
+        window.saveAndClose = function() {
+            // Simulate saving
+            MyNotification.success('Settings saved successfully!');
+            closeModal('large');
+        };
+        
+        window.confirmDelete = function() {
+            // Simulate deletion
+            MyNotification.error('Item deleted');
+            closeModal('footer');
+        };
+        
+        // Notification functions
+        window.showNotification = function(type) {
+            const messages = {
+                'success': 'Operation completed successfully!',
+                'error': 'An error occurred while processing your request',
+                'warning': 'Please review your settings before continuing',
+                'info': 'New updates are available for download'
+            };
+            
+            if (window.MyNotification && window.MyNotification[type]) {
+                window.MyNotification[type](messages[type]);
+            } else {
+                // Fallback method
+                const notification = document.createElement('my-notification');
+                notification.message = messages[type];
+                notification.type = type;
+                notification.closeable = true;
+                notification.show();
+            }
+        };
+        
+        window.showPositionedNotification = function(position) {
+            const notification = document.createElement('my-notification');
+            notification.message = `Notification from ${position}`;
+            notification.type = 'info';
+            notification.position = position;
+            notification.closeable = true;
+            notification.duration = 4000;
+            notification.show();
+        };
+        
+        // Make MyNotification available globally
+        window.MyNotification = window.MyNotification || {
+            success: (msg) => {
+                const n = document.createElement('my-notification');
+                n.message = msg; n.type = 'success'; n.closeable = true; n.show();
+            },
+            error: (msg) => {
+                const n = document.createElement('my-notification');
+                n.message = msg; n.type = 'error'; n.closeable = true; n.show();
+            },
+            warning: (msg) => {
+                const n = document.createElement('my-notification');
+                n.message = msg; n.type = 'warning'; n.closeable = true; n.show();
+            },
+            info: (msg) => {
+                const n = document.createElement('my-notification');
+                n.message = msg; n.type = 'info'; n.closeable = true; n.show();
+            }
+        };
     </script>
 </body>
 </html>
