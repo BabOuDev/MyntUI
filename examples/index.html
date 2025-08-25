@@ -97,7 +97,15 @@
             </div>
             
             <div class="demo-item">
-                <span class="demo-label">Button Variants</span>
+                <span class="demo-label">Material Design Variants</span>
+                <my-button label="Filled" variant="filled"></my-button>
+                <my-button label="Outlined" variant="outlined"></my-button>
+                <my-button label="Text" variant="text"></my-button>
+                <my-button label="Success" variant="success"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Legacy Variants (Still Supported)</span>
                 <my-button label="Primary" variant="primary"></my-button>
                 <my-button label="Secondary" variant="secondary"></my-button>
                 <my-button label="Ghost" variant="ghost"></my-button>
@@ -119,16 +127,31 @@
             </div>
             
             <div class="demo-item">
+                <span class="demo-label">Density Variants</span>
+                <my-button label="Default" variant="filled" size="sm"></my-button>
+                <my-button label="Comfortable" variant="filled" size="sm" density="comfortable"></my-button>
+                <my-button label="Compact" variant="filled" size="sm" density="compact"></my-button>
+                <my-button label="Dense" variant="filled" size="sm" density="dense"></my-button>
+            </div>
+            
+            <div class="demo-item">
+                <span class="demo-label">Ripple Effect Demo (Click to see ripple!)</span>
+                <my-button label="Large Ripple" variant="filled" size="lg"></my-button>
+                <my-button label="Outlined Ripple" variant="outlined" size="lg"></my-button>
+                <my-button label="Text Ripple" variant="text" size="lg"></my-button>
+            </div>
+            
+            <div class="demo-item">
                 <span class="demo-label">Buttons with Icons</span>
-                <my-button variant="primary">
+                <my-button variant="filled">
                     <my-icon icon="home"></my-icon>
                     Home
                 </my-button>
-                <my-button variant="secondary">
+                <my-button variant="outlined">
                     <my-icon icon="settings"></my-icon>
                     Settings
                 </my-button>
-                <my-button variant="ghost">
+                <my-button variant="text">
                     Save
                     <my-icon icon="save"></my-icon>
                 </my-button>

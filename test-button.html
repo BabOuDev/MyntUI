@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyntUI - Enhanced Button Component Testing</title>
+    <link rel="stylesheet" href="src/styles/base.css">
+    <style>
+        body {
+            padding: 2rem;
+            background: #fafafa;
+            font-family: var(--_global-font-family-sans);
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--_global-elevation-1);
+        }
+        
+        .demo-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .button-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enhanced MyntUI Button Component</h1>
+    
+    <div class="demo-section">
+        <h2 class="demo-title">Material Design 3 Variants</h2>
+        <div class="button-showcase">
+            <my-button variant="filled" label="Filled Button"></my-button>
+            <my-button variant="outlined" label="Outlined Button"></my-button>
+            <my-button variant="text" label="Text Button"></my-button>
+            <my-button variant="success" label="Success Button"></my-button>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Legacy Variants (Still Supported)</h2>
+        <div class="button-showcase">
+            <my-button variant="primary" label="Primary"></my-button>
+            <my-button variant="secondary" label="Secondary"></my-button>
+            <my-button variant="ghost" label="Ghost"></my-button>
+            <my-button variant="danger" label="Danger"></my-button>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Density Variants</h2>
+        <div class="button-grid">
+            <div>
+                <p><strong>Comfortable</strong></p>
+                <div class="button-showcase">
+                    <my-button variant="filled" label="Comfortable" density="comfortable"></my-button>
+                    <my-button variant="outlined" label="Comfortable" density="comfortable"></my-button>
+                </div>
+            </div>
+            <div>
+                <p><strong>Default</strong></p>
+                <div class="button-showcase">
+                    <my-button variant="filled" label="Default"></my-button>
+                    <my-button variant="outlined" label="Default"></my-button>
+                </div>
+            </div>
+            <div>
+                <p><strong>Compact</strong></p>
+                <div class="button-showcase">
+                    <my-button variant="filled" label="Compact" density="compact"></my-button>
+                    <my-button variant="outlined" label="Compact" density="compact"></my-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">States & Interactions</h2>
+        <div class="button-grid">
+            <div>
+                <p><strong>Normal States</strong></p>
+                <div class="button-showcase">
+                    <my-button variant="filled" label="Normal"></my-button>
+                    <my-button variant="filled" label="Disabled" disabled></my-button>
+                    <my-button variant="filled" label="Loading" loading></my-button>
+                </div>
+            </div>
+            <div>
+                <p><strong>With Ripple Effect</strong></p>
+                <div class="button-showcase">
+                    <my-button variant="filled" label="Click Me!"></my-button>
+                    <my-button variant="outlined" label="Try Keyboard Focus"></my-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Sizes</h2>
+        <div class="button-showcase">
+            <my-button variant="filled" label="Small" size="sm"></my-button>
+            <my-button variant="filled" label="Medium" size="md"></my-button>
+            <my-button variant="filled" label="Large" size="lg"></my-button>
+        </div>
+    </div>
+
+    <script type="module">
+        import './src/components/my-button/my-button.js';
+        
+        // Event listeners to test functionality
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() === 'my-button') {
+                console.log('Button clicked:', {
+                    variant: e.target.variant,
+                    label: e.target.label,
+                    size: e.target.size,
+                    density: e.target.density
+                });
+            }
+        });
+        
+        console.log('Enhanced Button Test Page Loaded');
+    </script>
+</body>
+</html>
