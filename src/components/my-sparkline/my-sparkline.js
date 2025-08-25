@@ -19,6 +19,7 @@ class MySparkline extends HTMLElement {
     this.handleResize = this.handleResize.bind(this);
     
     // Initialize component
+    this.parseData(); // Parse data first
     this.render();
     this.attachEventListeners();
   }
@@ -270,14 +271,39 @@ class MySparkline extends HTMLElement {
     this.render();
   }
 
-  // Attach event listeners
+  // Standardized event handling pattern for MyntUI components
   attachEventListeners() {
+    // Clean up existing listeners first
+    this.removeEventListeners();
+    
     // Listen for resize events if responsive
     if (this.hasAttribute('responsive')) {
       window.addEventListener('resize', this.handleResize);
-    } else {
-      window.removeEventListener('resize', this.handleResize);
+      this._eventTargets = [
+        { element: window, events: ['resize'] }
+      ];
     }
+  }
+
+  // Standardized event listener cleanup
+  removeEventListeners() {
+    if (this._eventTargets) {
+      this._eventTargets.forEach(target => {
+        target.element.removeEventListener('resize', this.handleResize);
+      });
+      this._eventTargets = null;
+    }
+    
+    // Clean up animation
+    if (this._animationId) {
+      cancelAnimationFrame(this._animationId);
+      this._animationId = null;
+    }
+  }
+
+  // Standardized lifecycle cleanup
+  disconnectedCallback() {
+    this.removeEventListeners();
   }
 
   // Animation frame
