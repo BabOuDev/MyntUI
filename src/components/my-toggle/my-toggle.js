@@ -1,60 +1,61 @@
 /**
  * MyntUI my-toggle Component
  * A switch-like component for a boolean input, providing a visual on/off state
+ * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
  */
 
-class MyToggle extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyToggle extends MyntUIBaseComponent {
   constructor() {
     super();
     
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
-    
-    // Bind event handlers
+    // Component-specific bindings
     this.handleClick = this.handleClick.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.toggle = this.toggle.bind(this);
     
-    // Initialize component
-    this.render();
-    this.attachEventListeners();
+    // Initialize with base component pattern
+    this.log('Toggle component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['checked', 'disabled', 'label', 'name', 'value', 'error', 'size'];
+    return [
+      ...super.observedAttributes,
+      'checked', 'label', 'name', 'value'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.render();
-      this.attachEventListeners();
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'checked':
+        this.emit('change', { 
+          checked: this.checked, 
+          value: this.checked ? this.value : null,
+          name: this.name 
+        });
+        break;
+      case 'disabled':
+        this.announceToScreenReader(
+          `Toggle ${this.disabled ? 'disabled' : 'enabled'}`,
+          'polite'
+        );
+        break;
     }
   }
 
-  // Getters and setters
+  // Enhanced getters and setters with validation (inherits common ones from base)
   get checked() {
     return this.hasAttribute('checked');
   }
 
   set checked(value) {
-    if (value) {
-      this.setAttribute('checked', '');
-    } else {
-      this.removeAttribute('checked');
-    }
-  }
-
-  get disabled() {
-    return this.hasAttribute('disabled');
-  }
-
-  set disabled(value) {
-    if (value) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
-    }
+    const boolValue = Boolean(value);
+    this.toggleAttribute('checked', boolValue);
+    this.log('Checked state changed:', boolValue);
   }
 
   get label() {
@@ -125,50 +126,34 @@ class MyToggle extends HTMLElement {
     const oldChecked = this.checked;
     this.checked = !oldChecked;
 
-    // Emit change event
-    this.dispatchEvent(new CustomEvent('change', {
-      detail: {
-        checked: this.checked,
-        value: this.checked ? this.value : null,
-        name: this.name
-      },
-      bubbles: true
-    }));
+    // Emit change event using base component method
+    this.emit('change', {
+      checked: this.checked,
+      value: this.checked ? this.value : null,
+      name: this.name
+    });
   }
 
-  // Attach event listeners
-  // Standardized event handling pattern for MyntUI components
+  // Attach event listeners using base component pattern
   attachEventListeners() {
-    // Clean up existing listeners first
-    this.removeEventListeners();
+    this.removeEventListeners(); // Clean up existing listeners
     
     const toggleContainer = this.shadowRoot.querySelector('.toggle-container');
     if (!toggleContainer) return;
     
-    // Only attach listeners to the shadow DOM container element
-    toggleContainer.addEventListener('click', this.handleClick);
-    toggleContainer.addEventListener('keydown', this.handleKeyDown);
-    
-    // Store references for cleanup
-    this._eventTargets = [
-      { element: toggleContainer, events: ['click', 'keydown'] }
-    ];
-  }
-
-  // Standardized event listener cleanup
-  removeEventListeners() {
-    if (this._eventTargets) {
-      this._eventTargets.forEach(target => {
-        target.element.removeEventListener('click', this.handleClick);
-        target.element.removeEventListener('keydown', this.handleKeyDown);
-      });
-      this._eventTargets = null;
-    }
-  }
-
-  // Standardized lifecycle cleanup
-  disconnectedCallback() {
-    this.removeEventListeners();
+    // Use base component's standardized event listener management
+    this.addEventListeners([
+      {
+        element: toggleContainer,
+        events: ['click'],
+        handler: this.handleClick
+      },
+      {
+        element: toggleContainer,
+        events: ['keydown'],
+        handler: this.handleKeyDown
+      }
+    ]);
   }
 
   // Render the component
