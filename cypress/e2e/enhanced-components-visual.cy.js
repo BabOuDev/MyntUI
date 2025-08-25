@@ -144,12 +144,12 @@ describe('Enhanced Components Visual Testing', () => {
         
         // Test click interaction
         cy.wait(500)
-        cy.get('my-progress').shadow().find('.progress-track').click('center')
+        cy.get('my-progress').first().shadow().find('.progress-track').click('center')
         cy.wait(200)
         cy.screenshot('progress-interaction-center-click', { overwrite: true })
         
         // Test right click
-        cy.get('my-progress').shadow().find('.progress-track').click('right')
+        cy.get('my-progress').first().shadow().find('.progress-track').click('right')
         cy.wait(200)
         cy.screenshot('progress-interaction-right-click', { overwrite: true })
       })
@@ -281,18 +281,18 @@ describe('Enhanced Components Visual Testing', () => {
         
         // Test focus and keyboard interaction
         cy.wait(500)
-        cy.get('my-gauge').shadow().find('.gauge-container').focus()
+        cy.get('my-gauge').first().shadow().find('.gauge-container').focus()
         cy.wait(200)
         cy.screenshot('gauge-focused-state', { overwrite: true })
         
         // Test arrow key interaction
-        cy.get('my-gauge').shadow().find('.gauge-container')
+        cy.get('my-gauge').first().shadow().find('.gauge-container')
           .type('{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}')
         cy.wait(200)
         cy.screenshot('gauge-arrow-key-increased', { overwrite: true })
         
         // Test Home key
-        cy.get('my-gauge').shadow().find('.gauge-container').type('{home}')
+        cy.get('my-gauge').first().shadow().find('.gauge-container').type('{home}')
         cy.wait(200)
         cy.screenshot('gauge-home-key-minimum', { overwrite: true })
         
@@ -402,14 +402,14 @@ describe('Enhanced Components Visual Testing', () => {
         cy.wait(500)
         
         // Test hover states
-        cy.get('my-progress').trigger('mouseover')
-        cy.get('my-gauge').trigger('mouseover')
+        cy.get('my-progress').first().trigger('mouseover')
+        cy.get('my-gauge').first().trigger('mouseover')
         cy.wait(300)
         cy.screenshot('components-hover-states', { overwrite: true })
         
         // Test normal states
-        cy.get('my-progress').trigger('mouseout')
-        cy.get('my-gauge').trigger('mouseout')
+        cy.get('my-progress').first().trigger('mouseout')
+        cy.get('my-gauge').first().trigger('mouseout')
         cy.wait(300)
         cy.screenshot('components-normal-states', { overwrite: true })
       })
