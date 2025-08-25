@@ -1,39 +1,54 @@
 /**
  * MyntUI my-checkbox Component
- * A standard checkbox input for selecting one or more options
+ * A Material Design 3 checkbox input for selecting one or more options
+ * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
  */
 
-class MyCheckbox extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyCheckbox extends MyntUIBaseComponent {
   constructor() {
     super();
     
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
-    
-    // Bind event handlers
+    // Component-specific bindings
     this.handleClick = this.handleClick.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.createRipple = this.createRipple.bind(this);
+    this.toggle = this.toggle.bind(this);
     
-    // Initialize component
-    this.render();
-    this.attachEventListeners();
+    // Initialize with base component pattern
+    this.log('Checkbox component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['checked', 'indeterminate', 'disabled', 'label', 'name', 'value', 'size', 'error'];
+    return [
+      ...super.observedAttributes,
+      'checked', 'indeterminate', 'label', 'name', 'value'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.render();
-      this.attachEventListeners();
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'checked':
+      case 'indeterminate':
+        this.announceToScreenReader(
+          `Checkbox ${this.checked ? 'checked' : this.indeterminate ? 'indeterminate' : 'unchecked'}`,
+          'polite'
+        );
+        break;
+      case 'disabled':
+        this.announceToScreenReader(
+          `Checkbox ${this.disabled ? 'disabled' : 'enabled'}`,
+          'polite'
+        );
+        break;
     }
   }
 
-  // Getters and setters
+  // Component-specific getters and setters (inherits common ones from BaseComponent)
   get checked() {
     return this.hasAttribute('checked');
   }
@@ -57,18 +72,6 @@ class MyCheckbox extends HTMLElement {
       this.removeAttribute('checked');
     } else {
       this.removeAttribute('indeterminate');
-    }
-  }
-
-  get disabled() {
-    return this.hasAttribute('disabled');
-  }
-
-  set disabled(value) {
-    if (value) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
     }
   }
 
@@ -96,88 +99,31 @@ class MyCheckbox extends HTMLElement {
     this.setAttribute('value', value);
   }
 
-  get size() {
-    return this.getAttribute('size') || 'md';
-  }
-
-  set size(value) {
-    this.setAttribute('size', value);
-  }
-
-  get error() {
-    return this.hasAttribute('error');
-  }
-
-  set error(value) {
-    if (value) {
-      this.setAttribute('error', '');
-    } else {
-      this.removeAttribute('error');
-    }
-  }
-
-  // Event handlers
+  // Component-specific event handlers
   handleClick(event) {
-    if (this.disabled) {
+    if (this.disabled || this.loading) {
       event.preventDefault();
       return;
     }
 
-    this.createRipple(event);
+    // Use BaseComponent's standardized ripple
+    const container = this.shadowRoot.querySelector('.checkbox-container');
+    this.createRipple(event, container);
     this.toggle();
   }
 
   handleKeyDown(event) {
-    if (this.disabled) return;
+    // Call parent handler first for common patterns
+    super.handleKeyDown(event);
+    
+    if (this.disabled || this.loading) return;
 
     if (event.key === ' ') {
       event.preventDefault();
-      this.createRipple();
+      const container = this.shadowRoot.querySelector('.checkbox-container');
+      this.createRipple(null, container);
       this.toggle();
     }
-  }
-
-  // Create ripple effect for Material Design 3
-  createRipple(event) {
-    const container = this.shadowRoot.querySelector('.checkbox-container');
-    if (!container || this.disabled) return;
-
-    // Remove existing ripples
-    const existingRipples = container.querySelectorAll('.ripple');
-    existingRipples.forEach(ripple => ripple.remove());
-
-    // Create ripple element
-    const ripple = document.createElement('span');
-    ripple.classList.add('ripple');
-
-    // Calculate ripple position and size
-    const rect = container.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const radius = size / 2;
-
-    let x, y;
-    if (event && event.clientX !== undefined) {
-      // Mouse click - position ripple at click point
-      x = event.clientX - rect.left - radius;
-      y = event.clientY - rect.top - radius;
-    } else {
-      // Keyboard activation - center ripple
-      x = rect.width / 2 - radius;
-      y = rect.height / 2 - radius;
-    }
-
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-
-    container.appendChild(ripple);
-
-    // Remove ripple after animation
-    setTimeout(() => {
-      if (ripple.parentNode) {
-        ripple.parentNode.removeChild(ripple);
-      }
-    }, 600);
   }
 
   // Toggle the checked state
@@ -190,19 +136,16 @@ class MyCheckbox extends HTMLElement {
       this.checked = !this.checked;
     }
 
-    // Emit change event
-    this.dispatchEvent(new CustomEvent('change', {
-      detail: {
-        checked: this.checked,
-        indeterminate: this.indeterminate,
-        value: this.checked ? this.value : null,
-        name: this.name
-      },
-      bubbles: true
-    }));
+    // Use BaseComponent's standardized event emission
+    this.emit('change', {
+      checked: this.checked,
+      indeterminate: this.indeterminate,
+      value: this.checked ? this.value : null,
+      name: this.name
+    });
   }
 
-  // Attach event listeners - Standardized pattern for MyntUI components
+  // Standardized event listener attachment using BaseComponent patterns
   attachEventListeners() {
     // Clean up existing listeners first
     this.removeEventListeners();
@@ -210,32 +153,32 @@ class MyCheckbox extends HTMLElement {
     const checkboxContainer = this.shadowRoot.querySelector('.checkbox-container');
     if (!checkboxContainer) return;
     
-    // Only attach listeners to the shadow DOM container element
-    checkboxContainer.addEventListener('click', this.handleClick);
-    checkboxContainer.addEventListener('keydown', this.handleKeyDown);
-    
-    // Store references for cleanup
-    this._eventTargets = [
-      { element: checkboxContainer, events: ['click', 'keydown'] }
-    ];
+    // Use BaseComponent's addEventListeners method
+    this.addEventListeners([
+      {
+        element: checkboxContainer,
+        events: ['click', 'keydown'],
+        handler: (event) => {
+          if (event.type === 'click') {
+            this.handleClick(event);
+          } else if (event.type === 'keydown') {
+            this.handleKeyDown(event);
+          }
+        }
+      }
+    ]);
   }
 
-  // Remove event listeners - part of standardized cleanup pattern
-  removeEventListeners() {
-    if (this._eventTargets) {
-      this._eventTargets.forEach(target => {
-        target.element.removeEventListener('click', this.handleClick);
-        target.element.removeEventListener('keydown', this.handleKeyDown);
-      });
-      this._eventTargets = null;
-    }
+  // Lifecycle methods using BaseComponent patterns
+  onConnected() {
+    this.log('Checkbox connected to DOM');
+    // Any additional connection logic can go here
   }
 
-  // Cleanup on disconnect - part of standardized lifecycle
-  disconnectedCallback() {
-    this.removeEventListeners();
+  onDisconnected() {
+    this.log('Checkbox disconnected from DOM');
+    // Any additional disconnection logic can go here
   }
-
 
   // Render the component
   render() {
@@ -491,13 +434,13 @@ class MyCheckbox extends HTMLElement {
           transition: var(--_checkbox-transition-fast);
         }
 
-        /* Enhanced ripple effect styles */
+        /* Enhanced ripple effect styles - using BaseComponent standardized ripple */
         .ripple {
           position: absolute;
           border-radius: 50%;
           transform: scale(0);
-          animation: ripple-animation var(--_checkbox-ripple-duration) var(--_checkbox-ripple-easing);
-          background-color: var(--_checkbox-state-layer-unchecked);
+          animation: ripple-animation var(--_global-ripple-duration) var(--_global-ripple-easing);
+          background-color: var(--_global-ripple-color-light);
           opacity: var(--_global-ripple-opacity-pressed);
           pointer-events: none;
           z-index: 1;
@@ -696,7 +639,5 @@ class MyCheckbox extends HTMLElement {
   }
 }
 
-// Register the custom element only if it hasn't been registered already
-if (!customElements.get('my-checkbox')) {
-  customElements.define('my-checkbox', MyCheckbox);
-}
+// Register the custom element using BaseComponent's registration helper
+MyCheckbox.define('my-checkbox');
