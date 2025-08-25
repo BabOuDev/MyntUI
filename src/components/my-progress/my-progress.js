@@ -128,12 +128,15 @@ class MyProgress extends HTMLElement {
     return `${percentage}%`;
   }
 
-  // Connected callback
+  // Connected callback - ensures proper initialization
   connectedCallback() {
-    // Parse initial values
-    this._value = Math.max(this.min, Math.min(this.max, parseFloat(this.getAttribute('value')) || 0));
+    // Parse initial values from attributes
     this._max = parseFloat(this.getAttribute('max')) || 100;
     this._min = parseFloat(this.getAttribute('min')) || 0;
+    this._value = Math.max(this._min, Math.min(this._max, parseFloat(this.getAttribute('value')) || 0));
+    
+    // Re-render with parsed values
+    this.render();
   }
 
   // Render the component

@@ -599,7 +599,7 @@ class MyInput extends HTMLElement {
           opacity: var(--_input-state-layer-opacity);
         }
 
-        /* Focus states with enhanced visual feedback */
+        /* Enhanced Focus states with Material Design 3 emphasis */
         .input-field:focus,
         .input-field.focused {
           border-color: var(--_input-border-color-focus);
@@ -607,6 +607,7 @@ class MyInput extends HTMLElement {
           background-color: var(--_input-background-focus);
           box-shadow: var(--_input-elevation-focus);
           outline: none;
+          transform: translateY(-1px);
         }
         
         .input-field:focus::before,
@@ -744,17 +745,19 @@ class MyInput extends HTMLElement {
           transform: translateY(0);
         }
 
-        /* Floating label animation */
+        /* Enhanced Floating label animation with Material Design 3 styling */
         .input-field:focus ~ .label.over,
         .input-field:not(:placeholder-shown) ~ .label.over {
-          top: -2px;
+          top: -8px;
           left: calc(var(--_input-padding-x) - 4px);
-          transform: translateY(-50%) scale(0.75);
+          transform: translateY(0) scale(0.75);
           font-size: var(--_global-font-size-xs);
           color: var(--_input-label-color-focus);
-          background: var(--_input-background-focus);
-          border-radius: var(--_global-border-radius-xs);
-          font-weight: var(--_global-font-weight-semibold);
+          background: var(--_global-color-surface);
+          border-radius: var(--_global-border-radius-sm);
+          font-weight: var(--_global-font-weight-medium);
+          box-shadow: 0 0 0 4px var(--_global-color-surface);
+          letter-spacing: 0.01em;
         }
         
         /* Error state for floating label */
