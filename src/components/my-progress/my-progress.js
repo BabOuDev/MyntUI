@@ -1,14 +1,14 @@
 /**
  * MyntUI my-progress Component
  * Displays the progress of a task or process, typically as a bar
+ * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
  */
 
-class MyProgress extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+
+class MyProgress extends MyntUIBaseComponent {
   constructor() {
     super();
-    
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
     
     // Internal state
     this._value = 0;
@@ -17,23 +17,42 @@ class MyProgress extends HTMLElement {
     this._animationId = null;
     this._previousValue = 0;
     
-    // Initialize component
-    this.render();
+    // Initialize with base component pattern
+    this.log('Progress component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
-    return ['value', 'max', 'min', 'label', 'variant', 'size', 'indeterminate', 'show-value', 'animated', 'tooltip', 'buffer-value'];
+    return [
+      ...super.observedAttributes,
+      'value', 'max', 'min', 'label', 'indeterminate', 'show-value', 'animated', 'tooltip', 'buffer-value', 'type'
+    ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.render();
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'value':
+      case 'min':
+      case 'max':
+        this._parseNumericValues();
+        this.announceToScreenReader(
+          `Progress ${name} changed to ${newValue}${name === 'value' ? ` (${Math.round(this.percentage)}%)` : ''}`,
+          'polite'
+        );
+        break;
+      case 'indeterminate':
+        this.announceToScreenReader(
+          `Progress ${newValue !== null ? 'is loading' : 'value is ' + Math.round(this.percentage) + '%'}`,
+          'polite'
+        );
+        break;
     }
   }
 
-  // Getters and setters
+  // Enhanced getters and setters with validation (inherits common ones from base)
   get value() {
     return this._value;
   }
@@ -41,14 +60,16 @@ class MyProgress extends HTMLElement {
   set value(value) {
     const numValue = Math.max(this.min, Math.min(this.max, parseFloat(value) || 0));
     
-    if (this.animated && Math.abs(numValue - this._value) > 0.01) {
-      this.animateToValue(numValue);
-    } else {
-      this._value = numValue;
-      this.updateProgressVisuals();
+    if (this.validateAttribute('value', numValue, (v) => typeof v === 'number' && !isNaN(v))) {
+      if (this.animated && Math.abs(numValue - this._value) > 0.01) {
+        this.animateToValue(numValue);
+      } else {
+        this._value = numValue;
+        this.updateProgressVisuals();
+      }
+      this.setAttribute('value', numValue.toString());
+      this.log('Value changed:', numValue);
     }
-    
-    this.setAttribute('value', numValue.toString());
   }
 
   get max() {
@@ -56,10 +77,12 @@ class MyProgress extends HTMLElement {
   }
 
   set max(value) {
-    this._max = Math.max(0, parseFloat(value) || 100);
-    this.setAttribute('max', this._max.toString());
-    // Recalculate value to ensure it's within bounds
-    this.value = this._value;
+    const numValue = Math.max(0, parseFloat(value) || 100);
+    if (this.validateAttribute('max', numValue, (v) => typeof v === 'number' && !isNaN(v) && v >= 0)) {
+      this._max = numValue;
+      this.setAttribute('max', numValue.toString());
+      this._parseNumericValues(); // Re-validate all values
+    }
   }
 
   get min() {
@@ -67,10 +90,12 @@ class MyProgress extends HTMLElement {
   }
 
   set min(value) {
-    this._min = Math.max(0, parseFloat(value) || 0);
-    this.setAttribute('min', this._min.toString());
-    // Recalculate value to ensure it's within bounds
-    this.value = this._value;
+    const numValue = Math.max(0, parseFloat(value) || 0);
+    if (this.validateAttribute('min', numValue, (v) => typeof v === 'number' && !isNaN(v) && v >= 0)) {
+      this._min = numValue;
+      this.setAttribute('min', numValue.toString());
+      this._parseNumericValues(); // Re-validate all values
+    }
   }
 
   get label() {
@@ -172,23 +197,38 @@ class MyProgress extends HTMLElement {
     return `${percentage}%`;
   }
 
-  // Connected callback - ensures proper initialization
-  connectedCallback() {
-    // Parse initial values from attributes
-    this._max = parseFloat(this.getAttribute('max')) || 100;
-    this._min = parseFloat(this.getAttribute('min')) || 0;
-    this._value = Math.max(this._min, Math.min(this._max, parseFloat(this.getAttribute('value')) || 0));
+  // Parse numeric values from attributes with validation
+  _parseNumericValues() {
+    this._max = Math.max(0, parseFloat(this.getAttribute('max')) || 100);
+    this._min = Math.max(0, parseFloat(this.getAttribute('min')) || 0);
     
-    // Re-render with parsed values
-    this.render();
+    // Ensure min is not greater than max
+    if (this._min > this._max) {
+      this._min = this._max;
+    }
+    
+    // Clamp value within bounds
+    const rawValue = parseFloat(this.getAttribute('value')) || 0;
+    this._value = Math.max(this._min, Math.min(this._max, rawValue));
   }
 
-  // Standardized lifecycle cleanup - part of MyntUI component pattern
-  disconnectedCallback() {
+  // Override base connected callback
+  onConnected() {
+    this._parseNumericValues();
+    this.log('Progress component connected with values:', {
+      value: this._value,
+      min: this._min,
+      max: this._max
+    });
+  }
+
+  // Override base disconnected callback
+  onDisconnected() {
     if (this._animationId) {
       cancelAnimationFrame(this._animationId);
       this._animationId = null;
     }
+    this.log('Progress component disconnected');
   }
 
   // Animate value change
@@ -248,7 +288,7 @@ class MyProgress extends HTMLElement {
     }
   }
 
-  // Public method to programmatically update progress
+  // Public method to programmatically update progress using base component pattern
   updateProgress(newValue, emitEvent = true) {
     const oldValue = this._value;
     const targetValue = Math.max(this.min, Math.min(this.max, parseFloat(newValue) || 0));
@@ -263,18 +303,58 @@ class MyProgress extends HTMLElement {
     this.setAttribute('value', targetValue.toString());
     
     if (emitEvent && oldValue !== this._value) {
-      // Emit progress update event for external listeners
-      this.dispatchEvent(new CustomEvent('progress-change', {
-        detail: {
-          value: this._value,
-          percentage: this.percentage,
-          oldValue: oldValue,
-          min: this.min,
-          max: this.max
-        },
-        bubbles: true
-      }));
+      // Use base component emit method
+      this.emit('progress-change', {
+        value: this._value,
+        percentage: this.percentage,
+        oldValue: oldValue,
+        min: this.min,
+        max: this.max
+      });
     }
+  }
+
+  // Attach event listeners using base component pattern
+  attachEventListeners() {
+    this.removeEventListeners(); // Clean up existing listeners
+    
+    const progressTrack = this.shadowRoot.querySelector('.progress-track');
+    if (!progressTrack) return;
+    
+    // Use base component's standardized event listener management
+    this.addEventListeners([
+      {
+        element: progressTrack,
+        events: ['click'],
+        handler: this.handleClick.bind(this)
+      },
+      {
+        element: progressTrack,
+        events: ['keydown'],
+        handler: this.handleKeyDown
+      },
+      {
+        element: progressTrack,
+        events: ['focus'],
+        handler: this.handleFocus
+      },
+      {
+        element: progressTrack,
+        events: ['blur'],
+        handler: this.handleBlur
+      }
+    ]);
+  }
+
+  // Handle click events on progress track
+  handleClick(event) {
+    if (this.disabled || this.indeterminate) return;
+    
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clickPosition = (event.clientX - rect.left) / rect.width;
+    const newValue = this.min + (this.max - this.min) * clickPosition;
+    
+    this.updateProgress(newValue);
   }
 
   // Render the component
