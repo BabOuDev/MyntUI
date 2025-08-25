@@ -311,7 +311,7 @@ class MyInput extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          /* Component-specific variables using global variables */
+          /* Input-specific variables using global semantic variables */
           --_input-height: var(--_global-input-height);
           --_input-padding-x: var(--_global-input-padding-x);
           --_input-padding-y: var(--_global-input-padding-y);
@@ -321,6 +321,11 @@ class MyInput extends HTMLElement {
           --_input-background: var(--_global-color-white);
           --_input-text-color: var(--_global-color-text-primary);
           --_input-placeholder-color: var(--_global-color-text-muted);
+          
+          --_input-focus-shadow: 0 0 0 2px rgba(128, 189, 255, 0.2);
+          --_input-error-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+          --_input-border-radius: var(--_global-border-radius-md);
+          --_input-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
           
           display: block;
           width: 100%;
@@ -379,13 +384,13 @@ class MyInput extends HTMLElement {
           height: var(--_input-height);
           padding: var(--_input-padding-y) var(--_input-padding-x);
           border: 1px solid var(--_input-border-color);
-          border-radius: var(--_global-border-radius-md);
+          border-radius: var(--_input-border-radius);
           background-color: var(--_input-background);
           color: var(--_input-text-color);
           font-size: var(--_global-font-size-md);
           font-family: var(--_global-font-family-sans);
           line-height: var(--_global-line-height-normal);
-          transition: all var(--_global-transition-fast);
+          transition: all var(--_input-transition);
           outline: none;
         }
 
@@ -395,7 +400,7 @@ class MyInput extends HTMLElement {
 
         .input-field:focus {
           border-color: var(--_input-border-color-focus);
-          box-shadow: 0 0 0 2px rgba(128, 189, 255, 0.2);
+          box-shadow: var(--_input-focus-shadow);
         }
 
         .input-field:disabled {
@@ -409,7 +414,7 @@ class MyInput extends HTMLElement {
         }
 
         .input-field.error:focus {
-          box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+          box-shadow: var(--_input-error-shadow);
         }
 
         /* Textarea specific styling */
@@ -520,5 +525,7 @@ class MyInput extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define('my-input', MyInput);
+// Register the custom element only if it hasn't been registered already
+if (!customElements.get('my-input')) {
+  customElements.define('my-input', MyInput);
+}
