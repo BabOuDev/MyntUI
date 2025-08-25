@@ -24,7 +24,7 @@ class MyButton extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['label', 'variant', 'disabled', 'loading', 'size', 'density'];
+    return ['label', 'variant', 'disabled', 'loading', 'size', 'density', 'fab', 'icon-only'];
   }
 
   // Handle attribute changes
@@ -90,6 +90,30 @@ class MyButton extends HTMLElement {
 
   set density(value) {
     this.setAttribute('density', value);
+  }
+
+  get fab() {
+    return this.hasAttribute('fab');
+  }
+
+  set fab(value) {
+    if (value) {
+      this.setAttribute('fab', '');
+    } else {
+      this.removeAttribute('fab');
+    }
+  }
+
+  get iconOnly() {
+    return this.hasAttribute('icon-only');
+  }
+
+  set iconOnly(value) {
+    if (value) {
+      this.setAttribute('icon-only', '');
+    } else {
+      this.removeAttribute('icon-only');
+    }
   }
 
   // Handle click events
@@ -264,6 +288,7 @@ class MyButton extends HTMLElement {
           --_button-line-height: var(--_global-line-height-tight);
           
           --_button-border-radius: var(--_global-border-radius-full);
+          --_button-border-radius-fab: var(--_global-border-radius-lg);
           --_button-gap: var(--_global-spacing-sm);
           
           --_button-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
@@ -460,6 +485,50 @@ class MyButton extends HTMLElement {
           filter: brightness(0.9);
           box-shadow: var(--_button-elevation-hover);
           transform: translateY(-1px);
+        }
+
+        /* Floating Action Button (FAB) styles */
+        :host([fab]) button {
+          border-radius: var(--_button-border-radius-fab);
+          min-width: 56px;
+          width: 56px;
+          height: 56px;
+          padding: 0;
+          box-shadow: var(--_global-elevation-2);
+        }
+
+        :host([fab]) button:hover:not(:disabled) {
+          box-shadow: var(--_global-elevation-3);
+        }
+
+        :host([fab][size="sm"]) button {
+          width: 40px;
+          height: 40px;
+          min-width: 40px;
+        }
+
+        :host([fab][size="lg"]) button {
+          width: 72px;
+          height: 72px;
+          min-width: 72px;
+        }
+
+        /* Icon-only button styles */
+        :host([icon-only]) button {
+          min-width: var(--_button-height-md);
+          width: var(--_button-height-md);
+          padding: 0;
+          border-radius: var(--_global-border-radius-full);
+        }
+
+        :host([icon-only][size="sm"]) button {
+          min-width: var(--_button-height-sm);
+          width: var(--_button-height-sm);
+        }
+
+        :host([icon-only][size="lg"]) button {
+          min-width: var(--_button-height-lg);
+          width: var(--_button-height-lg);
         }
 
         /* Focus state */
