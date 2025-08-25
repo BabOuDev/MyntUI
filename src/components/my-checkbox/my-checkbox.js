@@ -202,18 +202,38 @@ class MyCheckbox extends HTMLElement {
     }));
   }
 
-  // Attach event listeners
+  // Attach event listeners - Standardized pattern for MyntUI components
   attachEventListeners() {
-    const checkbox = this.shadowRoot.querySelector('.checkbox-container');
-    if (checkbox) {
-      // Remove existing listeners
-      checkbox.removeEventListener('click', this.handleClick);
-      checkbox.removeEventListener('keydown', this.handleKeyDown);
-      
-      // Add new listeners
-      checkbox.addEventListener('click', this.handleClick);
-      checkbox.addEventListener('keydown', this.handleKeyDown);
+    // Clean up existing listeners first
+    this.removeEventListeners();
+    
+    const checkboxContainer = this.shadowRoot.querySelector('.checkbox-container');
+    if (!checkboxContainer) return;
+    
+    // Only attach listeners to the shadow DOM container element
+    checkboxContainer.addEventListener('click', this.handleClick);
+    checkboxContainer.addEventListener('keydown', this.handleKeyDown);
+    
+    // Store references for cleanup
+    this._eventTargets = [
+      { element: checkboxContainer, events: ['click', 'keydown'] }
+    ];
+  }
+
+  // Remove event listeners - part of standardized cleanup pattern
+  removeEventListeners() {
+    if (this._eventTargets) {
+      this._eventTargets.forEach(target => {
+        target.element.removeEventListener('click', this.handleClick);
+        target.element.removeEventListener('keydown', this.handleKeyDown);
+      });
+      this._eventTargets = null;
     }
+  }
+
+  // Cleanup on disconnect - part of standardized lifecycle
+  disconnectedCallback() {
+    this.removeEventListeners();
   }
 
 
@@ -446,12 +466,48 @@ class MyCheckbox extends HTMLElement {
           color: var(--_global-color-outline);
         }
         
-        /* Reduced motion support */
+        /* Accessibility improvements - High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          .checkbox-input {
+            border: 3px solid currentColor;
+            background-color: var(--_global-color-surface);
+          }
+          
+          .checkbox-input.checked,
+          .checkbox-input.indeterminate {
+            background-color: var(--_global-color-primary);
+            outline: 2px solid;
+            outline-offset: 2px;
+          }
+          
+          .ripple {
+            display: none;
+          }
+          
+          .label {
+            font-weight: var(--_global-font-weight-bold);
+          }
+        }
+
+        /* Accessibility improvements - Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
           .checkbox-input,
           .checkbox-input::after,
-          .checkbox-container::before {
+          .checkbox-container::before,
+          .ripple {
+            animation: none;
             transition: none;
+          }
+          
+          .ripple {
+            display: none;
+          }
+        }
+
+        /* Enhanced focus-visible for better keyboard navigation */
+        @supports selector(:focus-visible) {
+          .checkbox-container:focus:not(:focus-visible) {
+            outline: none;
           }
         }
       </style>
