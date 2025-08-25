@@ -24,7 +24,7 @@ class MyRadioGroup extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['name', 'value', 'disabled', 'label'];
+    return ['name', 'value', 'disabled', 'label', 'required', 'size', 'layout'];
   }
 
   // Handle attribute changes
@@ -76,6 +76,34 @@ class MyRadioGroup extends HTMLElement {
 
   set label(value) {
     this.setAttribute('label', value);
+  }
+
+  get required() {
+    return this.hasAttribute('required');
+  }
+
+  set required(value) {
+    if (value) {
+      this.setAttribute('required', '');
+    } else {
+      this.removeAttribute('required');
+    }
+  }
+
+  get size() {
+    return this.getAttribute('size') || 'md';
+  }
+
+  set size(value) {
+    this.setAttribute('size', value);
+  }
+
+  get layout() {
+    return this.getAttribute('layout') || 'vertical';
+  }
+
+  set layout(value) {
+    this.setAttribute('layout', value);
   }
 
   // Get all radio elements
@@ -176,6 +204,9 @@ class MyRadioGroup extends HTMLElement {
         if (this.disabled) {
           radio.disabled = true;
         }
+        if (this.size && this.size !== 'md') {
+          radio.setAttribute('size', this.size);
+        }
         // Set tabindex for keyboard navigation
         radio.setAttribute('tabindex', index === 0 ? '0' : '-1');
       });
@@ -194,12 +225,14 @@ class MyRadioGroup extends HTMLElement {
         :host {
           /* Component-specific variables using global variables */
           --_radio-group-gap: var(--_global-spacing-sm);
+          --_radio-group-gap-horizontal: var(--_global-spacing-md);
           
           display: block;
         }
 
         :host([disabled]) {
-          opacity: 0.5;
+          opacity: 0.6;
+          cursor: not-allowed;
           pointer-events: none;
         }
 
@@ -212,28 +245,48 @@ class MyRadioGroup extends HTMLElement {
         .radio-group.horizontal {
           flex-direction: row;
           flex-wrap: wrap;
+          gap: var(--_radio-group-gap-horizontal);
+          align-items: center;
         }
 
         .group-label {
-          font-size: var(--_global-font-size-md);
+          font-size: var(--_global-font-size-sm);
           font-weight: var(--_global-font-weight-medium);
           color: var(--_global-color-text-primary);
+          line-height: var(--_global-line-height-tight);
           margin-bottom: var(--_global-spacing-sm);
+        }
+
+        .group-label.required::after {
+          content: ' *';
+          color: var(--_global-color-error);
         }
 
         /* Focus management for keyboard navigation */
         :host(:focus-within) {
           outline: none;
         }
+
+        /* Size variants */
+        :host([size="sm"]) {
+          --_radio-group-gap: var(--_global-spacing-xs);
+          --_radio-group-gap-horizontal: var(--_global-spacing-sm);
+        }
+
+        :host([size="lg"]) {
+          --_radio-group-gap: var(--_global-spacing-md);
+          --_radio-group-gap-horizontal: var(--_global-spacing-lg);
+        }
       </style>
 
-      ${this.label ? `<div class="group-label">${this.label}</div>` : ''}
+      ${this.label ? `<div class="group-label ${this.required ? 'required' : ''}">${this.label}</div>` : ''}
       
       <div 
-        class="radio-group ${this.getAttribute('layout') === 'horizontal' ? 'horizontal' : ''}"
+        class="radio-group ${this.layout === 'horizontal' ? 'horizontal' : ''}"
         role="radiogroup"
         ${this.label ? `aria-label="${this.label}"` : ''}
         ${this.disabled ? 'aria-disabled="true"' : ''}
+        ${this.required ? 'aria-required="true"' : ''}
       >
         <slot></slot>
       </div>
@@ -269,7 +322,7 @@ class MyRadio extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['checked', 'disabled', 'label', 'name', 'value'];
+    return ['checked', 'disabled', 'label', 'name', 'value', 'size'];
   }
 
   // Handle attribute changes
@@ -327,6 +380,14 @@ class MyRadio extends HTMLElement {
 
   set value(value) {
     this.setAttribute('value', value);
+  }
+
+  get size() {
+    return this.getAttribute('size') || 'md';
+  }
+
+  set size(value) {
+    this.setAttribute('size', value);
   }
 
   // Event handlers
