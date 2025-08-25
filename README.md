@@ -13,17 +13,20 @@ MyntUI is a comprehensive, framework-agnostic web component library that brings 
 - **Framework-Agnostic**: Works seamlessly with React, Vue, Angular, Svelte, or vanilla JavaScript
 
 ### Design & Accessibility
-- **Material Design 3 Compliance**: Authentic Material Design aesthetics with modern color systems and typography
+- **Enhanced Material Design 3 Compliance**: Updated color system with full tonal palette (10-99) and improved consistency
+- **Advanced Color System**: Comprehensive primary/secondary color variants for better visual hierarchy
 - **WCAG 2.1 AA Compliant**: Full accessibility support with ARIA attributes, keyboard navigation, and screen reader compatibility
 - **High Contrast & Reduced Motion Support**: Comprehensive accessibility preferences support
 - **Responsive Design**: Mobile-first approach with seamless desktop scaling
+- **Visual Consistency**: Unified styling patterns across all components with standardized spacing and typography
 
 ### Developer Experience
 - **Zero Dependencies**: Pure vanilla JavaScript with no external library requirements
 - **Advanced Theming**: Two-level CSS variable system for consistent and flexible customization
 - **TypeScript-Ready**: Full type definitions and IntelliSense support
-- **Comprehensive Storybook**: Interactive documentation with live examples and testing playground
+- **Comprehensive Storybook**: Enhanced interactive documentation with detailed component showcases
 - **Visual Regression Testing**: Automated Cypress tests ensuring consistent visual quality
+- **Enhanced Showcase**: Comprehensive component gallery demonstrating all variants and states
 
 ## Quick Start
 
@@ -154,6 +157,25 @@ MyntUI's BaseComponent architecture represents a significant evolution in web co
 - 📦 **22 built-in SVG icons** eliminating external dependencies for common use cases
 - 🎨 **Material Design 3 compliance** across all interactive components
 - 🚀 **Zero memory leaks** validated through extensive testing
+
+## Recent Enhancements
+
+### 🎨 Enhanced Material Design 3 Compliance (v1.0.0)
+- **Improved Color System**: Updated primary color variants with full tonal palette (10-99) for better visual hierarchy
+- **Enhanced Secondary Colors**: Better consistency across secondary color variants and improved accessibility
+- **Unified Styling**: Standardized component styling patterns for better visual consistency
+- **Comprehensive Storybook Showcase**: Enhanced component gallery with detailed examples of all variants and states
+
+### 🚀 Component Quality Improvements
+- **Visual Consistency**: All boolean input components (toggles, checkboxes, radio) now share consistent styling patterns
+- **Better Form Integration**: Enhanced input components with improved validation and accessibility
+- **Responsive Design**: All components now respond better to different screen sizes and densities
+- **Performance Optimizations**: Improved rendering performance and memory usage across all components
+
+### 🔧 Developer Experience
+- **Enhanced Documentation**: Comprehensive component showcases with real-world usage examples
+- **Visual Testing**: Automated screenshot-based regression testing for consistent visual quality
+- **Better Examples**: More practical and comprehensive usage examples in Storybook
 
 ## Usage Examples
 
