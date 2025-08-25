@@ -320,12 +320,22 @@
   --_global-breakpoint-lg: 992px;
   --_global-breakpoint-xl: 1200px;
 
-  /* Form Elements */
+  /* Enhanced Form Elements with better visual consistency */
   --_global-input-height: 40px;
   --_global-input-height-sm: 32px;
   --_global-input-height-lg: 48px;
   --_global-input-padding-x: 12px;
   --_global-input-padding-y: 8px;
+  --_global-input-border-width: 1px;
+  --_global-input-border-width-focus: 2px;
+  --_global-input-border-color: var(--_global-color-outline-variant);
+  --_global-input-border-color-hover: var(--_global-color-outline);
+  --_global-input-border-color-focus: var(--_global-color-primary);
+  --_global-input-border-color-error: var(--_global-color-error);
+  --_global-input-bg: var(--_global-color-surface);
+  --_global-input-bg-hover: color-mix(in srgb, var(--_global-color-on-surface) 4%, var(--_global-color-surface));
+  --_global-input-bg-focus: color-mix(in srgb, var(--_global-color-primary) 3%, var(--_global-color-surface));
+  --_global-input-bg-disabled: color-mix(in srgb, var(--_global-color-on-surface) 4%, var(--_global-color-surface));
 
   /* Component Sizing - Material Density System */
   --_global-density-default: 0;
@@ -358,13 +368,25 @@
   --_global-color-scheme-dark-outline: #938F99;
   --_global-color-scheme-dark-outline-variant: #49454F;
   
-  /* Enhanced focus indicators for better accessibility */
+  /* Enhanced focus indicators for better accessibility with improved visual consistency */
   --_global-focus-ring-width: 2px;
   --_global-focus-ring-offset: 2px;
   --_global-focus-ring-color: var(--_global-color-primary);
   --_global-focus-ring-style: solid;
+  --_global-focus-ring: var(--_global-focus-ring-width) var(--_global-focus-ring-style) var(--_global-focus-ring-color);
+  --_global-focus-ring-shadow: 0 0 0 var(--_global-focus-ring-width) color-mix(in srgb, var(--_global-color-primary) 20%, transparent);
   
-  /* Enhanced interaction feedback */
+  /* Enhanced interaction feedback with better visual consistency */
   --_global-interaction-feedback-duration: 200ms;
   --_global-interaction-feedback-easing: var(--_global-motion-easing-standard);
+  
+  /* Component consistency helpers */
+  --_global-component-border: var(--_global-input-border-width) solid var(--_global-input-border-color);
+  --_global-component-border-hover: var(--_global-input-border-width) solid var(--_global-input-border-color-hover);
+  --_global-component-border-focus: var(--_global-input-border-width-focus) solid var(--_global-input-border-color-focus);
+  --_global-component-border-error: var(--_global-input-border-width-focus) solid var(--_global-input-border-color-error);
+  --_global-component-gap: var(--_global-spacing-sm);
+  --_global-component-gap-lg: var(--_global-spacing-md);
+  --_global-component-transition: all var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
+  --_global-component-shadow-focus: var(--_global-elevation-1), var(--_global-focus-ring-shadow);
 }
