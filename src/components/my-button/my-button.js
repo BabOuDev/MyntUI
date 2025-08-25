@@ -267,7 +267,7 @@ class MyButton extends MyntUIBaseComponent {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          /* Enhanced Material Design 3 button variables with better semantic naming */
+          /* Enhanced Material Design 3 button variables with premium styling */
           --_button-min-width: 64px;
           --_button-state-layer-size: 40px;
           --_button-border-width: 1px;
@@ -286,46 +286,61 @@ class MyButton extends MyntUIBaseComponent {
           --_button-padding-lg: 0 var(--_global-spacing-xl);
           --_button-padding-xl: 0 calc(var(--_global-spacing-xl) + 4px);
           
-          /* Typography system */
+          /* Typography system with enhanced weights */
           --_button-font-family: var(--_global-font-family-sans);
           --_button-font-size-xs: var(--_global-font-size-xs);
           --_button-font-size-sm: var(--_global-font-size-sm);
           --_button-font-size-md: var(--_global-font-size-md);
           --_button-font-size-lg: var(--_global-font-size-lg);
           --_button-font-size-xl: var(--_global-font-size-xl);
-          --_button-font-weight: var(--_global-font-weight-medium);
+          --_button-font-weight: var(--_global-font-weight-semibold);
+          --_button-font-weight-emphasized: var(--_global-font-weight-bold);
           --_button-line-height: var(--_global-line-height-tight);
+          --_button-letter-spacing: 0.02em;
           
           /* Border radius system - Material Design 3 standard */
           --_button-border-radius: var(--_global-border-radius-full);
           --_button-border-radius-fab: var(--_global-border-radius-lg);
           --_button-gap: var(--_global-spacing-sm);
           
-          /* Enhanced motion system */
-          --_button-transition: var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
-          --_button-transition-fast: var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
-          --_button-transition-emphasized: var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          /* Advanced spring-based motion system */
+          --_button-spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+          --_button-spring-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          --_button-spring-snappy: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          --_button-transition: 280ms var(--_button-spring-smooth);
+          --_button-transition-fast: 180ms var(--_button-spring-smooth);
+          --_button-transition-bounce: 320ms var(--_button-spring-bounce);
+          --_button-transition-snappy: 240ms var(--_button-spring-snappy);
           
-          /* Material Design 3 color tokens */
+          /* Enhanced Material Design 3 color system with gradients */
           /* Filled variant colors */
-          --_button-filled-bg: var(--_global-color-primary);
+          --_button-filled-bg: linear-gradient(135deg, var(--_global-color-primary) 0%, color-mix(in srgb, var(--_global-color-primary) 85%, var(--_global-color-primary-container)) 100%);
+          --_button-filled-bg-solid: var(--_global-color-primary);
           --_button-filled-text: var(--_global-color-on-primary);
           --_button-filled-state-layer: var(--_global-color-on-primary);
+          --_button-filled-shadow: 0 2px 8px color-mix(in srgb, var(--_global-color-primary) 35%, transparent);
+          --_button-filled-shadow-hover: 0 6px 20px color-mix(in srgb, var(--_global-color-primary) 45%, transparent);
           
           /* Filled-tonal variant colors */
-          --_button-filled-tonal-bg: var(--_global-color-secondary-container);
+          --_button-filled-tonal-bg: linear-gradient(135deg, var(--_global-color-secondary-container) 0%, color-mix(in srgb, var(--_global-color-secondary-container) 90%, var(--_global-color-tertiary-container)) 100%);
+          --_button-filled-tonal-bg-solid: var(--_global-color-secondary-container);
           --_button-filled-tonal-text: var(--_global-color-on-secondary-container);
           --_button-filled-tonal-state-layer: var(--_global-color-on-secondary-container);
+          --_button-filled-tonal-shadow: 0 2px 8px color-mix(in srgb, var(--_global-color-secondary-container) 25%, transparent);
           
           /* Elevated variant colors */
-          --_button-elevated-bg: var(--_global-color-surface-container-low);
+          --_button-elevated-bg: linear-gradient(135deg, var(--_global-color-surface-container-low) 0%, color-mix(in srgb, var(--_global-color-surface-container-low) 95%, var(--_global-color-surface-container)) 100%);
+          --_button-elevated-bg-solid: var(--_global-color-surface-container-low);
           --_button-elevated-text: var(--_global-color-primary);
           --_button-elevated-state-layer: var(--_global-color-primary);
+          --_button-elevated-shadow: 0 4px 16px color-mix(in srgb, var(--_global-color-outline) 15%, transparent);
+          --_button-elevated-shadow-hover: 0 8px 24px color-mix(in srgb, var(--_global-color-outline) 25%, transparent);
           
           /* Outlined variant colors */
           --_button-outlined-bg: transparent;
           --_button-outlined-text: var(--_global-color-primary);
           --_button-outlined-border: var(--_button-border-width) solid var(--_global-color-outline);
+          --_button-outlined-border-hover: var(--_button-border-width) solid var(--_global-color-primary);
           --_button-outlined-state-layer: var(--_global-color-primary);
           
           /* Text variant colors */
@@ -333,40 +348,46 @@ class MyButton extends MyntUIBaseComponent {
           --_button-text-text: var(--_global-color-primary);
           --_button-text-state-layer: var(--_global-color-primary);
           
-          /* Status variant colors */
-          --_button-success-bg: var(--_global-color-success);
+          /* Status variant colors with enhanced gradients */
+          --_button-success-bg: linear-gradient(135deg, var(--_global-color-success) 0%, color-mix(in srgb, var(--_global-color-success) 85%, #22c55e) 100%);
           --_button-success-text: var(--_global-color-on-success);
-          --_button-error-bg: var(--_global-color-error);
+          --_button-error-bg: linear-gradient(135deg, var(--_global-color-error) 0%, color-mix(in srgb, var(--_global-color-error) 85%, #ef4444) 100%);
           --_button-error-text: var(--_global-color-on-error);
           
-          /* Elevation system */
+          /* Advanced elevation system */
           --_button-elevation: var(--_global-elevation-1);
-          --_button-elevation-hover: var(--_global-elevation-2);
-          --_button-elevation-elevated: var(--_global-elevation-1);
-          --_button-elevation-elevated-hover: var(--_global-elevation-2);
+          --_button-elevation-hover: 0 6px 20px color-mix(in srgb, var(--_global-color-shadow) 12%, transparent), 0 2px 8px color-mix(in srgb, var(--_global-color-shadow) 8%, transparent);
+          --_button-elevation-elevated: 0 4px 16px color-mix(in srgb, var(--_global-color-shadow) 10%, transparent);
+          --_button-elevation-elevated-hover: 0 8px 28px color-mix(in srgb, var(--_global-color-shadow) 16%, transparent), 0 4px 12px color-mix(in srgb, var(--_global-color-shadow) 12%, transparent);
           
           /* Enhanced state layer system */
-          --_button-state-layer-hover: var(--_global-state-layer-hover);
-          --_button-state-layer-focus: var(--_global-state-layer-focus);
-          --_button-state-layer-pressed: var(--_global-state-layer-pressed);
+          --_button-state-layer-hover: 0.08;
+          --_button-state-layer-focus: 0.12;
+          --_button-state-layer-pressed: 0.12;
+          --_button-state-layer-dragged: 0.16;
           
-          /* Focus ring system */
-          --_button-focus-ring: var(--_global-focus-ring-width) var(--_global-focus-ring-style) var(--_global-focus-ring-color);
-          --_button-focus-ring-offset: var(--_global-focus-ring-offset);
+          /* Multi-layered focus ring system */
+          --_button-focus-ring-primary: 2px solid color-mix(in srgb, var(--_global-color-primary) 60%, transparent);
+          --_button-focus-ring-secondary: 4px solid color-mix(in srgb, var(--_global-color-primary) 20%, transparent);
+          --_button-focus-ring-offset: 2px;
+          --_button-focus-glow: 0 0 0 8px color-mix(in srgb, var(--_global-color-primary) 12%, transparent);
           
-          /* Ripple system */
+          /* Enhanced ripple system */
           --_button-ripple-size: calc(var(--_button-state-layer-size) * 1.5);
-          --_button-ripple-duration: var(--_global-ripple-duration);
-          --_button-ripple-easing: var(--_global-ripple-easing);
+          --_button-ripple-duration: 480ms;
+          --_button-ripple-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          --_button-ripple-scale-start: 0;
+          --_button-ripple-scale-end: 2.5;
           
-          /* Disabled state */
-          --_button-disabled-opacity: 0.5;
-          --_button-disabled-bg: var(--_global-color-outline-variant);
-          --_button-disabled-text: var(--_global-color-outline);
+          /* Premium disabled state */
+          --_button-disabled-opacity: 0.38;
+          --_button-disabled-bg: color-mix(in srgb, var(--_global-color-on-surface) 12%, transparent);
+          --_button-disabled-text: color-mix(in srgb, var(--_global-color-on-surface) 38%, transparent);
           
           display: inline-flex;
           position: relative;
           isolation: isolate;
+          will-change: transform, box-shadow;
         }
 
         button {
@@ -384,26 +405,46 @@ class MyButton extends MyntUIBaseComponent {
           font-size: var(--_button-font-size-md);
           font-weight: var(--_button-font-weight);
           line-height: var(--_button-line-height);
+          letter-spacing: var(--_button-letter-spacing);
           text-align: center;
           white-space: nowrap;
           user-select: none;
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
           
           border: none;
           border-radius: var(--_button-border-radius);
           cursor: pointer;
           
-          transition: var(--_button-transition);
+          /* Enhanced spring-based transitions */
+          transition: 
+            transform var(--_button-transition),
+            box-shadow var(--_button-transition),
+            background var(--_button-transition-fast),
+            color var(--_button-transition-fast),
+            border-color var(--_button-transition-fast),
+            filter var(--_button-transition-fast);
+          
           outline: none;
           overflow: hidden;
           isolation: isolate;
+          will-change: transform, box-shadow, filter;
           
-          /* Default filled variant styling */
-          background-color: var(--_button-filled-bg);
+          /* Default filled variant with enhanced styling */
+          background: var(--_button-filled-bg);
           color: var(--_button-filled-text);
-          box-shadow: var(--_button-elevation);
+          box-shadow: var(--_button-filled-shadow);
+          
+          /* Premium backdrop filter for glass effect on light backgrounds */
+          backdrop-filter: saturate(180%) blur(20px);
+          
+          /* Enhanced micro-interaction preparation */
+          transform: translateZ(0) scale(1);
+          filter: brightness(1) contrast(1);
         }
 
-        /* Enhanced state layer with Material Design 3 principles */
+        /* Premium multi-layered state system */
         button::before {
           content: '';
           position: absolute;
@@ -412,40 +453,96 @@ class MyButton extends MyntUIBaseComponent {
           right: 0;
           bottom: 0;
           border-radius: inherit;
-          background-color: var(--_button-filled-state-layer);
+          background: radial-gradient(circle at center, var(--_button-filled-state-layer) 0%, transparent 70%);
           opacity: 0;
-          transition: var(--_button-transition-fast);
+          transition: 
+            opacity var(--_button-transition-fast),
+            transform var(--_button-transition-fast);
+          pointer-events: none;
+          z-index: 1;
+          transform: scale(0.8);
+        }
+
+        /* Secondary glow layer */
+        button::after {
+          content: '';
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          right: -2px;
+          bottom: -2px;
+          border-radius: calc(var(--_button-border-radius) + 2px);
+          background: var(--_button-filled-state-layer);
+          opacity: 0;
+          transition: opacity var(--_button-transition-bounce);
           pointer-events: none;
           z-index: -1;
+          filter: blur(4px);
         }
 
-        /* Hover state layer */
+        /* Enhanced hover state with spring physics */
+        button.hovered:not(:disabled) {
+          transform: translateZ(0) scale(1.02) translateY(-2px);
+          box-shadow: var(--_button-elevation-hover);
+          filter: brightness(1.05) contrast(1.05);
+          transition: 
+            transform var(--_button-transition-bounce),
+            box-shadow var(--_button-transition-bounce),
+            filter var(--_button-transition-fast);
+        }
+
         button.hovered:not(:disabled)::before {
           opacity: var(--_button-state-layer-hover);
+          transform: scale(1);
         }
 
-        /* Focus state layer */
+        button.hovered:not(:disabled)::after {
+          opacity: 0.06;
+        }
+
+        /* Sophisticated focus state with multi-layer rings */
+        button.focused:not(:disabled) {
+          outline: none;
+          box-shadow: 
+            var(--_button-focus-glow),
+            var(--_button-elevation-hover);
+          transform: translateZ(0) scale(1.01);
+          filter: brightness(1.08) saturate(1.1);
+        }
+
         button.focused:not(:disabled)::before {
           opacity: var(--_button-state-layer-focus);
+          transform: scale(1.1);
+          background: radial-gradient(circle at center, var(--_button-filled-state-layer) 0%, color-mix(in srgb, var(--_button-filled-state-layer) 60%, transparent) 100%);
         }
 
-        /* Pressed state layer */
+        button.focused:not(:disabled)::after {
+          opacity: 0.12;
+          animation: focus-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes focus-pulse {
+          0%, 100% { opacity: 0.12; transform: scale(1); }
+          50% { opacity: 0.18; transform: scale(1.02); }
+        }
+
+        /* Enhanced pressed state with realistic spring bounce */
+        button.pressed:not(:disabled) {
+          transform: translateZ(0) scale(0.96) translateY(-1px);
+          box-shadow: 
+            0 2px 8px color-mix(in srgb, var(--_global-color-shadow) 8%, transparent),
+            inset 0 1px 2px color-mix(in srgb, var(--_global-color-shadow) 10%, transparent);
+          filter: brightness(0.95) contrast(1.1);
+          transition: 
+            transform var(--_button-transition-snappy),
+            box-shadow var(--_button-transition-snappy),
+            filter var(--_button-transition-fast);
+        }
+
         button.pressed:not(:disabled)::before {
           opacity: var(--_button-state-layer-pressed);
-          transform: scale(0.98);
-          transition: var(--_button-transition-emphasized);
-        }
-
-        /* Enhanced focus ring with proper accessibility */
-        button.focused:not(:disabled) {
-          outline: var(--_button-focus-ring);
-          outline-offset: var(--_button-focus-ring-offset);
-        }
-
-        /* Hover elevation enhancement */
-        button.hovered:not(:disabled) {
-          box-shadow: var(--_button-elevation-hover);
-          transform: translateY(-1px);
+          transform: scale(1.2);
+          background: radial-gradient(circle at center, var(--_button-filled-state-layer) 20%, transparent 80%);
         }
 
         /* Enhanced size variants with proper scaling */
@@ -495,69 +592,127 @@ class MyButton extends MyntUIBaseComponent {
           padding: 0 var(--_global-spacing-lg);
         }
 
-        /* Material Design 3 Variant System */
+        /* Enhanced Material Design 3 Variant System with Premium Styling */
         
-        /* Filled variant (default) */
+        /* Filled variant (default) with gradient background */
         button.variant-filled,
         button.variant-primary {
-          background-color: var(--_button-filled-bg);
+          background: var(--_button-filled-bg);
           color: var(--_button-filled-text);
-          box-shadow: var(--_button-elevation);
+          box-shadow: var(--_button-filled-shadow);
+          font-weight: var(--_button-font-weight);
         }
 
         button.variant-filled::before,
         button.variant-primary::before {
-          background-color: var(--_button-filled-state-layer);
+          background: radial-gradient(circle at center, var(--_button-filled-state-layer) 0%, transparent 70%);
         }
 
-        /* Filled-tonal variant */
+        button.variant-filled::after,
+        button.variant-primary::after {
+          background: var(--_button-filled-state-layer);
+        }
+
+        button.variant-filled.hovered:not(:disabled),
+        button.variant-primary.hovered:not(:disabled) {
+          box-shadow: var(--_button-filled-shadow-hover);
+          filter: brightness(1.08) saturate(1.05);
+        }
+
+        /* Filled-tonal variant with enhanced gradient */
         button.variant-filled-tonal {
-          background-color: var(--_button-filled-tonal-bg);
+          background: var(--_button-filled-tonal-bg);
           color: var(--_button-filled-tonal-text);
-          box-shadow: none;
+          box-shadow: var(--_button-filled-tonal-shadow);
+          font-weight: var(--_button-font-weight);
         }
 
         button.variant-filled-tonal::before {
-          background-color: var(--_button-filled-tonal-state-layer);
+          background: radial-gradient(circle at center, var(--_button-filled-tonal-state-layer) 0%, transparent 70%);
         }
 
-        /* Elevated variant */
+        button.variant-filled-tonal::after {
+          background: var(--_button-filled-tonal-state-layer);
+        }
+
+        button.variant-filled-tonal.hovered:not(:disabled) {
+          filter: brightness(1.05) saturate(1.1);
+        }
+
+        /* Elevated variant with premium glass effect */
         button.variant-elevated {
-          background-color: var(--_button-elevated-bg);
+          background: var(--_button-elevated-bg);
           color: var(--_button-elevated-text);
-          box-shadow: var(--_button-elevation-elevated);
+          box-shadow: var(--_button-elevated-shadow);
+          backdrop-filter: saturate(180%) blur(20px);
+          border: 1px solid color-mix(in srgb, var(--_global-color-surface-variant) 30%, transparent);
         }
 
         button.variant-elevated::before {
-          background-color: var(--_button-elevated-state-layer);
+          background: radial-gradient(circle at center, var(--_button-elevated-state-layer) 0%, transparent 70%);
+        }
+
+        button.variant-elevated::after {
+          background: var(--_button-elevated-state-layer);
         }
 
         button.variant-elevated.hovered:not(:disabled) {
-          box-shadow: var(--_button-elevation-elevated-hover);
+          box-shadow: var(--_button-elevated-shadow-hover);
+          border-color: color-mix(in srgb, var(--_global-color-primary) 20%, transparent);
+          filter: brightness(1.02) saturate(1.05);
         }
 
-        /* Outlined variant */
+        /* Outlined variant with enhanced border animations */
         button.variant-outlined {
-          background-color: var(--_button-outlined-bg);
+          background: var(--_button-outlined-bg);
           color: var(--_button-outlined-text);
           border: var(--_button-outlined-border);
           box-shadow: none;
+          position: relative;
+          overflow: hidden;
         }
 
         button.variant-outlined::before {
-          background-color: var(--_button-outlined-state-layer);
+          background: radial-gradient(circle at center, var(--_button-outlined-state-layer) 0%, transparent 70%);
         }
 
-        /* Text variant */
+        button.variant-outlined::after {
+          background: var(--_button-outlined-state-layer);
+        }
+
+        button.variant-outlined.hovered:not(:disabled) {
+          border-color: var(--_global-color-primary);
+          background: color-mix(in srgb, var(--_global-color-primary) 4%, transparent);
+          filter: brightness(1.02);
+        }
+
+        button.variant-outlined.focused:not(:disabled) {
+          border-color: var(--_global-color-primary);
+          box-shadow: 
+            var(--_button-focus-glow),
+            0 0 0 1px color-mix(in srgb, var(--_global-color-primary) 40%, transparent);
+        }
+
+        /* Text variant with subtle hover area */
         button.variant-text {
-          background-color: var(--_button-text-bg);
+          background: var(--_button-text-bg);
           color: var(--_button-text-text);
           box-shadow: none;
           min-width: auto;
+          padding: var(--_global-spacing-sm) var(--_global-spacing-md);
         }
 
         button.variant-text::before {
-          background-color: var(--_button-text-state-layer);
+          background: radial-gradient(circle at center, var(--_button-text-state-layer) 0%, transparent 70%);
+        }
+
+        button.variant-text::after {
+          background: var(--_button-text-state-layer);
+        }
+
+        button.variant-text.hovered:not(:disabled) {
+          background: color-mix(in srgb, var(--_global-color-primary) 6%, transparent);
+          transform: translateZ(0) scale(1.01);
         }
 
         /* Legacy support variants */
@@ -582,27 +737,49 @@ class MyButton extends MyntUIBaseComponent {
           background-color: var(--_global-color-primary);
         }
 
-        /* Status variants with enhanced styling */
+        /* Status variants with premium gradient styling */
         button.variant-success {
-          background-color: var(--_button-success-bg);
+          background: var(--_button-success-bg);
           color: var(--_button-success-text);
-          box-shadow: var(--_button-elevation);
+          box-shadow: 0 2px 8px color-mix(in srgb, var(--_global-color-success) 35%, transparent);
+          font-weight: var(--_button-font-weight);
         }
 
         button.variant-success::before {
-          background-color: var(--_button-success-text);
+          background: radial-gradient(circle at center, var(--_button-success-text) 0%, transparent 70%);
+        }
+
+        button.variant-success::after {
+          background: var(--_button-success-text);
+        }
+
+        button.variant-success.hovered:not(:disabled) {
+          box-shadow: 0 6px 20px color-mix(in srgb, var(--_global-color-success) 45%, transparent);
+          filter: brightness(1.08) saturate(1.1);
         }
 
         button.variant-danger,
         button.variant-error {
-          background-color: var(--_button-error-bg);
+          background: var(--_button-error-bg);
           color: var(--_button-error-text);
-          box-shadow: var(--_button-elevation);
+          box-shadow: 0 2px 8px color-mix(in srgb, var(--_global-color-error) 35%, transparent);
+          font-weight: var(--_button-font-weight);
         }
 
         button.variant-danger::before,
         button.variant-error::before {
-          background-color: var(--_button-error-text);
+          background: radial-gradient(circle at center, var(--_button-error-text) 0%, transparent 70%);
+        }
+
+        button.variant-danger::after,
+        button.variant-error::after {
+          background: var(--_button-error-text);
+        }
+
+        button.variant-danger.hovered:not(:disabled),
+        button.variant-error.hovered:not(:disabled) {
+          box-shadow: 0 6px 20px color-mix(in srgb, var(--_global-color-error) 45%, transparent);
+          filter: brightness(1.08) saturate(1.1);
         }
 
         /* Enhanced Floating Action Button (FAB) styles */
@@ -700,7 +877,7 @@ class MyButton extends MyntUIBaseComponent {
           pointer-events: none;
         }
 
-        /* Improved loading spinner with Material Design aesthetics */
+        /* Premium loading spinner with sophisticated animations */
         .loading-spinner {
           position: absolute;
           top: 50%;
@@ -708,40 +885,84 @@ class MyButton extends MyntUIBaseComponent {
           transform: translate(-50%, -50%);
           width: 20px;
           height: 20px;
+          z-index: 2;
+        }
+
+        .loading-spinner::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
           border: 2px solid transparent;
           border-top: 2px solid currentColor;
+          border-right: 1px solid color-mix(in srgb, currentColor 40%, transparent);
           border-radius: 50%;
-          animation: spin var(--_global-motion-duration-long2) linear infinite;
-          z-index: 2;
+          animation: 
+            spinner-rotate 1200ms cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite,
+            spinner-pulse 2000ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .loading-spinner::after {
+          content: '';
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          right: 2px;
+          bottom: 2px;
+          border: 1px solid transparent;
+          border-top: 1px solid color-mix(in srgb, currentColor 60%, transparent);
+          border-radius: 50%;
+          animation: spinner-rotate 800ms linear infinite reverse;
         }
 
         .loading-spinner.size-xs {
           width: 12px;
           height: 12px;
+        }
+
+        .loading-spinner.size-xs::before {
           border-width: 1px;
+        }
+
+        .loading-spinner.size-xs::after {
+          border-width: 1px;
+          top: 1px;
+          left: 1px;
+          right: 1px;
+          bottom: 1px;
         }
 
         .loading-spinner.size-sm {
           width: 16px;
           height: 16px;
-          border-width: 2px;
         }
 
         .loading-spinner.size-lg {
           width: 24px;
           height: 24px;
+        }
+
+        .loading-spinner.size-lg::before {
           border-width: 3px;
         }
 
         .loading-spinner.size-xl {
           width: 28px;
           height: 28px;
+        }
+
+        .loading-spinner.size-xl::before {
           border-width: 3px;
         }
 
-        @keyframes spin {
-          0% { transform: translate(-50%, -50%) rotate(0deg); }
-          100% { transform: translate(-50%, -50%) rotate(360deg); }
+        @keyframes spinner-rotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        @keyframes spinner-pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
         }
 
         /* Enhanced content container */
@@ -759,42 +980,105 @@ class MyButton extends MyntUIBaseComponent {
           transition: opacity var(--_button-transition-fast);
         }
 
-        /* Enhanced ripple effect following Material Design 3 principles */
+        /* Premium ripple effect with realistic physics */
         .ripple {
           position: absolute;
           border-radius: 50%;
-          transform: scale(0);
-          animation: ripple-animation var(--_button-ripple-duration) var(--_button-ripple-easing);
-          background-color: var(--_global-ripple-color-light);
-          opacity: var(--_global-ripple-opacity-pressed);
           pointer-events: none;
           z-index: 0;
+          will-change: transform, opacity;
           mix-blend-mode: normal;
         }
 
-        /* Dynamic ripple colors based on variant */
-        button.variant-outlined .ripple,
-        button.variant-text .ripple,
-        button.variant-ghost .ripple,
-        button.variant-elevated .ripple {
-          background-color: var(--_global-ripple-color-dark);
+        /* Primary ripple layer */
+        .ripple::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border-radius: inherit;
+          background: radial-gradient(circle, var(--_global-ripple-color-light) 0%, transparent 70%);
+          transform: scale(var(--_button-ripple-scale-start));
+          opacity: var(--_global-ripple-opacity-pressed);
+          animation: ripple-expand var(--_button-ripple-duration) var(--_button-ripple-easing);
         }
 
-        @keyframes ripple-animation {
+        /* Secondary ripple glow */
+        .ripple::after {
+          content: '';
+          position: absolute;
+          top: -10%;
+          left: -10%;
+          width: 120%;
+          height: 120%;
+          border-radius: inherit;
+          background: var(--_global-ripple-color-light);
+          transform: scale(0);
+          opacity: 0.1;
+          filter: blur(2px);
+          animation: ripple-glow var(--_button-ripple-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Dynamic ripple colors based on variant */
+        button.variant-outlined .ripple::before,
+        button.variant-text .ripple::before,
+        button.variant-ghost .ripple::before,
+        button.variant-elevated .ripple::before {
+          background: radial-gradient(circle, var(--_global-ripple-color-dark) 0%, transparent 70%);
+        }
+
+        button.variant-outlined .ripple::after,
+        button.variant-text .ripple::after,
+        button.variant-ghost .ripple::after,
+        button.variant-elevated .ripple::after {
+          background: var(--_global-ripple-color-dark);
+        }
+
+        /* Enhanced ripple animations with spring physics */
+        @keyframes ripple-expand {
+          0% {
+            transform: scale(var(--_button-ripple-scale-start));
+            opacity: var(--_global-ripple-opacity-pressed);
+          }
+          15% {
+            transform: scale(0.4);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.9);
+          }
+          30% {
+            transform: scale(0.8);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.6);
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.3);
+          }
+          70% {
+            transform: scale(1.8);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.15);
+          }
+          100% {
+            transform: scale(var(--_button-ripple-scale-end));
+            opacity: 0;
+          }
+        }
+
+        @keyframes ripple-glow {
           0% {
             transform: scale(0);
-            opacity: var(--_global-ripple-opacity-pressed);
+            opacity: 0;
           }
           20% {
             transform: scale(0.3);
-            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.8);
+            opacity: 0.1;
           }
           50% {
-            transform: scale(1);
-            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.4);
+            transform: scale(0.8);
+            opacity: 0.05;
           }
           100% {
-            transform: scale(2.5);
+            transform: scale(1.5);
             opacity: 0;
           }
         }
@@ -837,31 +1121,50 @@ class MyButton extends MyntUIBaseComponent {
         /* Enhanced Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
           :host {
-            --_button-transition: none;
-            --_button-transition-fast: none;
-            --_button-transition-emphasized: none;
+            --_button-transition: 150ms ease;
+            --_button-transition-fast: 100ms ease;
+            --_button-transition-bounce: 150ms ease;
+            --_button-transition-snappy: 120ms ease;
           }
           
           button,
           button::before,
+          button::after,
           .loading-spinner,
+          .loading-spinner::before,
+          .loading-spinner::after,
           .ripple,
+          .ripple::before,
+          .ripple::after,
           .content {
             animation: none !important;
-            transition: none !important;
           }
           
-          .ripple {
+          .ripple,
+          .ripple::before,
+          .ripple::after {
             display: none;
           }
           
           button.hovered:not(:disabled),
-          button.pressed:not(:disabled) {
+          button.pressed:not(:disabled),
+          button.focused:not(:disabled) {
             transform: none;
+            filter: none;
           }
           
           button.loading .content {
             opacity: 0.5;
+          }
+          
+          /* Simple loading indicator for reduced motion */
+          .loading-spinner::before {
+            animation: none;
+            opacity: 0.6;
+          }
+          
+          .loading-spinner::after {
+            display: none;
           }
         }
 
@@ -882,11 +1185,47 @@ class MyButton extends MyntUIBaseComponent {
           }
         }
         
-        /* Color scheme adaptation */
+        /* Enhanced color scheme adaptation */
         @media (prefers-color-scheme: dark) {
           :host {
-            --_button-elevation: 0 2px 8px rgba(0, 0, 0, 0.4);
-            --_button-elevation-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+            /* Enhanced dark mode shadows with better depth */
+            --_button-elevation: 0 2px 8px rgba(0, 0, 0, 0.6);
+            --_button-elevation-hover: 0 6px 20px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.4);
+            --_button-elevation-elevated: 0 4px 16px rgba(0, 0, 0, 0.5);
+            --_button-elevation-elevated-hover: 0 8px 28px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.6);
+            
+            /* Enhanced dark mode gradients */
+            --_button-filled-bg: linear-gradient(135deg, var(--_global-color-primary) 0%, color-mix(in srgb, var(--_global-color-primary) 90%, var(--_global-color-surface)) 100%);
+            --_button-filled-tonal-bg: linear-gradient(135deg, var(--_global-color-secondary-container) 0%, color-mix(in srgb, var(--_global-color-secondary-container) 95%, var(--_global-color-surface)) 100%);
+            --_button-elevated-bg: linear-gradient(135deg, var(--_global-color-surface-container-low) 0%, color-mix(in srgb, var(--_global-color-surface-container-low) 98%, var(--_global-color-surface-bright)) 100%);
+            
+            /* Better backdrop filters for dark mode */
+            --_button-backdrop-filter: saturate(200%) blur(16px);
+          }
+          
+          /* Enhanced outlined border in dark mode */
+          button.variant-outlined {
+            border-color: color-mix(in srgb, var(--_global-color-outline) 80%, transparent);
+          }
+          
+          button.variant-outlined.hovered:not(:disabled) {
+            border-color: var(--_global-color-primary);
+            background: color-mix(in srgb, var(--_global-color-primary) 8%, transparent);
+          }
+          
+          /* Enhanced text variant in dark mode */
+          button.variant-text.hovered:not(:disabled) {
+            background: color-mix(in srgb, var(--_global-color-primary) 12%, transparent);
+          }
+          
+          /* Better loading spinner contrast */
+          .loading-spinner::before {
+            border-top-color: currentColor;
+            border-right-color: color-mix(in srgb, currentColor 60%, transparent);
+          }
+          
+          .loading-spinner::after {
+            border-top-color: color-mix(in srgb, currentColor 80%, transparent);
           }
         }
       </style>

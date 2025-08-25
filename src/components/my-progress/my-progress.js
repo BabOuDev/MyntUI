@@ -817,10 +817,45 @@ class MyProgress extends MyntUIBaseComponent {
           }
         }
         
-        /* Enhanced circular progress with better centering */
+        /* Enhanced circular progress with sophisticated styling */
+        :host([type="circular"]) {
+          background: radial-gradient(circle at center, 
+            var(--_gauge-bg-color) 0%,
+            var(--_global-color-surface-container-low) 100%
+          );
+          border: 1px solid var(--_global-color-outline-variant);
+          box-shadow: 
+            var(--_global-elevation-2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
         :host([type="circular"]) .circular-text {
           font-feature-settings: 'tnum';
           letter-spacing: -0.02em;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+          font-weight: var(--_global-font-weight-bold);
+        }
+        
+        :host([type="circular"]) .circular-svg {
+          filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+        }
+        
+        :host([type="circular"]) .circular-progress {
+          filter: drop-shadow(0 0 6px rgba(var(--_progress-primary-rgb, 103, 80, 164), 0.4));
+          stroke: url(#circularGradient);
+        }
+        
+        :host([type="circular"]:hover) {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 
+            var(--_global-shadow-interaction-moderate),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            0 0 30px rgba(var(--_progress-primary-rgb, 103, 80, 164), 0.2);
+        }
+        
+        :host([type="circular"]:hover) .circular-progress {
+          stroke-width: calc(6px + 1px);
+          filter: drop-shadow(0 0 12px rgba(var(--_progress-primary-rgb, 103, 80, 164), 0.6));
         }
       </style>
 
@@ -844,6 +879,13 @@ class MyProgress extends MyntUIBaseComponent {
           ${this.tooltip ? `<div class="progress-tooltip">${this.tooltip}</div>` : ''}
           ${this.getAttribute('type') === 'circular' ? `
             <svg class="circular-svg" viewBox="0 0 60 60">
+              <defs>
+                <linearGradient id="circularGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:var(--_progress-primary);stop-opacity:0.9" />
+                  <stop offset="50%" style="stop-color:color-mix(in srgb, var(--_progress-primary) 80%, white 20%);stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:var(--_progress-primary);stop-opacity:0.95" />
+                </linearGradient>
+              </defs>
               <circle class="circular-bg" cx="30" cy="30" r="26"></circle>
               <circle class="circular-progress ${this.indeterminate ? 'indeterminate' : ''}" cx="30" cy="30" r="26"></circle>
             </svg>

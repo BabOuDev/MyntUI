@@ -247,7 +247,7 @@ class MyGauge extends MyntUIBaseComponent {
     }
   }
 
-  // Animate value change
+  // Animate value change with spring physics
   animateToValue(targetValue) {
     if (this._animationId) {
       cancelAnimationFrame(this._animationId);
@@ -255,16 +255,24 @@ class MyGauge extends MyntUIBaseComponent {
     
     const startValue = this._value;
     const startTime = performance.now();
-    const duration = 800; // ms
+    const duration = 1200; // ms - increased for smoother spring animation
     
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Ease-out animation
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      // Advanced spring physics with overshoot and settle
+      let easedProgress;
+      if (progress < 1) {
+        const springStrength = 0.6;
+        const damping = 0.8;
+        easedProgress = 1 - Math.pow(2, -8 * progress) * Math.cos((progress * 8 - springStrength) * (2 * Math.PI) / 3);
+      } else {
+        easedProgress = 1;
+      }
       
-      this._value = startValue + (targetValue - startValue) * easedProgress;
+      const currentValue = startValue + (targetValue - startValue) * easedProgress;
+      this._value = currentValue;
       this.updateGauge();
       
       if (progress < 1) {
@@ -273,43 +281,113 @@ class MyGauge extends MyntUIBaseComponent {
         this._value = targetValue;
         this.setAttribute('value', targetValue.toString());
         this._animationId = null;
+        this.triggerValueReachedEffect();
       }
     };
     
     this._animationId = requestAnimationFrame(animate);
   }
 
-  // Update gauge visual elements
+  // Update gauge visual elements with enhanced effects
   updateGauge() {
     const needle = this.shadowRoot.querySelector('.gauge-needle');
     const fill = this.shadowRoot.querySelector('.gauge-fill');
     const valueDisplay = this.shadowRoot.querySelector('.gauge-value');
-    const bufferFill = this.shadowRoot.querySelector('.gauge-buffer');
+    const gaugeContainer = this.shadowRoot.querySelector('.gauge-container');
+    const track = this.shadowRoot.querySelector('.gauge-track');
+    
+    const color = this.getColor();
+    const percentage = this.percentage;
+    const intensity = percentage / 100;
     
     if (needle) {
       needle.style.transform = `rotate(${this.angle}deg)`;
-      needle.style.filter = `drop-shadow(0 2px 4px ${this.getColor()}40)`;
+      needle.style.filter = `
+        drop-shadow(0 3px 8px ${color}60)
+        drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4))
+      `;
+      needle.style.transformOrigin = '50px 50px';
+      
+      // Add subtle pulsing effect at high values
+      if (percentage > 80) {
+        needle.style.animation = 'gauge-needle-pulse 2s var(--_global-spring-gentle) infinite alternate';
+      } else {
+        needle.style.animation = 'none';
+      }
     }
     
     if (fill) {
-      const percentage = this.percentage;
-      // For arc: circumference = 2π * radius, we want 180 degrees = π * radius
-      const circumference = Math.PI * 40; // radius = 40
+      // Enhanced arc animation
+      const circumference = Math.PI * 40;
       const offset = circumference - (circumference * percentage) / 100;
       fill.style.strokeDashoffset = offset.toString();
-      fill.style.stroke = this.gradient ? 'url(#gaugeGradient)' : this.getColor();
+      
+      // Dynamic gradient and glow based on value
+      if (this.gradient) {
+        fill.style.stroke = 'url(#gaugeGradient)';
+      } else {
+        fill.style.stroke = color;
+      }
+      
+      // Enhanced glow and shadow effects
+      fill.style.filter = `
+        drop-shadow(0 0 ${4 + intensity * 8}px ${color}60)
+        drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2))
+        brightness(${1 + intensity * 0.1})
+        saturate(${1 + intensity * 0.2})
+      `;
+      
+      // Dynamic stroke width based on intensity
+      const baseStrokeWidth = parseFloat(getComputedStyle(this).getPropertyValue('--_gauge-stroke-width')) || 12;
+      fill.style.strokeWidth = `${baseStrokeWidth + intensity * 2}px`;
     }
     
     if (valueDisplay) {
       valueDisplay.textContent = `${this.formatValue(this._value)}${this.unit}`;
-      valueDisplay.style.color = this.getColor();
+      valueDisplay.style.color = color;
+      valueDisplay.style.textShadow = `0 0 ${4 + intensity * 8}px ${color}40`;
+      
+      // Scale animation for value changes
+      valueDisplay.style.transform = `scale(${1 + intensity * 0.05})`;
     }
     
-    // Add subtle glow effect to the gauge
-    const gaugeContainer = this.shadowRoot.querySelector('.gauge-container');
+    // Enhanced container glow and shadow
     if (gaugeContainer) {
-      const intensity = this.percentage / 100;
-      gaugeContainer.style.boxShadow = `0 4px 20px ${this.getColor()}${Math.round(intensity * 30).toString(16).padStart(2, '0')}, var(--_gauge-shadow)`;
+      const glowIntensity = Math.round(intensity * 40).toString(16).padStart(2, '0');
+      gaugeContainer.style.boxShadow = `
+        0 8px 32px ${color}${glowIntensity},
+        var(--_gauge-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1)
+      `;
+    }
+    
+    // Dynamic track opacity based on progress
+    if (track) {
+      track.style.opacity = (0.2 + intensity * 0.15).toString();
+    }
+    
+    // Update CSS custom properties for dynamic effects
+    this.style.setProperty('--_gauge-current-intensity', intensity.toString());
+    this.style.setProperty('--_gauge-current-color', color);
+  }
+  
+  // Trigger effect when value reaches certain thresholds
+  triggerValueReachedEffect() {
+    const threshold = this.getCurrentThreshold();
+    if (threshold) {
+      const fill = this.shadowRoot.querySelector('.gauge-fill');
+      if (fill) {
+        fill.style.animation = 'gauge-threshold-reached 0.8s var(--_global-spring-wobbly) forwards';
+        setTimeout(() => {
+          fill.style.animation = '';
+        }, 800);
+      }
+      
+      this.emit('threshold-reached', {
+        value: this._value,
+        percentage: this.percentage,
+        threshold: threshold
+      });
     }
   }
 
@@ -674,31 +752,70 @@ class MyGauge extends MyntUIBaseComponent {
         /* Responsive adjustments */
         /* Enhanced hover effects with sophisticated micro-interactions */
         :host(:hover) {
-          transform: translateY(-2px) var(--_global-micro-scale-subtle);
-          transition: transform var(--_global-motion-duration-medium1) var(--_global-spring-bouncy),
-                      box-shadow var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
-          box-shadow: var(--_global-shadow-interaction-moderate), var(--_gauge-shadow);
+          transform: translateY(-3px) scale(1.02);
+          transition: transform var(--_global-motion-duration-medium2) var(--_global-spring-bouncy),
+                      box-shadow var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized);
+          box-shadow: 
+            var(--_global-shadow-interaction-strong),
+            0 0 40px var(--_gauge-current-color, var(--_global-color-primary))30,
+            var(--_gauge-shadow);
           cursor: pointer;
         }
         
         :host(:hover) .gauge-needle {
-          filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6));
-          transition: filter var(--_global-motion-duration-short2) var(--_global-spring-gentle);
+          filter: 
+            drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8))
+            drop-shadow(0 0 8px var(--_gauge-current-color, var(--_global-color-primary))80);
+          transition: filter var(--_global-motion-duration-medium1) var(--_global-spring-gentle);
           transform-origin: 50px 50px;
-          animation: gauge-needle-pulse var(--_global-loading-pulse-duration) var(--_global-spring-gentle) infinite alternate;
+          animation: gauge-needle-hover-pulse 1.5s var(--_global-spring-gentle) infinite alternate;
         }
         
         :host(:hover) .gauge-fill {
-          stroke-width: calc(var(--_gauge-stroke-width) + 1.5px);
-          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25)) brightness(1.08) saturate(1.1);
-          transition: stroke-width var(--_global-motion-duration-short2) var(--_global-spring-wobbly),
-                      filter var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          stroke-width: calc(var(--_gauge-stroke-width) + 2px);
+          filter: 
+            drop-shadow(0 0 16px var(--_gauge-current-color, var(--_global-color-primary))60)
+            drop-shadow(0 4px 16px rgba(0, 0, 0, 0.3))
+            brightness(1.15) 
+            saturate(1.2) 
+            contrast(1.05);
+          transition: all var(--_global-motion-duration-medium1) var(--_global-spring-wobbly);
         }
         
-        /* Active/pressed state for better feedback */
+        :host(:hover) .gauge-track {
+          opacity: calc(0.2 + var(--_gauge-current-intensity, 0) * 0.2);
+          stroke-width: calc(var(--_gauge-stroke-width-bg) + 1px);
+          transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
+        }
+        
+        :host(:hover) .gauge-value {
+          transform: scale(calc(1.05 + var(--_gauge-current-intensity, 0) * 0.1));
+          text-shadow: 0 0 12px var(--_gauge-current-color, var(--_global-color-primary))50;
+          transition: all var(--_global-motion-duration-medium1) var(--_global-spring-wobbly);
+        }
+        
+        /* Enhanced active/pressed state with spring physics */
         :host(:active) {
-          transform: translateY(-1px) scale(0.98);
+          transform: translateY(-1px) scale(0.985);
           transition: transform var(--_global-motion-duration-short1) var(--_global-spring-energetic);
+          box-shadow: 
+            var(--_global-shadow-interaction-moderate),
+            0 0 30px var(--_gauge-current-color, var(--_global-color-primary))40,
+            inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        :host(:active) .gauge-fill {
+          stroke-width: calc(var(--_gauge-stroke-width) + 3px);
+          filter: 
+            drop-shadow(0 0 20px var(--_gauge-current-color, var(--_global-color-primary))80)
+            brightness(1.2) 
+            saturate(1.3);
+        }
+        
+        :host(:active) .gauge-needle {
+          filter: 
+            drop-shadow(0 5px 16px rgba(0, 0, 0, 0.9))
+            drop-shadow(0 0 12px var(--_gauge-current-color, var(--_global-color-primary))90);
         }
         
         /* Enhanced focus state */
@@ -707,13 +824,52 @@ class MyGauge extends MyntUIBaseComponent {
           transition: box-shadow var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
         }
         
-        /* Pulse animation for needle on hover */
+        /* Enhanced pulse animations with sophisticated physics */
         @keyframes gauge-needle-pulse {
           0% {
-            filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6));
+            filter: 
+              drop-shadow(0 3px 8px var(--_gauge-current-color, var(--_global-color-primary))60)
+              drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4));
           }
           100% {
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
+            filter: 
+              drop-shadow(0 4px 16px var(--_gauge-current-color, var(--_global-color-primary))80)
+              drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6))
+              brightness(1.1);
+          }
+        }
+        
+        @keyframes gauge-needle-hover-pulse {
+          0% {
+            filter: 
+              drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8))
+              drop-shadow(0 0 8px var(--_gauge-current-color, var(--_global-color-primary))80);
+          }
+          100% {
+            filter: 
+              drop-shadow(0 6px 20px rgba(0, 0, 0, 0.9))
+              drop-shadow(0 0 16px var(--_gauge-current-color, var(--_global-color-primary))90)
+              brightness(1.05);
+          }
+        }
+        
+        @keyframes gauge-threshold-reached {
+          0% {
+            stroke-width: var(--_gauge-stroke-width);
+            filter: none;
+          }
+          50% {
+            stroke-width: calc(var(--_gauge-stroke-width) + 4px);
+            filter: 
+              drop-shadow(0 0 20px var(--_gauge-current-color, var(--_global-color-primary))90)
+              brightness(1.3) 
+              saturate(1.4);
+          }
+          100% {
+            stroke-width: calc(var(--_gauge-stroke-width) + 1px);
+            filter: 
+              drop-shadow(0 0 12px var(--_gauge-current-color, var(--_global-color-primary))70)
+              brightness(1.1);
           }
         }
         
@@ -772,9 +928,19 @@ class MyGauge extends MyntUIBaseComponent {
         <svg class="gauge-svg" viewBox="0 0 100 60" aria-hidden="true">
           <defs>
             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color:${color};stop-opacity:0.8" />
-              <stop offset="100%" style="stop-color:${color};stop-opacity:1" />
+              <stop offset="0%" style="stop-color:${color};stop-opacity:0.85" />
+              <stop offset="25%" style="stop-color:color-mix(in srgb, ${color} 90%, white 10%);stop-opacity:0.95" />
+              <stop offset="75%" style="stop-color:color-mix(in srgb, ${color} 85%, white 15%);stop-opacity:1" />
+              <stop offset="100%" style="stop-color:${color};stop-opacity:0.9" />
             </linearGradient>
+            <radialGradient id="gaugeNeedleGradient" cx="50%" cy="20%" r="80%">
+              <stop offset="0%" style="stop-color:rgba(255, 255, 255, 0.9)" />
+              <stop offset="100%" style="stop-color:var(--_gauge-needle-color)" />
+            </radialGradient>
+            <filter id="gaugeShadow">
+              <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
+              <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.2"/>
+            </filter>
             <filter id="glow">
               <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
               <feMerge> 
@@ -799,9 +965,11 @@ class MyGauge extends MyntUIBaseComponent {
           <!-- Center circle -->
           <circle class="gauge-center" cx="50" cy="50" r="4"/>
           
-          <!-- Needle -->
+          <!-- Enhanced needle with gradient and better shape -->
           <polygon class="gauge-needle" 
-                   points="49.5,50 50.5,50 50,22"
+                   points="49,50 51,50 50.5,24 49.5,24"
+                   fill="url(#gaugeNeedleGradient)"
+                   filter="url(#gaugeShadow)"
                    transform="rotate(${this.angle} 50 50)"/>
         </svg>
 
