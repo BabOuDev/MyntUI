@@ -1,6 +1,6 @@
 describe('Button Component Visual Tests', () => {
   beforeEach(() => {
-    cy.visit('/test-button.html')
+    cy.visit('/examples/test-button.html')
     // Wait for page load and components to render
     cy.get('my-button').should('exist')
     cy.wait(1000)
