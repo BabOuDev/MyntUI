@@ -459,23 +459,32 @@ class MyInput extends HTMLElement {
         :host {
           /* Input-specific variables using global semantic variables */
           --_input-height: var(--_global-input-height);
-          --_input-padding-x: var(--_global-input-padding-x);
-          --_input-padding-y: var(--_global-input-padding-y);
-          --_input-border-color: var(--_global-color-border);
-          --_input-border-color-focus: var(--_global-color-border-focus);
-          --_input-border-color-error: var(--_global-color-border-error);
-          --_input-background: var(--_global-color-white);
-          --_input-text-color: var(--_global-color-text-primary);
-          --_input-placeholder-color: var(--_global-color-text-muted);
+          --_input-padding-x: var(--_global-spacing-md);
+          --_input-padding-y: var(--_global-spacing-sm);
+          --_input-border-color: var(--_global-color-outline-variant);
+          --_input-border-color-focus: var(--_global-color-primary);
+          --_input-border-color-error: var(--_global-color-error);
+          --_input-border-color-hover: var(--_global-color-outline);
+          --_input-background: var(--_global-color-surface-container-low);
+          --_input-background-hover: var(--_global-color-surface-container);
+          --_input-background-focus: var(--_global-color-surface-container-high);
+          --_input-text-color: var(--_global-color-on-surface);
+          --_input-placeholder-color: var(--_global-color-on-surface-variant);
+          --_input-label-color: var(--_global-color-on-surface-variant);
+          --_input-label-color-focus: var(--_global-color-primary);
           
-          --_input-focus-shadow: 0 0 0 2px rgba(128, 189, 255, 0.2);
-          --_input-error-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
-          --_input-border-radius: var(--_global-border-radius-md);
-          --_input-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_input-elevation: var(--_global-elevation-1);
+          --_input-elevation-hover: var(--_global-elevation-2);
+          --_input-elevation-focus: var(--_global-elevation-3);
+          --_input-border-radius: var(--_global-border-radius-sm);
+          --_input-border-radius-top: var(--_global-border-radius-sm) var(--_global-border-radius-sm) 0 0;
+          --_input-transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_input-state-layer-opacity: var(--_global-state-layer-hover);
           
           display: block;
           width: 100%;
           position: relative;
+          font-family: var(--_global-font-family-sans);
         }
 
         /* Host focus management */
@@ -508,8 +517,11 @@ class MyInput extends HTMLElement {
         .label {
           font-size: var(--_global-font-size-sm);
           font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-text-primary);
+          color: var(--_input-label-color);
           line-height: var(--_global-line-height-tight);
+          transition: color var(--_input-transition);
+          display: block;
+          margin-bottom: var(--_global-spacing-xs);
         }
 
         .label.required::after {
@@ -523,10 +535,12 @@ class MyInput extends HTMLElement {
           left: var(--_input-padding-x);
           transform: translateY(-50%);
           background: var(--_input-background);
-          padding: 0 4px;
-          transition: all var(--_global-transition-fast);
+          padding: 0 var(--_global-spacing-xs);
+          transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
           pointer-events: none;
-          z-index: 1;
+          z-index: 2;
+          margin-bottom: 0;
+          border-radius: var(--_global-border-radius-sm);
         }
 
         .input-wrapper {
@@ -546,21 +560,58 @@ class MyInput extends HTMLElement {
           color: var(--_input-text-color);
           font-size: var(--_global-font-size-md);
           font-family: var(--_global-font-family-sans);
+          font-weight: var(--_global-font-weight-normal);
           line-height: var(--_global-line-height-normal);
-          transition: all var(--_input-transition);
+          transition: var(--_input-transition);
           outline: none;
+          box-shadow: var(--_input-elevation);
+          position: relative;
+          z-index: 1;
+        }
+        
+        /* Material Design 3 State Layer */
+        .input-field::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: currentColor;
+          opacity: 0;
+          transition: opacity var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
+          pointer-events: none;
+          border-radius: inherit;
         }
 
         .input-field::placeholder {
           color: var(--_input-placeholder-color);
         }
 
+        /* Hover states */
+        .input-field:hover:not(:disabled):not(:focus) {
+          border-color: var(--_input-border-color-hover);
+          background-color: var(--_input-background-hover);
+          box-shadow: var(--_input-elevation-hover);
+        }
+        
+        .input-field:hover:not(:disabled):not(:focus)::before {
+          opacity: var(--_input-state-layer-opacity);
+        }
+
         /* Focus states with enhanced visual feedback */
         .input-field:focus,
         .input-field.focused {
           border-color: var(--_input-border-color-focus);
-          box-shadow: var(--_input-focus-shadow);
+          border-width: 2px;
+          background-color: var(--_input-background-focus);
+          box-shadow: var(--_input-elevation-focus);
           outline: none;
+        }
+        
+        .input-field:focus::before,
+        .input-field.focused::before {
+          opacity: var(--_global-state-layer-focus);
         }
 
         /* Enhanced focus for container */
@@ -568,11 +619,15 @@ class MyInput extends HTMLElement {
           transform: translateY(-1px);
           transition: transform var(--_input-transition);
         }
+        
+        .input-container.focused .label:not(.over) {
+          color: var(--_input-label-color-focus);
+        }
 
         /* Focus-visible for keyboard navigation */
         .input-field:focus-visible {
-          box-shadow: 0 0 0 3px var(--_global-color-border-focus);
-          outline: none;
+          outline: 2px solid var(--_input-border-color-focus);
+          outline-offset: 2px;
         }
 
         /* Enhanced disabled state */
@@ -690,12 +745,28 @@ class MyInput extends HTMLElement {
         }
 
         /* Floating label animation */
-        .input-field:focus + .label.over,
-        .input-field:not(:placeholder-shown) + .label.over {
-          top: 0;
-          transform: translateY(-50%);
+        .input-field:focus ~ .label.over,
+        .input-field:not(:placeholder-shown) ~ .label.over {
+          top: -2px;
+          left: calc(var(--_input-padding-x) - 4px);
+          transform: translateY(-50%) scale(0.75);
           font-size: var(--_global-font-size-xs);
-          color: var(--_input-border-color-focus);
+          color: var(--_input-label-color-focus);
+          background: var(--_input-background-focus);
+          border-radius: var(--_global-border-radius-xs);
+          font-weight: var(--_global-font-weight-semibold);
+        }
+        
+        /* Error state for floating label */
+        .input-container.has-error .input-field:focus ~ .label.over,
+        .input-container.has-error .input-field:not(:placeholder-shown) ~ .label.over {
+          color: var(--_input-border-color-error);
+        }
+        
+        /* Ensure floating label stays elevated */
+        .input-field:focus ~ .label.over,
+        .input-field:not(:placeholder-shown) ~ .label.over {
+          z-index: 3;
         }
       </style>
 
