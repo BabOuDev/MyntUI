@@ -210,17 +210,49 @@ class MyRadio extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          /* Component-specific variables using global variables */
+          /* Enhanced Material Design 3 variables with better semantic naming */
           --_radio-size: 20px;
-          --_radio-color: var(--_global-color-primary);
-          --_radio-color-unchecked: var(--_global-color-on-surface-variant);
-          --_radio-color-disabled: var(--_global-color-outline);
-          --_radio-background: var(--_global-color-surface);
-          --_radio-border: 2px solid var(--_global-color-outline);
-          --_radio-border-checked: 2px solid var(--_global-color-primary);
-          --_radio-border-hover: 2px solid var(--_global-color-on-surface);
+          --_radio-dot-size: 10px;
           --_radio-state-layer-size: 40px;
+          --_radio-border-width: 2px;
+          
+          /* Color tokens following Material Design 3 principles */
+          --_radio-color-unchecked: var(--_global-color-outline);
+          --_radio-color-checked: var(--_global-color-primary);
+          --_radio-color-disabled: var(--_global-color-outline-variant);
+          --_radio-color-error: var(--_global-color-error);
+          
+          /* Background colors */
+          --_radio-background-unchecked: var(--_global-color-surface);
+          --_radio-background-disabled: var(--_global-color-surface-variant);
+          
+          /* Border definitions */
+          --_radio-border-unchecked: var(--_radio-border-width) solid var(--_radio-color-unchecked);
+          --_radio-border-checked: var(--_radio-border-width) solid var(--_radio-color-checked);
+          --_radio-border-hover: var(--_radio-border-width) solid var(--_global-color-on-surface);
+          --_radio-border-focus: var(--_radio-border-width) solid var(--_radio-color-checked);
+          --_radio-border-disabled: var(--_radio-border-width) solid var(--_radio-color-disabled);
+          --_radio-border-error: var(--_radio-border-width) solid var(--_radio-color-error);
+          
+          /* Enhanced state layer colors */
+          --_radio-state-layer-unchecked: var(--_radio-color-checked);
+          --_radio-state-layer-checked: var(--_radio-color-checked);
+          --_radio-state-layer-error: var(--_radio-color-error);
+          
+          /* Improved motion and transitions */
           --_radio-transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          --_radio-transition-fast: all var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
+          --_radio-transition-emphasized: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          
+          /* Ripple enhancements */
+          --_radio-ripple-size: calc(var(--_radio-state-layer-size) * 1.2);
+          --_radio-ripple-duration: var(--_global-ripple-duration);
+          --_radio-ripple-easing: var(--_global-ripple-easing);
+          
+          /* Typography */
+          --_radio-label-color: var(--_global-color-on-surface);
+          --_radio-label-color-disabled: var(--_global-color-outline);
+          --_radio-label-color-error: var(--_global-color-error);
           
           display: inline-flex;
           align-items: center;
@@ -250,9 +282,10 @@ class MyRadio extends HTMLElement {
           margin: calc((var(--_radio-state-layer-size) - var(--_radio-size)) / -2);
           border-radius: 50%;
           overflow: hidden;
+          isolation: isolate;
         }
 
-        /* Material Design 3 State Layer */
+        /* Enhanced state layer with dynamic color */
         .radio-container::before {
           content: '';
           position: absolute;
@@ -261,87 +294,144 @@ class MyRadio extends HTMLElement {
           right: 0;
           bottom: 0;
           border-radius: 50%;
-          background: var(--_radio-color);
+          background-color: var(--_radio-state-layer-unchecked);
           opacity: 0;
-          transition: opacity var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
+          transition: var(--_radio-transition-fast);
           pointer-events: none;
+          z-index: -1;
         }
         
-        .radio-container:hover::before {
+        /* State layer color changes for checked state */
+        .radio-container:has(.checked)::before {
+          background-color: var(--_radio-state-layer-checked);
+        }
+        
+        /* Hover state with enhanced interaction feedback */
+        .radio-container:hover:not([aria-disabled="true"])::before {
           opacity: var(--_global-state-layer-hover);
+          transform: scale(1.1);
         }
         
-        .radio-container:active::before {
+        /* Active/pressed state */
+        .radio-container:active:not([aria-disabled="true"])::before {
           opacity: var(--_global-state-layer-pressed);
+          transform: scale(0.95);
+          transition: var(--_radio-transition-emphasized);
         }
 
+        /* Enhanced focus indicators with smooth transitions */
         .radio-container:focus {
-          outline: 2px solid var(--_global-color-primary);
+          outline: 2px solid var(--_radio-color-checked);
           outline-offset: 2px;
+          transition: outline-color var(--_radio-transition-fast);
         }
         
         .radio-container:focus::before {
           opacity: var(--_global-state-layer-focus);
+          transform: scale(1.05);
+        }
+        
+        /* Focus ring enhancement for keyboard navigation */
+        .radio-container:focus:not(:active) {
+          outline-width: 3px;
+          animation: focus-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes focus-pulse {
+          0%, 100% { outline-offset: 2px; }
+          50% { outline-offset: 4px; }
         }
 
         .radio-input {
           width: var(--_radio-size);
           height: var(--_radio-size);
           position: relative;
-          border: var(--_radio-border);
+          border: var(--_radio-border-unchecked);
           border-radius: 50%;
-          background-color: var(--_radio-background);
+          background-color: var(--_radio-background-unchecked);
           transition: var(--_radio-transition);
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
+        /* Enhanced checked state with smooth color transition */
         .radio-input.checked {
           border: var(--_radio-border-checked);
+          transform: scale(1.05);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         
-        /* Inner dot for checked state */
+        /* Enhanced inner dot for checked state */
         .radio-input::after {
           content: '';
           position: absolute;
-          width: 10px;
-          height: 10px;
+          width: var(--_radio-dot-size);
+          height: var(--_radio-dot-size);
           border-radius: 50%;
-          background-color: var(--_radio-color);
+          background-color: var(--_radio-color-checked);
           transform: scale(0);
-          transition: transform var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
+          transition: var(--_radio-transition-emphasized);
+          opacity: 0;
         }
         
         .radio-input.checked::after {
           transform: scale(1);
+          opacity: 1;
+          animation: radio-dot-appear 0.3s var(--_global-motion-easing-emphasized) forwards;
+        }
+        
+        /* Radio dot appearance animation */
+        @keyframes radio-dot-appear {
+          0% {
+            transform: scale(0.3);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        
+        /* Hover enhancement for unchecked state */
+        .radio-container:hover:not([aria-disabled="true"]) .radio-input:not(.checked) {
+          border: var(--_radio-border-hover);
+          background-color: var(--_global-color-surface-variant);
+          transform: scale(1.02);
         }
 
         .label {
-          color: var(--_global-color-on-surface);
+          color: var(--_radio-label-color);
           font-size: var(--_global-font-size-sm);
           font-weight: var(--_global-font-weight-normal);
           line-height: var(--_global-line-height-normal);
           cursor: pointer;
           flex: 1;
+          transition: var(--_radio-transition-fast);
         }
 
-        /* Hover states */
-        .radio-container:hover:not([aria-disabled="true"]) .radio-input:not(.checked) {
-          border: var(--_radio-border-hover);
-        }
-
-        /* Ripple effect styles */
+        /* Enhanced ripple effect styles */
         .ripple {
           position: absolute;
           border-radius: 50%;
           transform: scale(0);
-          animation: ripple-animation var(--_global-ripple-duration) var(--_global-ripple-easing);
-          background-color: currentColor;
+          animation: ripple-animation var(--_radio-ripple-duration) var(--_radio-ripple-easing);
+          background-color: var(--_radio-state-layer-unchecked);
           opacity: var(--_global-ripple-opacity-pressed);
           pointer-events: none;
           z-index: 1;
+          mix-blend-mode: normal;
+        }
+        
+        /* Dynamic ripple color based on radio state */
+        .radio-container:has(.checked) .ripple {
+          background-color: var(--_radio-state-layer-checked);
         }
 
         @keyframes ripple-animation {
@@ -349,49 +439,57 @@ class MyRadio extends HTMLElement {
             transform: scale(0);
             opacity: var(--_global-ripple-opacity-pressed);
           }
+          20% {
+            transform: scale(0.3);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.8);
+          }
           50% {
-            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.5);
+            transform: scale(1);
+            opacity: calc(var(--_global-ripple-opacity-pressed) * 0.4);
           }
           100% {
-            transform: scale(2);
+            transform: scale(2.5);
             opacity: 0;
           }
         }
 
-        /* Size variants */
+        /* Enhanced size variants */
         :host([size="sm"]) {
           --_radio-size: 16px;
+          --_radio-dot-size: 8px;
           --_radio-state-layer-size: 36px;
         }
 
         :host([size="lg"]) {
           --_radio-size: 24px;
+          --_radio-dot-size: 12px;
           --_radio-state-layer-size: 48px;
         }
 
-        /* Error state */
+        /* Enhanced error state */
         :host([error]) {
-          --_radio-color: var(--_global-color-error);
-          --_radio-border: 2px solid var(--_global-color-error);
-          --_radio-border-checked: 2px solid var(--_global-color-error);
+          --_radio-color-unchecked: var(--_radio-color-error);
+          --_radio-color-checked: var(--_radio-color-error);
+          --_radio-border-unchecked: var(--_radio-border-error);
+          --_radio-border-checked: var(--_radio-border-error);
+          --_radio-border-hover: var(--_radio-border-error);
+          --_radio-state-layer-unchecked: var(--_radio-state-layer-error);
+          --_radio-state-layer-checked: var(--_radio-state-layer-error);
+          --_radio-label-color: var(--_radio-label-color-error);
         }
 
-        :host([error]) .radio-input.checked {
-          border-color: var(--_global-color-error);
+        :host([error]) .radio-container:focus {
+          outline-color: var(--_radio-color-error);
         }
 
-        :host([error]) .radio-input.checked::after {
-          background-color: var(--_global-color-error);
-        }
-
-        :host([error]) .label {
-          color: var(--_global-color-error);
-        }
-
-        /* Disabled state */
+        /* Enhanced disabled state */
         :host([disabled]) {
-          --_radio-color: var(--_radio-color-disabled);
-          --_radio-border: 2px solid var(--_radio-color-disabled);
+          --_radio-color-unchecked: var(--_radio-color-disabled);
+          --_radio-color-checked: var(--_radio-color-disabled);
+          --_radio-background-unchecked: var(--_radio-background-disabled);
+          --_radio-border-unchecked: var(--_radio-border-disabled);
+          --_radio-border-checked: var(--_radio-border-disabled);
+          --_radio-label-color: var(--_radio-label-color-disabled);
         }
         
         :host([disabled]) .radio-container::before {
@@ -399,27 +497,117 @@ class MyRadio extends HTMLElement {
         }
 
         :host([disabled]) .radio-input {
-          background-color: var(--_global-color-surface-variant);
+          box-shadow: none;
+          cursor: not-allowed;
         }
         
         :host([disabled]) .radio-input.checked {
-          border-color: var(--_radio-color-disabled);
+          transform: none;
+          box-shadow: none;
         }
-
+        
         :host([disabled]) .radio-input.checked::after {
-          background-color: var(--_radio-color-disabled);
+          animation: none;
         }
 
         :host([disabled]) .label {
-          color: var(--_global-color-outline);
+          cursor: not-allowed;
         }
         
-        /* Reduced motion support */
+        /* Enhanced High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          :host {
+            --_radio-border-width: 3px;
+          }
+          
+          .radio-input {
+            border-width: var(--_radio-border-width);
+            background-color: var(--_global-color-surface);
+            box-shadow: none;
+          }
+          
+          .radio-input.checked {
+            background-color: var(--_global-color-primary);
+            outline: 2px solid var(--_global-color-on-surface);
+            outline-offset: 2px;
+          }
+          
+          .radio-input.checked::after {
+            background-color: var(--_global-color-on-primary);
+          }
+          
+          .radio-container::before,
+          .ripple {
+            display: none;
+          }
+          
+          .label {
+            font-weight: var(--_global-font-weight-bold);
+          }
+          
+          .radio-container:focus {
+            outline-width: 4px;
+            outline-style: double;
+          }
+        }
+
+        /* Enhanced Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
+          :host {
+            --_radio-transition: none;
+            --_radio-transition-fast: none;
+            --_radio-transition-emphasized: none;
+          }
+          
           .radio-input,
           .radio-input::after,
-          .radio-container::before {
-            transition: none;
+          .radio-container::before,
+          .ripple,
+          .label {
+            animation: none !important;
+            transition: none !important;
+          }
+          
+          .ripple,
+          .radio-container:focus:not(:active) {
+            display: none;
+          }
+          
+          .radio-input.checked {
+            transform: none;
+          }
+          
+          .radio-container:hover:not([aria-disabled="true"]) .radio-input:not(.checked) {
+            transform: none;
+          }
+        }
+
+        /* Enhanced focus-visible support with better keyboard navigation indicators */
+        @supports selector(:focus-visible) {
+          .radio-container:focus:not(:focus-visible) {
+            outline: none;
+            animation: none;
+          }
+          
+          .radio-container:focus:not(:focus-visible)::before {
+            opacity: 0;
+          }
+          
+          .radio-container:focus-visible {
+            outline: 3px solid var(--_radio-color-checked);
+            outline-offset: 3px;
+            animation: focus-pulse 2s ease-in-out infinite;
+          }
+        }
+        
+        /* Color scheme adaptation */
+        @media (prefers-color-scheme: dark) {
+          .radio-input {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+          }
+          
+          .radio-input.checked {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
           }
         }
       </style>
