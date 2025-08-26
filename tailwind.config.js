@@ -1,5 +1,8 @@
 import { globalConfig } from './src/config/global-config.js';
 
+// Get theme configuration for dynamic values
+const themeConfig = globalConfig.get('theme');
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -147,7 +150,11 @@ export default {
         md: '16px',
         lg: '24px',
         xl: '32px',
-        xxl: '48px'
+        xxl: '48px',
+        // Add semantic spacing values
+        'component-padding': '12px',
+        'section-gap': '24px',
+        'page-margin': '32px'
       },
       // Border radius system
       borderRadius: {
@@ -314,7 +321,8 @@ export default {
             backgroundColor: 'currentColor',
             opacity: '0',
             transition: 'opacity 200ms cubic-bezier(0.4, 0, 0.2, 1)',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            borderRadius: 'inherit'
           },
           '&:hover::before': {
             opacity: theme('opacity.state-hover')
@@ -339,6 +347,11 @@ export default {
         '.state-layer-surface': {
           '&::before': {
             backgroundColor: theme('colors.surface.on-surface')
+          }
+        },
+        '.state-layer-transparent': {
+          '&::before': {
+            backgroundColor: 'transparent'
           }
         }
       });
@@ -374,6 +387,78 @@ export default {
         },
         '.bg-opacity-state-pressed': {
           backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-pressed')}, transparent)`
+        }
+      });
+    },
+    // Custom plugin for component-specific utilities
+    function({ addUtilities, theme, addComponents }) {
+      // Component base styles
+      addComponents({
+        '.mynt-input-base': {
+          display: 'flex',
+          alignItems: 'center',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderRadius: theme('borderRadius.lg'),
+          transition: `all ${theme('transitionDuration.medium1')} ${theme('transitionTimingFunction.standard')}`,
+          fontFamily: theme('fontFamily.sans'),
+          fontSize: theme('fontSize.body-medium[0]'),
+          lineHeight: theme('fontSize.body-medium[1].lineHeight'),
+          '&:focus-within': {
+            outline: `2px solid ${theme('colors.primary.DEFAULT')}`,
+            outlineOffset: '2px'
+          }
+        },
+        '.mynt-button-base': {
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: theme('borderRadius.full'),
+          fontFamily: theme('fontFamily.sans'),
+          fontWeight: '500',
+          textAlign: 'center',
+          textDecoration: 'none',
+          cursor: 'pointer',
+          userSelect: 'none',
+          transition: `all ${theme('transitionDuration.medium1')} ${theme('transitionTimingFunction.standard')}`,
+          minWidth: theme('minWidth.button'),
+          '&:disabled': {
+            opacity: theme('opacity.50'),
+            cursor: 'not-allowed',
+            pointerEvents: 'none'
+          }
+        },
+        '.mynt-card-base': {
+          backgroundColor: theme('colors.surface.DEFAULT'),
+          borderRadius: theme('borderRadius.lg'),
+          borderWidth: '1px',
+          borderColor: theme('colors.outline.variant'),
+          boxShadow: theme('boxShadow.elevation1')
+        }
+      });
+
+      // Size-specific utilities
+      addUtilities({
+        '.mynt-size-sm': {
+          height: theme('height.input-sm'),
+          minHeight: theme('minHeight.input-sm'),
+          padding: `${theme('spacing.xs')} ${theme('spacing.sm')}`,
+          fontSize: theme('fontSize.label-medium[0]'),
+          lineHeight: theme('fontSize.label-medium[1].lineHeight')
+        },
+        '.mynt-size-md': {
+          height: theme('height.input-md'),
+          minHeight: theme('minHeight.input-md'),
+          padding: `${theme('spacing.sm')} ${theme('spacing.md')}`,
+          fontSize: theme('fontSize.body-medium[0]'),
+          lineHeight: theme('fontSize.body-medium[1].lineHeight')
+        },
+        '.mynt-size-lg': {
+          height: theme('height.input-lg'),
+          minHeight: theme('minHeight.input-lg'),
+          padding: `${theme('spacing.md')} ${theme('spacing.lg')}`,
+          fontSize: theme('fontSize.body-large[0]'),
+          lineHeight: theme('fontSize.body-large[1].lineHeight')
         }
       });
     }
