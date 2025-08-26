@@ -3,6 +3,9 @@
  * Main entry point for importing all components
  */
 
+// Global configuration
+import './config/global-config.js';
+
 // Basic components
 import './components/my-icon/my-icon.js';
 import './components/my-button/my-button.js';
@@ -35,3 +38,5 @@ import './components/my-drawer/my-drawer.js';
 
 console.log('MyntUI: Available components loaded successfully');
 console.log('Components ready: my-icon, my-button, my-input, my-toggle, my-checkbox, my-radio, my-radio-group, my-tooltip, my-dropdown, my-gauge, my-progress, my-sparkline, my-data-list, my-data-table, my-data-chart, my-modal, my-notification, my-drawer');
+console.log('MyntUI: Global configuration system initialized');
+console.log('Features: All 18 input types • Icon slots • Light/Dark themes • Grid system • Global config');

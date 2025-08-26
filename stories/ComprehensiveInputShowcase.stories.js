@@ -1,4 +1,5 @@
 import '../src/index.js';
+import { globalConfig, getThemeConfig, getComponentConfig } from '../src/config/global-config.js';
 
 export default {
   title: 'Overview/Comprehensive Input Showcase',
@@ -196,6 +197,14 @@ export const ComprehensiveInputShowcase = () => {
             <div class="stat-label">Accessibility Ready</div>
           </div>
           <div class="stat-card">
+            <div class="stat-number">CONFIG</div>
+            <div class="stat-label">Global Configuration</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">GRID</div>
+            <div class="stat-label">Layout System</div>
+          </div>
+          <div class="stat-card">
             <div class="stat-number">MD3</div>
             <div class="stat-label">Material Design 3</div>
           </div>
@@ -250,6 +259,7 @@ export const ComprehensiveInputShowcase = () => {
               type="number" 
               label="Price" 
               placeholder="99.99"
+              leading-icon="attach_money"
               min="0"
               max="9999"
               step="0.01"
@@ -262,6 +272,7 @@ export const ComprehensiveInputShowcase = () => {
               type="integer" 
               label="Quantity" 
               placeholder="10"
+              leading-icon="tag"
               min="1"
               max="100"
               helper-text="Whole numbers only">
@@ -285,6 +296,7 @@ export const ComprehensiveInputShowcase = () => {
             <my-input 
               type="date" 
               label="Event Date"
+              leading-icon="event"
               helper-text="Standard date picker">
             </my-input>
           </div>
@@ -293,6 +305,7 @@ export const ComprehensiveInputShowcase = () => {
             <my-input 
               type="datetime-local" 
               label="Appointment"
+              leading-icon="schedule"
               helper-text="Date and time selection">
             </my-input>
           </div>
@@ -301,6 +314,7 @@ export const ComprehensiveInputShowcase = () => {
             <my-input 
               type="time" 
               label="Meeting Time"
+              leading-icon="access_time"
               helper-text="Time selection only">
             </my-input>
           </div>
@@ -309,6 +323,7 @@ export const ComprehensiveInputShowcase = () => {
             <my-input 
               type="date-of-birth" 
               label="Date of Birth"
+              leading-icon="cake"
               helper-text="Specialized DOB input">
             </my-input>
           </div>
@@ -331,6 +346,7 @@ export const ComprehensiveInputShowcase = () => {
               type="email" 
               label="Email Address" 
               placeholder="user@example.com"
+              leading-icon="mail"
               helper-text="Built-in email validation">
             </my-input>
           </div>
@@ -340,6 +356,7 @@ export const ComprehensiveInputShowcase = () => {
               type="tel" 
               label="Phone Number" 
               placeholder="+1 (555) 123-4567"
+              leading-icon="phone"
               helper-text="Telephone number format">
             </my-input>
           </div>
@@ -349,6 +366,7 @@ export const ComprehensiveInputShowcase = () => {
               type="url" 
               label="Website" 
               placeholder="https://example.com"
+              leading-icon="link"
               helper-text="Valid URL required">
             </my-input>
           </div>
@@ -358,6 +376,8 @@ export const ComprehensiveInputShowcase = () => {
               type="password" 
               label="Password" 
               placeholder="Enter secure password"
+              leading-icon="lock"
+              trailing-icon="visibility"
               helper-text="Hidden input for security">
             </my-input>
           </div>
@@ -380,6 +400,8 @@ export const ComprehensiveInputShowcase = () => {
               type="search" 
               label="Search" 
               placeholder="Search products..."
+              leading-icon="search"
+              trailing-icon="clear"
               helper-text="Optimized for search queries">
             </my-input>
           </div>

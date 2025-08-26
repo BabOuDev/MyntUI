@@ -1,5 +1,5 @@
 
-Ensure all input types mentioned in contributing are properly implemented and displayed in storybook ("text",
+Ensure all input types mentioned in contributing are properly implemented and showcased in storybook ("text",
         "pattern",
         "number",
         "integer",
@@ -10,26 +10,36 @@ Ensure all input types mentioned in contributing are properly implemented and di
         "select",
         "dynamic-select",
         "textarea",
-        "checkbox",
+        "checkbox",L
         "radio",
         "email",
         "password",
         "url",
         "tel")
 
-Add/Update storybook in this repo, and showcase every component, with all potential variants.
 
-Then, your job is update, enhance quality and consistency, and test the repository. Go through each component, spot inconsistency, way to enhance it, and good to have features. use the CONTRIBUTING.md file to know a bit more what needs to be done. Make the library look beautiful. 
-Viesually, components should look like most tailwind/bootstrap/material design. Keep it simple, sharp, and consistent. Follow guidelines from the CONTRIBUTING.md file.
+Also, these inputs have visible slots on both sides, they should not be visible unless used to display a relevant icon (calendar icon for date inputs, magnifying glass for search input, currency input for currency number, etc...)
 
-If necessary, add/update README files for each component. You can also add/update storybook to showcase components.
+Ensure all components work well both on light and dark theme.
 
+It should also have a grid system.
+
+We should have a global config file to set the defaults for all theme and logic. 
+
+- the position of the labels on inputs
+- the sizes (used everywhere, buttons, inputs, icons, ...)
+- the colours
+- the padding / spacing
+- the corners (round, squared, fully-round, ...)
+- the name of the keys used in API related objects (limit, offset, total, result...)
+
+
+Read the CONTRIBUTING.md to know what to do.
+Use cypress screenshots to  know how the component look like.
 Make a commit and push your changes after every single file edit.
 
-You will need to write end to end and unit tests for the project. But make sure to spend most of your time on the actual porting, not on the testing. A good heuristic is to spend 80% of your time on the actual porting, and 20% on the
-testing. 
-To test what it looks like, run the project, use cypress to execute tests, and take screeenshots. Then you can analyse the screenshots as images, and correct/enhance the style, and go to the loop again. Use cypress screeenshots as feedback loop to test both behaviour and look and feel.
 
-Design: Consistency is Key
-UX: Smooth, Neat and Accessible
-Code: Keep It Stupid Simple
+Guidelines: 
+- Design: Consistency is Key
+- UX: Smooth, Neat and Accessible
+- Code: Keep It Stupid Simple
