@@ -117,132 +117,59 @@ class MyButton extends MyntUIBaseComponent {
     const isFab = this.fab;
     const isIconOnly = this.iconOnly;
     
-    // Base button classes
+    // Use mynt-button-base from global config
     let baseClasses = [
-      'inline-flex',
-      'items-center',
-      'justify-center',
+      'mynt-button-base',
       'gap-2',
       'relative',
-      'font-medium',
-      'text-center',
       'whitespace-nowrap',
       'select-none',
-      'transition-all',
-      'duration-medium1',
-      'ease-standard',
-      'focus-ring',
-      'state-layer',
       'overflow-hidden',
       'will-change-transform'
     ];
 
-    // Size classes
-    const sizeClasses = {
-      xs: ['h-6', 'px-2', 'text-xs', 'min-w-12'],
-      sm: ['h-component-sm', 'px-sm', 'text-label-medium', 'min-w-button'],
-      md: ['h-component-md', 'px-md', 'text-body-medium', 'min-w-button'],
-      lg: ['h-component-lg', 'px-lg', 'text-body-large', 'min-w-button'],
-      xl: ['h-14', 'px-xl', 'text-lg', 'min-w-button']
-    };
-
-    baseClasses.push(...(sizeClasses[size] || sizeClasses.md));
+    // Size classes using global config utilities
+    baseClasses.push(`mynt-size-${size || 'md'}`);
 
     // Density adjustments
     if (density === 'compact') {
       baseClasses.push('tracking-tighter');
     }
 
-    // Variant-specific classes
-    let variantClasses = [];
-    
+    // Variant-specific classes from global config
+    let finalVariant = variant;
     if (isElevated) {
-      variantClasses = [
-        'bg-surface-container-low',
-        'text-primary',
-        'shadow-elevation2',
-        'hover:shadow-elevation3',
-        'border',
-        'border-outline-variant',
-        'backdrop-blur-sm'
-      ];
+      finalVariant = 'elevated';
     } else if (isFilledTonal) {
-      variantClasses = [
-        'bg-secondary-container',
-        'text-secondary-on-container',
-        'hover:shadow-elevation1'
-      ];
+      finalVariant = 'filled-tonal';
+    }
+
+    // Get variant classes from global config
+    const variantConfig = config.variants?.button?.[finalVariant] || config.variants?.button?.filled || '';
+    if (variantConfig) {
+      baseClasses.push(...variantConfig.split(' ').filter(Boolean));
     } else {
-      switch (variant) {
+      // Fallback to default button styling
+      switch (finalVariant) {
         case 'filled':
         case 'primary':
         default:
-          variantClasses = [
-            'bg-primary',
-            'text-primary-on-primary',
-            'shadow-elevation1',
-            'hover:shadow-elevation2'
-          ];
+          baseClasses.push('bg-primary', 'text-primary-on-primary', 'shadow-elevation1', 'hover:shadow-elevation2');
           break;
         case 'outlined':
-          variantClasses = [
-            'bg-transparent',
-            'text-primary',
-            'border',
-            'border-outline',
-            'hover:bg-primary',
-            'hover:bg-opacity-state-hover',
-            'hover:border-primary'
-          ];
+          baseClasses.push('bg-transparent', 'text-primary', 'border-2', 'border-outline', 'hover:bg-primary/10');
           break;
         case 'text':
-          variantClasses = [
-            'bg-transparent',
-            'text-primary',
-            'hover:bg-primary',
-            'hover:bg-opacity-state-hover',
-            'px-md',
-            'min-w-auto'
-          ];
+          baseClasses.push('bg-transparent', 'text-primary', 'hover:bg-primary/10');
           break;
-        case 'secondary':
-          variantClasses = [
-            'bg-secondary',
-            'text-secondary-on-secondary',
-            'shadow-elevation1',
-            'hover:shadow-elevation2'
-          ];
+        case 'filled-tonal':
+          baseClasses.push('bg-secondary-container', 'text-secondary-on-container', 'hover:shadow-elevation1');
           break;
-        case 'success':
-          variantClasses = [
-            'bg-success',
-            'text-success-on-success',
-            'shadow-elevation1',
-            'hover:shadow-elevation2'
-          ];
-          break;
-        case 'error':
-        case 'danger':
-          variantClasses = [
-            'bg-error',
-            'text-error-on-error',
-            'shadow-elevation1',
-            'hover:shadow-elevation2'
-          ];
-          break;
-        case 'ghost':
-          variantClasses = [
-            'bg-transparent',
-            'text-primary',
-            'border',
-            'border-outline-variant',
-            'hover:bg-surface-variant'
-          ];
+        case 'elevated':
+          baseClasses.push('bg-surface', 'text-primary', 'shadow-elevation1', 'hover:shadow-elevation2', 'border', 'border-outline-variant');
           break;
       }
     }
-
-    baseClasses.push(...variantClasses);
 
     // FAB specific classes
     if (isFab) {
@@ -279,20 +206,28 @@ class MyButton extends MyntUIBaseComponent {
       baseClasses.push('rounded-full');
     }
 
-    // State classes
+    // State classes from global config
+    const stateConfig = config.states || {};
+    
     if (isDisabled || isLoading) {
-      baseClasses.push(
-        'opacity-50',
-        'cursor-not-allowed',
-        'pointer-events-none'
-      );
+      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+      const loadingState = stateConfig.loading || 'opacity-75 cursor-wait';
+      
+      if (isDisabled) {
+        baseClasses.push(...disabledState.split(' ').filter(Boolean));
+      }
+      if (isLoading) {
+        baseClasses.push(...loadingState.split(' ').filter(Boolean));
+      }
     } else {
+      // Interactive states from global config
+      const hoverState = stateConfig.hover || 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2';
+      const activeState = stateConfig.active || 'active:bg-opacity-state-pressed active:scale-95';
+      
       baseClasses.push(
         'cursor-pointer',
-        'hover:scale-subtle',
-        'hover:-translate-y-px',
-        'active:scale-95',
-        'active:translate-y-0'
+        ...hoverState.split(' ').filter(Boolean),
+        ...activeState.split(' ').filter(Boolean)
       );
     }
 
