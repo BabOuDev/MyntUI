@@ -39,12 +39,17 @@ class MyCheckbox extends MyntUIBaseComponent {
           `Checkbox ${this.checked ? 'checked' : this.indeterminate ? 'indeterminate' : 'unchecked'}`,
           'polite'
         );
+        this.updateDOM();
         break;
       case 'disabled':
         this.announceToScreenReader(
           `Checkbox ${this.disabled ? 'disabled' : 'enabled'}`,
           'polite'
         );
+        this.updateDOM();
+        break;
+      case 'error':
+        this.updateDOM();
         break;
     }
   }
@@ -61,6 +66,8 @@ class MyCheckbox extends MyntUIBaseComponent {
     } else {
       this.removeAttribute('checked');
     }
+    // Update DOM immediately when property is set
+    this.updateDOM();
   }
 
   get indeterminate() {
@@ -74,6 +81,8 @@ class MyCheckbox extends MyntUIBaseComponent {
     } else {
       this.removeAttribute('indeterminate');
     }
+    // Update DOM immediately when property is set
+    this.updateDOM();
   }
 
   get label() {
@@ -166,9 +175,10 @@ class MyCheckbox extends MyntUIBaseComponent {
       if (checked || indeterminate) {
         checkboxClasses.push(
           'bg-primary',
-          'border-primary',
+          'border-primary', 
           'text-primary-on-primary',
-          'shadow-sm'
+          'shadow-sm',
+          'checked'
         );
       } else {
         checkboxClasses.push(
@@ -311,6 +321,10 @@ class MyCheckbox extends MyntUIBaseComponent {
           display: inline-block;
         }
         
+        :host([error]) {
+          /* Error state styling handled via classes */
+        }
+        
         /* Material Design 3 checkbox mark with enhanced animation */
         .checkbox-mark {
           position: absolute;
@@ -340,10 +354,21 @@ class MyCheckbox extends MyntUIBaseComponent {
           stroke-dasharray: 16;
           stroke-dashoffset: 16;
           transition: stroke-dashoffset 300ms cubic-bezier(0.4, 0, 0.2, 1);
+          animation: checkmark-draw 0.3s ease-in-out;
         }
         
         .checkbox-mark.visible .check-icon {
           stroke-dashoffset: 0;
+        }
+        
+        /* Checkmark drawing animation */
+        @keyframes checkmark-draw {
+          from {
+            stroke-dashoffset: 16;
+          }
+          to {
+            stroke-dashoffset: 0;
+          }
         }
         
         /* Indeterminate mark with smooth animation */
@@ -427,11 +452,7 @@ class MyCheckbox extends MyntUIBaseComponent {
           </div>
         </div>
         
-        ${label ? `
-          <span class="${classes.label} label">
-            ${label}
-          </span>
-        ` : ''}
+        ${label ? `<span class="${classes.label} label">${label}</span>` : ''}
         
         <slot></slot>
         
@@ -466,6 +487,41 @@ class MyCheckbox extends MyntUIBaseComponent {
           handler: this.handleKeyDown
         }
       ]);
+    }
+  }
+
+  // Update DOM without full re-render
+  updateDOM() {
+    if (!this.shadowRoot) return;
+    
+    const checkboxInput = this.shadowRoot.querySelector('.checkbox-input');
+    const checkboxMark = this.shadowRoot.querySelector('.checkbox-mark');
+    
+    if (checkboxInput && checkboxMark) {
+      // Update aria-checked
+      checkboxInput.setAttribute('aria-checked', this.indeterminate ? 'mixed' : this.checked.toString());
+      
+      // Update visible class
+      if (this.checked || this.indeterminate) {
+        checkboxMark.classList.add('visible');
+      } else {
+        checkboxMark.classList.remove('visible');
+      }
+      
+      // Update classes based on current state - this will include 'checked' class
+      const classes = this.getTailwindClasses();
+      const newClasses = classes.checkbox + ' checkbox-input checkbox-container';
+      
+      // Make sure 'checked' class is explicitly added when needed
+      if (this.checked || this.indeterminate) {
+        if (!newClasses.includes('checked')) {
+          checkboxInput.className = newClasses + ' checked';
+        } else {
+          checkboxInput.className = newClasses;
+        }
+      } else {
+        checkboxInput.className = newClasses.replace(' checked', '');
+      }
     }
   }
 
