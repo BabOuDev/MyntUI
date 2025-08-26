@@ -6,6 +6,7 @@
  */
 
 import { MyntUIBaseComponent } from '../../core/base-component.js';
+import { globalConfig } from '../../config/global-config.js';
 
 class MyInput extends MyntUIBaseComponent {
   constructor() {
@@ -118,31 +119,29 @@ class MyInput extends MyntUIBaseComponent {
     this._value = this._schema.value;
   }
 
-  // Automatic icon assignment based on input type
+  // Automatic icon assignment based on input type using global configuration
   getDefaultIconForType(type) {
-    const iconMap = {
-      'email': 'mail',
-      'password': 'lock',
-      'search': 'search',
-      'date': 'event',
-      'datetime-local': 'schedule',
-      'time': 'access_time',
-      'date-of-birth': 'cake',
-      'tel': 'phone',
-      'url': 'link',
-      'number': 'tag',
-      'integer': 'tag'
-    };
-    return iconMap[type] || null;
+    const autoIconMapping = globalConfig.get('components.input.autoIconMapping', {});
+    return autoIconMapping[type] || null;
   }
 
   // Apply automatic icon assignment if no explicit icons are provided
   applyAutomaticIcons() {
+    const showIconsOnly = globalConfig.get('components.input.showIconsOnly', 'when-relevant');
+    
+    // Skip automatic icons if set to 'never'
+    if (showIconsOnly === 'never') {
+      return;
+    }
+    
     // Only assign automatic icons if no explicit icons are set
     if (!this._schema.leadingIcon && !this._schema.trailingIcon) {
       const autoIcon = this.getDefaultIconForType(this._schema.type);
       if (autoIcon) {
-        this._schema.leadingIcon = autoIcon;
+        // For 'when-relevant', only assign if the input type benefits from an icon
+        if (showIconsOnly === 'when-relevant' || showIconsOnly === 'always') {
+          this._schema.leadingIcon = autoIcon;
+        }
       }
     }
   }
@@ -3039,6 +3038,32 @@ class MyInput extends MyntUIBaseComponent {
           .focus-ripple,
           .error-animation {
             display: none !important;
+          }
+        }
+
+        /* Dark theme support via data-color-scheme attribute and media query */
+        :host([data-color-scheme="dark"]),
+        :host-context([data-color-scheme="dark"]) {
+          --_input-background: var(--_global-color-scheme-dark-surface);
+          --_input-color: var(--_global-color-scheme-dark-on-surface);
+          --_input-border-color: var(--_global-color-scheme-dark-outline-variant);
+          --_input-border-color-hover: var(--_global-color-scheme-dark-outline);
+          --_input-border-color-focus: var(--_global-color-scheme-dark-primary);
+          --_input-label-color: var(--_global-color-scheme-dark-on-surface-variant);
+          --_input-label-color-focus: var(--_global-color-scheme-dark-primary);
+          --_input-helper-text-color: var(--_global-color-scheme-dark-on-surface-variant);
+        }
+
+        @media (prefers-color-scheme: dark) {
+          :host {
+            --_input-background: var(--_global-color-scheme-dark-surface);
+            --_input-color: var(--_global-color-scheme-dark-on-surface);
+            --_input-border-color: var(--_global-color-scheme-dark-outline-variant);
+            --_input-border-color-hover: var(--_global-color-scheme-dark-outline);
+            --_input-border-color-focus: var(--_global-color-scheme-dark-primary);
+            --_input-label-color: var(--_global-color-scheme-dark-on-surface-variant);
+            --_input-label-color-focus: var(--_global-color-scheme-dark-primary);
+            --_input-helper-text-color: var(--_global-color-scheme-dark-on-surface-variant);
           }
         }
       </style>
