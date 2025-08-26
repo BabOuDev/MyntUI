@@ -287,156 +287,106 @@ class MyNotification extends HTMLElement {
 
   // Render the component
   render() {
+    // Type-specific styling classes
+    const typeClasses = {
+      success: 'bg-green-50 border-l-green-500 text-green-900',
+      error: 'bg-red-50 border-l-red-500 text-red-900', 
+      warning: 'bg-yellow-50 border-l-yellow-500 text-yellow-900',
+      info: 'bg-blue-50 border-l-blue-500 text-blue-900'
+    };
+
+    // Icon color classes
+    const iconClasses = {
+      success: 'text-green-600',
+      error: 'text-red-600',
+      warning: 'text-yellow-600', 
+      info: 'text-blue-600'
+    };
+
+    // Progress bar classes
+    const progressClasses = {
+      success: 'bg-green-500',
+      error: 'bg-red-500',
+      warning: 'bg-yellow-500',
+      info: 'bg-blue-500'
+    };
+
+    const currentTypeClass = typeClasses[this.type] || typeClasses.info;
+    const currentIconClass = iconClasses[this.type] || iconClasses.info;
+    const currentProgressClass = progressClasses[this.type] || progressClasses.info;
+    
+    const displayClass = this.isVisible ? 'block' : 'hidden';
+    const opacityClass = this.isVisible ? 'opacity-100' : 'opacity-0';
+    const transformClass = this.isVisible ? 'translate-x-0' : 'translate-x-full';
+
     this.shadowRoot.innerHTML = `
+      <div class="
+        notification-container min-w-[300px] max-w-sm ${currentTypeClass} 
+        rounded-lg shadow-elevation3 border-l-4 cursor-pointer relative
+        flex items-start gap-3 p-4 transition-all duration-250 ease-in-out
+        ${opacityClass} ${transformClass} transform
+        hover:shadow-lg hover:-translate-y-px
+      " 
+      role="alert" 
+      aria-live="polite">
+        
+        <!-- Notification Icon -->
+        <span class="
+          notification-icon flex-shrink-0 text-xl ${currentIconClass} mt-0.5
+        ">${this.icon}</span>
+        
+        <!-- Content -->
+        <div class="
+          notification-content flex-1 flex flex-col gap-1
+        ">
+          <p class="
+            notification-message text-sm font-medium leading-normal m-0
+          ">
+            <slot>${this.message}</slot>
+          </p>
+        </div>
+        
+        <!-- Close Button -->
+        ${this.closeable ? `
+          <button 
+            class="
+              notification-close flex-shrink-0 bg-transparent border-none
+              cursor-pointer p-0.5 rounded-full flex items-center justify-center
+              opacity-70 transition-all duration-250 ease-in-out
+              text-base w-5 h-5 mt-0.5
+              hover:opacity-100 hover:bg-black/10
+              focus:outline-2 focus:outline-blue-500 focus:outline-offset-2
+            " 
+            type="button"
+            aria-label="Close notification"
+          >
+            ✕
+          </button>
+        ` : ''}
+        
+        <!-- Progress Bar -->
+        ${this.duration > 0 && this.isVisible ? `
+          <div 
+            class="
+              notification-progress absolute bottom-0 left-0 h-0.5 
+              ${currentProgressClass} rounded-b-lg animate-progress
+            " 
+            aria-hidden="true"
+            style="animation-duration: ${this.duration}ms;"
+          ></div>
+        ` : ''}
+      </div>
+
       <style>
+        /* Minimal CSS for notification-specific functionality */
         :host {
-          /* Notification-specific variables using global semantic variables */
-          --_notification-background: var(--_global-color-surface-container);
-          --_notification-text-color: var(--_global-color-on-surface);
-          --_notification-border-radius: var(--_global-border-radius-lg);
-          --_notification-elevation: var(--_global-elevation-3);
-          --_notification-padding: var(--_global-spacing-md) var(--_global-spacing-lg);
-          --_notification-min-width: 300px;
-          --_notification-max-width: 400px;
-          --_notification-gap: var(--_global-spacing-sm);
-          
-          /* Type-specific colors */
-          --_notification-success-bg: var(--_global-color-success-container);
-          --_notification-success-border: var(--_global-color-success);
-          --_notification-success-icon: var(--_global-color-success);
-          
-          --_notification-error-bg: var(--_global-color-error-container);
-          --_notification-error-border: var(--_global-color-error);
-          --_notification-error-icon: var(--_global-color-error);
-          
-          --_notification-warning-bg: var(--_global-color-warning-container);
-          --_notification-warning-border: var(--_global-color-warning);
-          --_notification-warning-icon: var(--_global-color-warning);
-          
-          --_notification-info-bg: var(--_global-color-info-container);
-          --_notification-info-border: var(--_global-color-info);
-          --_notification-info-icon: var(--_global-color-info);
-          
-          /* Animation */
-          --_notification-transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
-          
-          display: ${this.isVisible ? 'block' : 'none'};
+          display: ${displayClass};
           position: fixed;
-          z-index: var(--_global-z-index-notification);
+          z-index: 600; /* notification z-index from global config */
+          font-family: system-ui, -apple-system, sans-serif;
         }
 
-        .notification-container {
-          min-width: var(--_notification-min-width);
-          max-width: var(--_notification-max-width);
-          background-color: var(--_notification-background);
-          border-radius: var(--_notification-border-radius);
-          box-shadow: var(--_notification-elevation);
-          padding: var(--_notification-padding);
-          display: flex;
-          align-items: flex-start;
-          gap: var(--_notification-gap);
-          transition: var(--_notification-transition);
-          border-left: 4px solid var(--_notification-info-border);
-          cursor: pointer;
-          position: relative;
-          opacity: ${this.isVisible ? '1' : '0'};
-          transform: translateX(${this.isVisible ? '0' : '100%'});
-        }
-
-        /* Type-specific styling */
-        :host([type="success"]) .notification-container {
-          background-color: var(--_notification-success-bg);
-          border-left-color: var(--_notification-success-border);
-        }
-
-        :host([type="error"]) .notification-container {
-          background-color: var(--_notification-error-bg);
-          border-left-color: var(--_notification-error-border);
-        }
-
-        :host([type="warning"]) .notification-container {
-          background-color: var(--_notification-warning-bg);
-          border-left-color: var(--_notification-warning-border);
-        }
-
-        :host([type="info"]) .notification-container {
-          background-color: var(--_notification-info-bg);
-          border-left-color: var(--_notification-info-border);
-        }
-
-        .notification-icon {
-          flex-shrink: 0;
-          font-size: 20px;
-          color: var(--_notification-info-icon);
-          font-family: 'Material Icons';
-          margin-top: 2px;
-        }
-
-        :host([type="success"]) .notification-icon {
-          color: var(--_notification-success-icon);
-        }
-
-        :host([type="error"]) .notification-icon {
-          color: var(--_notification-error-icon);
-        }
-
-        :host([type="warning"]) .notification-icon {
-          color: var(--_notification-warning-icon);
-        }
-
-        :host([type="info"]) .notification-icon {
-          color: var(--_notification-info-icon);
-        }
-
-        .notification-content {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: var(--_global-spacing-xs);
-        }
-
-        .notification-message {
-          color: var(--_notification-text-color);
-          font-size: var(--_global-font-size-sm);
-          font-weight: var(--_global-font-weight-medium);
-          line-height: var(--_global-line-height-normal);
-          margin: 0;
-        }
-
-        .notification-close {
-          flex-shrink: 0;
-          background: none;
-          border: none;
-          color: var(--_notification-text-color);
-          cursor: pointer;
-          padding: 2px;
-          border-radius: var(--_global-border-radius-full);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0.7;
-          transition: var(--_notification-transition);
-          font-size: 16px;
-          width: 20px;
-          height: 20px;
-          margin-top: 2px;
-        }
-
-        .notification-close:hover {
-          opacity: 1;
-          background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .notification-close:focus {
-          outline: 2px solid var(--_global-color-primary);
-          outline-offset: 2px;
-        }
-
-        /* Animation states */
-        :host([visible]) .notification-container {
-          animation: notification-enter var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized) forwards;
-        }
-
+        /* Animation for notification entrance */
         @keyframes notification-enter {
           from {
             opacity: 0;
@@ -448,36 +398,8 @@ class MyNotification extends HTMLElement {
           }
         }
 
-        /* Hover effects */
-        .notification-container:hover {
-          box-shadow: var(--_global-elevation-4);
-          transform: translateY(-1px);
-        }
-
-        /* Progress bar for duration */
-        .notification-progress {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          height: 2px;
-          background-color: var(--_notification-info-border);
-          border-radius: 0 0 var(--_notification-border-radius) var(--_notification-border-radius);
-          animation: notification-progress ${this.duration}ms linear forwards;
-        }
-
-        :host([type="success"]) .notification-progress {
-          background-color: var(--_notification-success-border);
-        }
-
-        :host([type="error"]) .notification-progress {
-          background-color: var(--_notification-error-border);
-        }
-
-        :host([type="warning"]) .notification-progress {
-          background-color: var(--_notification-warning-border);
-        }
-
-        @keyframes notification-progress {
+        /* Progress bar animation */
+        @keyframes progress {
           from {
             width: 100%;
           }
@@ -486,11 +408,20 @@ class MyNotification extends HTMLElement {
           }
         }
 
-        /* Responsive design */
+        .animate-progress {
+          animation: progress linear forwards;
+        }
+
+        /* Apply entrance animation when visible */
+        :host([visible]) .notification-container {
+          animation: notification-enter 250ms cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        /* Responsive design for mobile */
         @media (max-width: 480px) {
           :host {
-            left: 8px !important;
-            right: 8px !important;
+            left: 0.5rem !important;
+            right: 0.5rem !important;
             transform: none !important;
           }
           
@@ -500,7 +431,7 @@ class MyNotification extends HTMLElement {
           }
         }
 
-        /* Accessibility */
+        /* Accessibility - Reduced motion support */
         @media (prefers-reduced-motion: reduce) {
           .notification-container,
           .notification-progress {
@@ -508,29 +439,14 @@ class MyNotification extends HTMLElement {
             transition: none;
           }
         }
-      </style>
 
-      <div class="notification-container" role="alert" aria-live="polite">
-        <span class="notification-icon">${this.icon}</span>
-        
-        <div class="notification-content">
-          <p class="notification-message">
-            <slot>${this.message}</slot>
-          </p>
-        </div>
-        
-        ${this.closeable ? `
-          <button 
-            class="notification-close" 
-            type="button"
-            aria-label="Close notification"
-          >
-            ✕
-          </button>
-        ` : ''}
-        
-        ${this.duration > 0 && this.isVisible ? '<div class="notification-progress" aria-hidden="true"></div>' : ''}
-      </div>
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+          .notification-container {
+            border: 2px solid;
+          }
+        }
+      </style>
     `;
   }
 }

@@ -290,182 +290,113 @@ class MyModal extends MyntUIBaseComponent {
 
   // Render the component
   render() {
+    // Get size classes from global config
+    const sizeClasses = {
+      sm: 'w-96 max-w-sm',
+      md: 'w-[600px] max-w-2xl', 
+      lg: 'w-[800px] max-w-4xl',
+      xl: 'w-[1000px] max-w-6xl'
+    };
+
+    const currentSizeClass = sizeClasses[this.size] || sizeClasses.md;
+    const displayClass = this.open ? 'flex' : 'hidden';
+    const backdropOpacity = this.open ? 'opacity-100' : 'opacity-0';
+    const containerScale = this.open ? 'scale-100' : 'scale-90';
+    const containerOpacity = this.open ? 'opacity-100' : 'opacity-0';
+    const backdropCursor = this.closeOnBackdropClick ? 'cursor-pointer' : 'cursor-default';
+
     this.shadowRoot.innerHTML = `
+      <div class="
+        fixed inset-0 z-modal ${displayClass} items-center justify-center p-6
+        backdrop-blur-sm transition-all duration-medium1 ease-standard
+      ">
+        <!-- Backdrop -->
+        <div 
+          class="
+            absolute inset-0 bg-black/50 ${backdropOpacity}
+            transition-opacity duration-medium1 ease-standard ${backdropCursor}
+          " 
+          aria-hidden="true"
+        ></div>
+
+        <!-- Modal Container -->
+        <div 
+          class="
+            modal-container
+            relative bg-white shadow-elevation4 rounded-xl border border-gray-300
+            max-h-[90vh] ${currentSizeClass} overflow-hidden flex flex-col
+            ${containerScale} ${containerOpacity}
+            transform transition-all duration-300 ease-in-out
+          "
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="${this.title ? 'modal-title' : ''}"
+          aria-describedby="modal-body"
+          tabindex="0"
+        >
+          ${this.title ? `
+          <!-- Modal Header -->
+          <header class="
+            flex items-center justify-between p-6 border-b border-gray-200
+            bg-gray-50
+          ">
+            <h2 
+              id="modal-title" 
+              class="
+                text-title-large font-semibold text-gray-900 
+                m-0 leading-tight
+              "
+            >
+              ${this.title}
+            </h2>
+            <button 
+              class="
+                bg-transparent border-none text-gray-500 cursor-pointer
+                p-2 rounded-full flex items-center justify-center
+                w-10 h-10 text-xl transition-all duration-medium1 ease-standard
+                hover:bg-gray-200 hover:text-gray-900
+                focus:outline-2 focus:outline-primary-600 focus:outline-offset-2
+                focus-ring state-layer
+              " 
+              type="button" 
+              aria-label="Close modal"
+              tabindex="0"
+            >
+              ✕
+            </button>
+          </header>
+          ` : ''}
+          
+          <!-- Modal Body -->
+          <div 
+            id="modal-body"
+            class="
+              p-6 flex-1 overflow-y-auto text-gray-900
+              text-body-medium leading-normal
+            "
+          >
+            <slot name="body">
+              <slot></slot>
+            </slot>
+          </div>
+          
+          <!-- Modal Footer -->
+          <footer class="
+            p-6 border-t border-gray-200 bg-gray-50
+            flex gap-4 justify-end items-center
+          ">
+            <slot name="footer"></slot>
+          </footer>
+        </div>
+      </div>
+
       <style>
+        /* Minimal CSS - leveraging TailwindCSS for styling */
         :host {
-          /* Modal-specific variables using global semantic variables */
-          --_modal-backdrop-color: var(--_global-color-background-overlay);
-          --_modal-background: var(--_global-color-surface);
-          --_modal-border-radius: var(--_global-border-radius-lg);
-          --_modal-elevation: var(--_global-elevation-5);
-          --_modal-padding: var(--_global-spacing-lg);
-          --_modal-header-padding: var(--_global-spacing-lg) var(--_global-spacing-lg) var(--_global-spacing-md) var(--_global-spacing-lg);
-          --_modal-footer-padding: var(--_global-spacing-md) var(--_global-spacing-lg) var(--_global-spacing-lg) var(--_global-spacing-lg);
-          --_modal-gap: var(--_global-spacing-md);
-          
-          /* Size variants */
-          --_modal-width-sm: 400px;
-          --_modal-width-md: 600px;
-          --_modal-width-lg: 800px;
-          --_modal-width-xl: 1000px;
-          --_modal-max-width: 90vw;
-          --_modal-max-height: 90vh;
-          
-          /* Animation */
-          --_modal-transition: all var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized);
-          --_modal-backdrop-transition: opacity var(--_global-motion-duration-medium1) var(--_global-motion-easing-standard);
-          
-          /* Z-index */
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: var(--_global-z-index-modal);
-          
-          /* Display management */
-          display: ${this.open ? 'flex' : 'none'};
-          align-items: center;
-          justify-content: center;
-          padding: var(--_global-spacing-lg);
+          font-family: system-ui, -apple-system, sans-serif;
         }
 
-        .modal-backdrop {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: var(--_modal-backdrop-color);
-          opacity: ${this.open ? '1' : '0'};
-          transition: var(--_modal-backdrop-transition);
-          cursor: ${this.closeOnBackdropClick ? 'pointer' : 'default'};
-        }
-
-        .modal-container {
-          position: relative;
-          background-color: var(--_modal-background);
-          border-radius: var(--_modal-border-radius);
-          box-shadow: var(--_modal-elevation);
-          max-width: var(--_modal-max-width);
-          max-height: var(--_modal-max-height);
-          width: var(--_modal-width-md);
-          transform: ${this.open ? 'scale(1)' : 'scale(0.9)'};
-          opacity: ${this.open ? '1' : '0'};
-          transition: var(--_modal-transition);
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-
-        /* Size variants */
-        :host([size="sm"]) .modal-container {
-          width: var(--_modal-width-sm);
-        }
-
-        :host([size="lg"]) .modal-container {
-          width: var(--_modal-width-lg);
-        }
-
-        :host([size="xl"]) .modal-container {
-          width: var(--_modal-width-xl);
-        }
-
-        .modal-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: var(--_modal-header-padding);
-          border-bottom: 1px solid var(--_global-color-outline-variant);
-          background-color: var(--_global-color-surface-container-low);
-        }
-
-        .modal-title {
-          font-size: var(--_global-font-size-xl);
-          font-weight: var(--_global-font-weight-semibold);
-          color: var(--_global-color-on-surface);
-          margin: 0;
-          line-height: var(--_global-line-height-tight);
-        }
-
-        .modal-close-button {
-          background: none;
-          border: none;
-          color: var(--_global-color-on-surface-variant);
-          cursor: pointer;
-          padding: var(--_global-spacing-sm);
-          border-radius: var(--_global-border-radius-full);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: var(--_modal-transition);
-          font-size: 24px;
-          width: 40px;
-          height: 40px;
-        }
-
-        .modal-close-button:hover {
-          background-color: var(--_global-color-surface-variant);
-          color: var(--_global-color-on-surface);
-        }
-
-        .modal-close-button:focus {
-          outline: 2px solid var(--_global-color-primary);
-          outline-offset: 2px;
-        }
-
-        .modal-body {
-          padding: var(--_modal-padding);
-          flex: 1;
-          overflow-y: auto;
-          color: var(--_global-color-on-surface);
-          font-size: var(--_global-font-size-md);
-          line-height: var(--_global-line-height-normal);
-        }
-
-        .modal-footer {
-          padding: var(--_modal-footer-padding);
-          border-top: 1px solid var(--_global-color-outline-variant);
-          background-color: var(--_global-color-surface-container-low);
-          display: flex;
-          gap: var(--_modal-gap);
-          justify-content: flex-end;
-          align-items: center;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-          :host {
-            padding: var(--_global-spacing-md);
-          }
-          
-          .modal-container {
-            width: 100%;
-            max-width: none;
-            margin: 0;
-          }
-          
-          .modal-header {
-            padding: var(--_global-spacing-md);
-          }
-          
-          .modal-body {
-            padding: var(--_global-spacing-md);
-          }
-          
-          .modal-footer {
-            padding: var(--_global-spacing-md);
-            flex-wrap: wrap;
-          }
-        }
-
-        /* Animation for entering/leaving */
-        @media (prefers-reduced-motion: no-preference) {
-          :host([open]) .modal-container {
-            animation: modal-enter var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized) forwards;
-          }
-        }
-
+        /* Animation keyframes for modal entrance */
         @keyframes modal-enter {
           from {
             opacity: 0;
@@ -477,48 +408,38 @@ class MyModal extends MyntUIBaseComponent {
           }
         }
 
-        /* Accessibility improvements */
+        /* Apply entrance animation when open */
+        .modal-container {
+          animation: modal-enter 300ms cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        /* Accessibility - Reduced motion support */
         @media (prefers-reduced-motion: reduce) {
-          .modal-container,
-          .modal-backdrop {
+          .modal-container {
+            animation: none;
             transition: none;
+          }
+          
+          * {
+            transition-duration: 0ms !important;
+          }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+          .modal-container {
+            border: 2px solid;
+          }
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+          .modal-container {
+            width: calc(100vw - 2rem) !important;
+            max-width: none !important;
           }
         }
       </style>
-
-      <div class="modal-backdrop" aria-hidden="true"></div>
-      <div 
-        class="modal-container"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        aria-describedby="modal-body"
-        tabindex="0"
-      >
-        ${this.title ? `
-        <header class="modal-header">
-          <h2 class="modal-title" id="modal-title">${this.title}</h2>
-          <button 
-            class="modal-close-button" 
-            type="button" 
-            aria-label="Close modal"
-            tabindex="0"
-          >
-            ✕
-          </button>
-        </header>
-        ` : ''}
-        
-        <div class="modal-body" id="modal-body">
-          <slot name="body">
-            <slot></slot>
-          </slot>
-        </div>
-        
-        <footer class="modal-footer">
-          <slot name="footer"></slot>
-        </footer>
-      </div>
     `;
   }
 }

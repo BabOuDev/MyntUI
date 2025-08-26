@@ -268,190 +268,131 @@ class MyTooltip extends HTMLElement {
 
   // Render the component
   render() {
+    // Size classes for tooltip
+    const sizeClasses = {
+      sm: 'px-2 py-1 text-xs max-w-[180px]',
+      md: 'px-3 py-2 text-sm max-w-[240px]',
+      lg: 'px-4 py-3 text-base max-w-[320px]'
+    };
+
+    // Variant color classes
+    const variantClasses = {
+      dark: 'bg-gray-900 text-white',
+      light: 'bg-white text-gray-900 border border-gray-300',
+      primary: 'bg-primary text-primary-on-primary',
+      error: 'bg-error text-error-on-error'
+    };
+
+    // Arrow size classes
+    const arrowSizes = {
+      sm: 'w-2 h-2',
+      md: 'w-3 h-3', 
+      lg: 'w-4 h-4'
+    };
+
+    const currentSizeClass = sizeClasses[this.size] || sizeClasses.md;
+    const currentVariantClass = variantClasses[this.variant] || variantClasses.dark;
+    const currentArrowSize = arrowSizes[this.size] || arrowSizes.md;
+    const visibilityClass = this._isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75';
+    const multilineClass = this.multiline ? 'whitespace-normal break-words' : 'whitespace-nowrap truncate';
+    const pointerEvents = this._isVisible ? 'pointer-events-none' : 'pointer-events-none';
+
     this.shadowRoot.innerHTML = `
+      <div class="
+        trigger inline-block w-full
+      ">
+        <slot></slot>
+      </div>
+      
+      <div 
+        class="
+          tooltip absolute z-tooltip rounded-lg font-medium leading-tight
+          shadow-elevation2 transition-all duration-150 ease-emphasized
+          ${currentSizeClass} ${currentVariantClass} ${visibilityClass} 
+          ${multilineClass} ${pointerEvents}
+          transform origin-center
+        "
+        role="tooltip"
+        aria-hidden="${!this._isVisible}"
+        id="tooltip-${Math.random().toString(36).substr(2, 9)}"
+      >
+        ${this.text ? this.text : '<slot name="content"></slot>'}
+        
+        <!-- Arrow -->
+        <div class="
+          tooltip-arrow absolute ${currentArrowSize} rotate-45
+          ${this.variant === 'light' ? 'bg-white border-gray-300' : 
+            this.variant === 'primary' ? 'bg-primary' :
+            this.variant === 'error' ? 'bg-error' : 'bg-gray-900'}
+        "></div>
+      </div>
+
       <style>
+        /* Minimal CSS for complex positioning and arrow styling */
         :host {
-          /* Component-specific variables using global variables */
-          --_tooltip-bg-dark: var(--_global-color-on-surface);
-          --_tooltip-text-color-dark: var(--_global-color-surface);
-          --_tooltip-bg-light: var(--_global-color-surface);
-          --_tooltip-text-color-light: var(--_global-color-on-surface);
-          --_tooltip-bg-primary: var(--_global-color-primary);
-          --_tooltip-text-color-primary: var(--_global-color-on-primary);
-          --_tooltip-bg-error: var(--_global-color-error);
-          --_tooltip-text-color-error: var(--_global-color-on-error);
-          
-          --_tooltip-border-radius: var(--_global-border-radius-sm);
-          --_tooltip-padding-sm: var(--_global-spacing-xs) calc(var(--_global-spacing-sm) * 0.75);
-          --_tooltip-padding-md: var(--_global-spacing-xs) var(--_global-spacing-sm);
-          --_tooltip-padding-lg: var(--_global-spacing-sm) var(--_global-spacing-md);
-          --_tooltip-font-size-sm: var(--_global-font-size-xs);
-          --_tooltip-font-size-md: var(--_global-font-size-sm);
-          --_tooltip-font-size-lg: var(--_global-font-size-md);
-          --_tooltip-max-width-sm: 180px;
-          --_tooltip-max-width-md: 240px;
-          --_tooltip-max-width-lg: 320px;
-          --_tooltip-z-index: var(--_global-z-index-tooltip);
-          --_tooltip-arrow-size: 6px;
-          --_tooltip-elevation: var(--_global-elevation-2);
-          
           display: inline-block;
           position: relative;
-          font-family: var(--_global-font-family-sans);
+          font-family: system-ui, -apple-system, sans-serif;
         }
 
         :host([disabled]) {
           pointer-events: none;
         }
 
-        .trigger {
-          display: inline-block;
-          width: 100%;
-        }
-
-        .tooltip {
-          position: absolute;
-          background-color: var(--_tooltip-bg-dark);
-          color: var(--_tooltip-text-color-dark);
-          padding: var(--_tooltip-padding-md);
-          border-radius: var(--_tooltip-border-radius);
-          font-size: var(--_tooltip-font-size-md);
-          font-weight: var(--_global-font-weight-medium);
-          line-height: var(--_global-line-height-tight);
-          max-width: var(--_tooltip-max-width-md);
-          z-index: var(--_tooltip-z-index);
-          opacity: 0;
-          pointer-events: none;
-          transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          box-shadow: var(--_tooltip-elevation);
-          transform: scale(0.8);
-        }
-
-        .tooltip.visible {
-          opacity: 1;
-          transform: scale(1);
-        }
-
-        /* Arrow styling */
-        .tooltip::before {
-          content: '';
-          position: absolute;
-          width: 0;
-          height: 0;
-          border: var(--_tooltip-arrow-size) solid transparent;
-        }
-
-        /* Top position arrow */
-        .tooltip.top::before {
+        /* Position-specific arrow styling */
+        .tooltip.top .tooltip-arrow {
           top: 100%;
           left: 50%;
-          transform: translateX(-50%);
-          border-top-color: var(--_tooltip-bg-dark);
-          border-bottom: none;
+          transform: translateX(-50%) rotate(45deg);
+          margin-top: -2px;
         }
 
-        /* Bottom position arrow */
-        .tooltip.bottom::before {
+        .tooltip.bottom .tooltip-arrow {
           bottom: 100%;
           left: 50%;
-          transform: translateX(-50%);
-          border-bottom-color: var(--_tooltip-bg-dark);
-          border-top: none;
+          transform: translateX(-50%) rotate(45deg);
+          margin-bottom: -2px;
         }
 
-        /* Left position arrow */
-        .tooltip.left::before {
+        .tooltip.left .tooltip-arrow {
           top: 50%;
           left: 100%;
-          transform: translateY(-50%);
-          border-left-color: var(--_tooltip-bg-dark);
-          border-right: none;
+          transform: translateY(-50%) rotate(45deg);
+          margin-left: -2px;
         }
 
-        /* Right position arrow */
-        .tooltip.right::before {
+        .tooltip.right .tooltip-arrow {
           top: 50%;
           right: 100%;
-          transform: translateY(-50%);
-          border-right-color: var(--_tooltip-bg-dark);
-          border-left: none;
+          transform: translateY(-50%) rotate(45deg);
+          margin-right: -2px;
         }
 
-        /* Multi-line tooltips */
-        .tooltip.multiline {
-          white-space: normal;
-          word-wrap: break-word;
-          text-overflow: clip;
+        /* Arrow border adjustments for light variant */
+        :host([variant="light"]) .tooltip.top .tooltip-arrow {
+          border-top: 1px solid rgb(209, 213, 219); /* gray-300 */
+          border-right: 1px solid rgb(209, 213, 219);
         }
 
-        /* Size variants */
-        :host([size="sm"]) {
-          --_tooltip-padding-md: var(--_tooltip-padding-sm);
-          --_tooltip-font-size-md: var(--_tooltip-font-size-sm);
-          --_tooltip-max-width-md: var(--_tooltip-max-width-sm);
-          --_tooltip-arrow-size: 4px;
+        :host([variant="light"]) .tooltip.bottom .tooltip-arrow {
+          border-bottom: 1px solid rgb(209, 213, 219);
+          border-left: 1px solid rgb(209, 213, 219);
         }
 
-        :host([size="lg"]) {
-          --_tooltip-padding-md: var(--_tooltip-padding-lg);
-          --_tooltip-font-size-md: var(--_tooltip-font-size-lg);
-          --_tooltip-max-width-md: var(--_tooltip-max-width-lg);
-          --_tooltip-arrow-size: 8px;
+        :host([variant="light"]) .tooltip.left .tooltip-arrow {
+          border-top: 1px solid rgb(209, 213, 219);
+          border-left: 1px solid rgb(209, 213, 219);
         }
 
-        /* Variant styles */
-        :host([variant="light"]) .tooltip {
-          background-color: var(--_tooltip-bg-light);
-          color: var(--_tooltip-text-color-light);
-          border: 1px solid var(--_global-color-outline-variant);
+        :host([variant="light"]) .tooltip.right .tooltip-arrow {
+          border-bottom: 1px solid rgb(209, 213, 219);
+          border-right: 1px solid rgb(209, 213, 219);
         }
 
-        :host([variant="light"]) .tooltip::before {
-          border-top-color: var(--_tooltip-bg-light);
-          border-bottom-color: var(--_tooltip-bg-light);
-          border-left-color: var(--_tooltip-bg-light);
-          border-right-color: var(--_tooltip-bg-light);
-        }
-
-        :host([variant="primary"]) .tooltip {
-          background-color: var(--_tooltip-bg-primary);
-          color: var(--_tooltip-text-color-primary);
-        }
-
-        :host([variant="primary"]) .tooltip::before {
-          border-top-color: var(--_tooltip-bg-primary);
-          border-bottom-color: var(--_tooltip-bg-primary);
-          border-left-color: var(--_tooltip-bg-primary);
-          border-right-color: var(--_tooltip-bg-primary);
-        }
-
-        :host([variant="error"]) .tooltip {
-          background-color: var(--_tooltip-bg-error);
-          color: var(--_tooltip-text-color-error);
-        }
-
-        :host([variant="error"]) .tooltip::before {
-          border-top-color: var(--_tooltip-bg-error);
-          border-bottom-color: var(--_tooltip-bg-error);
-          border-left-color: var(--_tooltip-bg-error);
-          border-right-color: var(--_tooltip-bg-error);
-        }
-
-        /* Enhanced multiline support */
-        :host([multiline]) .tooltip {
-          white-space: normal;
-          word-wrap: break-word;
-          text-overflow: clip;
-          line-height: var(--_global-line-height-normal);
-        }
-
-        /* Accessibility improvements */
+        /* Accessibility - Reduced motion support */
         @media (prefers-reduced-motion: reduce) {
           .tooltip {
-            transition: opacity var(--_global-motion-duration-short1) ease;
+            transition: opacity 75ms ease;
             transform: none !important;
           }
           
@@ -465,25 +406,13 @@ class MyTooltip extends HTMLElement {
           .tooltip {
             border: 2px solid currentColor;
           }
-          
-          :host([variant="light"]) .tooltip {
-            border: 2px solid var(--_global-color-on-surface);
-          }
+        }
+
+        /* Ensure proper z-index stacking */
+        .tooltip {
+          z-index: 300; /* tooltip z-index from global config */
         }
       </style>
-
-      <div class="trigger">
-        <slot></slot>
-      </div>
-      
-      <div 
-        class="tooltip ${this.position} ${this.multiline ? 'multiline' : ''}"
-        role="tooltip"
-        aria-hidden="${!this._isVisible}"
-        id="tooltip-${Math.random().toString(36).substr(2, 9)}"
-      >
-        ${this.text ? this.text : '<slot name="content"></slot>'}
-      </div>
     `;
   }
 }
