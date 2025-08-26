@@ -106,10 +106,14 @@ class MyButton extends MyntUIBaseComponent {
     this.toggleAttribute('filled-tonal', Boolean(value));
   }
 
-  // Generate TailwindCSS classes based on props and config
+  // Generate TailwindCSS classes based on props and enhanced global config
   getTailwindClasses() {
     const { variant, size, density } = this.getComponentProps();
     const config = globalConfig.get('theme.tailwind', {});
+    const componentConfig = config.components?.button || {};
+    const sizeConfig = config.sizes?.[size] || config.sizes?.md;
+    const stateConfig = config.states || {};
+    
     const isLoading = this.loading;
     const isDisabled = this.disabled;
     const isElevated = this.elevated;
@@ -117,26 +121,38 @@ class MyButton extends MyntUIBaseComponent {
     const isFab = this.fab;
     const isIconOnly = this.iconOnly;
     
-    // Use mynt-button-base from global config
+    // Base classes from global config
     let baseClasses = [
-      'mynt-button-base',
+      componentConfig.base || 'inline-flex items-center justify-center font-medium text-center cursor-pointer select-none transition-all duration-medium1 ease-standard focus-ring disabled:pointer-events-none min-w-button',
       'gap-2',
       'relative',
-      'whitespace-nowrap',
-      'select-none',
       'overflow-hidden',
       'will-change-transform'
-    ];
+    ].filter(Boolean);
 
-    // Size classes using global config utilities
-    baseClasses.push(`mynt-size-${size || 'md'}`);
-
-    // Density adjustments
-    if (density === 'compact') {
-      baseClasses.push('tracking-tighter');
+    // Size classes from enhanced global config
+    if (sizeConfig?.button) {
+      baseClasses.push(sizeConfig.button);
+    } else {
+      // Fallback size classes
+      const sizeMap = {
+        xs: 'h-7 min-w-16 px-2 py-1 text-xs',
+        sm: 'h-input-sm min-w-button px-sm py-xs text-label-medium',
+        md: 'h-input-md min-w-button px-md py-sm text-body-medium',
+        lg: 'h-input-lg min-w-button px-lg py-md text-body-large',
+        xl: 'h-14 min-w-button px-6 py-4 text-title-small'
+      };
+      baseClasses.push(sizeMap[size] || sizeMap.md);
     }
 
-    // Variant-specific classes from global config
+    // Density adjustments from global config
+    if (density === 'compact') {
+      baseClasses.push('tracking-tighter', 'leading-tight');
+    } else if (density === 'comfortable') {
+      baseClasses.push('tracking-wide', 'leading-relaxed');
+    }
+
+    // Determine final variant
     let finalVariant = variant;
     if (isElevated) {
       finalVariant = 'elevated';
@@ -144,91 +160,104 @@ class MyButton extends MyntUIBaseComponent {
       finalVariant = 'filled-tonal';
     }
 
-    // Get variant classes from global config
-    const variantConfig = config.variants?.button?.[finalVariant] || config.variants?.button?.filled || '';
+    // Get variant classes from enhanced global config
+    const variantConfig = config.variants?.button?.[finalVariant];
     if (variantConfig) {
-      baseClasses.push(...variantConfig.split(' ').filter(Boolean));
+      baseClasses.push(variantConfig);
     } else {
-      // Fallback to default button styling
+      // Fallback to default button styling with enhanced classes
       switch (finalVariant) {
         case 'filled':
         case 'primary':
         default:
-          baseClasses.push('bg-primary', 'text-primary-on-primary', 'shadow-elevation1', 'hover:shadow-elevation2');
+          baseClasses.push('bg-primary text-primary-on-primary border-0 shadow-elevation1 hover:shadow-elevation2 state-layer-primary');
           break;
         case 'outlined':
-          baseClasses.push('bg-transparent', 'text-primary', 'border-2', 'border-outline', 'hover:bg-primary/10');
+          baseClasses.push('bg-transparent border border-outline text-primary hover:bg-primary/8 focus:bg-primary/12 state-layer-primary');
           break;
         case 'text':
-          baseClasses.push('bg-transparent', 'text-primary', 'hover:bg-primary/10');
+          baseClasses.push('bg-transparent border-0 text-primary hover:bg-primary/8 focus:bg-primary/12 state-layer-primary');
           break;
         case 'filled-tonal':
-          baseClasses.push('bg-secondary-container', 'text-secondary-on-container', 'hover:shadow-elevation1');
+          baseClasses.push('bg-secondary-container text-secondary-on-container border-0 hover:shadow-elevation1 state-layer-secondary');
           break;
         case 'elevated':
-          baseClasses.push('bg-surface', 'text-primary', 'shadow-elevation1', 'hover:shadow-elevation2', 'border', 'border-outline-variant');
+          baseClasses.push('bg-surface shadow-elevation1 text-primary border-0 hover:shadow-elevation2 focus:shadow-elevation1 state-layer-surface');
           break;
       }
     }
 
-    // FAB specific classes
+    // FAB specific classes using global config
     if (isFab) {
-      baseClasses = baseClasses.filter(c => !c.includes('px-') && !c.includes('min-w-'));
-      const fabSizeClasses = {
-        xs: ['w-8', 'h-8'],
-        sm: ['w-10', 'h-10'],
-        md: ['w-14', 'h-14'],
-        lg: ['w-18', 'h-18'],
-        xl: ['w-24', 'h-24']
+      baseClasses = baseClasses.filter(c => !c.match(/px-|py-|min-w-/));
+      const fabSizes = {
+        xs: 'w-8 h-8 p-1',
+        sm: 'w-10 h-10 p-2',
+        md: 'w-14 h-14 p-3',
+        lg: 'w-16 h-16 p-4',
+        xl: 'w-20 h-20 p-5'
       };
       baseClasses.push(
         'rounded-lg',
-        'p-0',
         'shadow-elevation2',
         'hover:shadow-elevation3',
-        ...(fabSizeClasses[size] || fabSizeClasses.md)
+        'focus:shadow-elevation2',
+        fabSizes[size] || fabSizes.md
       );
     } else if (isIconOnly) {
-      baseClasses = baseClasses.filter(c => !c.includes('px-') && !c.includes('min-w-'));
-      const iconSizeClasses = {
-        xs: ['w-6', 'h-6'],
-        sm: ['w-component-sm', 'h-component-sm'],
-        md: ['w-component-md', 'h-component-md'],
-        lg: ['w-component-lg', 'h-component-lg'],
-        xl: ['w-14', 'h-14']
+      baseClasses = baseClasses.filter(c => !c.match(/px-|py-|min-w-/));
+      const iconSizes = {
+        xs: 'w-6 h-6 p-1',
+        sm: 'w-8 h-8 p-1.5',
+        md: 'w-10 h-10 p-2',
+        lg: 'w-12 h-12 p-2.5',
+        xl: 'w-14 h-14 p-3'
       };
       baseClasses.push(
         'rounded-full',
-        'p-0',
-        ...(iconSizeClasses[size] || iconSizeClasses.md)
+        iconSizes[size] || iconSizes.md,
+        componentConfig.iconOnly || 'aspect-square'
       );
     } else {
       baseClasses.push('rounded-full');
     }
 
-    // State classes from global config
-    const stateConfig = config.states || {};
+    // State classes from enhanced global config
+    if (isDisabled) {
+      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:grayscale';
+      baseClasses.push(disabledState);
+    }
     
-    if (isDisabled || isLoading) {
-      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
-      const loadingState = stateConfig.loading || 'opacity-75 cursor-wait';
-      
-      if (isDisabled) {
-        baseClasses.push(...disabledState.split(' ').filter(Boolean));
+    if (isLoading) {
+      const loadingState = stateConfig.loading || 'opacity-75 cursor-wait animate-pulse';
+      baseClasses.push(loadingState);
+    }
+    
+    if (!isDisabled && !isLoading) {
+      // Interactive states from enhanced global config
+      if (stateConfig.base) {
+        baseClasses.push(stateConfig.base);
       }
-      if (isLoading) {
-        baseClasses.push(...loadingState.split(' ').filter(Boolean));
-      }
-    } else {
-      // Interactive states from global config
-      const hoverState = stateConfig.hover || 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2';
-      const activeState = stateConfig.active || 'active:bg-opacity-state-pressed active:scale-95';
       
-      baseClasses.push(
-        'cursor-pointer',
-        ...hoverState.split(' ').filter(Boolean),
-        ...activeState.split(' ').filter(Boolean)
-      );
+      if (stateConfig.hover) {
+        baseClasses.push(stateConfig.hover);
+      }
+      
+      if (stateConfig.active) {
+        baseClasses.push(stateConfig.active);
+      }
+      
+      if (stateConfig.focus) {
+        baseClasses.push(stateConfig.focus);
+      }
+      
+      baseClasses.push('cursor-pointer');
+    }
+
+    // Animation classes from global config
+    const animationConfig = config.animations || {};
+    if (animationConfig.ripple && this.getComponentProps().rippleEffect) {
+      baseClasses.push(animationConfig.ripple);
     }
 
     return baseClasses.join(' ');
