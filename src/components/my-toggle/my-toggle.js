@@ -103,98 +103,121 @@ class MyToggle extends MyntUIBaseComponent {
     this.setAttribute('size', value);
   }
 
-  // Generate TailwindCSS classes using global config
+  // Generate TailwindCSS classes using enhanced global config
   getTailwindClasses() {
     const size = this.size || 'md';
     const disabled = this.disabled;
     const checked = this.checked;
     const error = this.error;
     const config = globalConfig.get('theme.tailwind', {});
+    const sizeConfig = config.sizes?.[size] || config.sizes?.md;
+    const stateConfig = config.states || {};
     
-    // Container classes
+    // Container classes using enhanced config
     let containerClasses = [
       'inline-flex',
       'items-center',
-      'gap-3',
+      sizeConfig?.spacing || 'gap-sm',
       'cursor-pointer',
       'select-none',
       'group'
-    ];
+    ].filter(Boolean);
 
-    // Toggle track classes
+    // Toggle track classes using enhanced global config
     let trackClasses = [
       'relative',
       'flex-shrink-0',
       'rounded-full',
-      'transition-all',
-      'duration-medium1',
       'border-2',
       'p-1',
-      'focus-visible:ring-2',
-      'focus-visible:ring-primary/60',
-      'focus-visible:ring-offset-2'
-    ];
+      stateConfig.base || 'transition-all duration-medium1',
+      stateConfig.focus || 'focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2'
+    ].filter(Boolean);
 
-    // Size classes for toggle
-    const sizeClasses = {
-      sm: ['w-10', 'h-6'],
-      md: ['w-12', 'h-7'], 
-      lg: ['w-14', 'h-8']
-    };
-    trackClasses.push(...(sizeClasses[size] || sizeClasses.md));
+    // Size classes for toggle using enhanced config
+    if (sizeConfig?.spacing) {
+      // Use size config if available
+      const toggleSizes = {
+        xs: 'w-8 h-5',
+        sm: 'w-10 h-6',
+        md: 'w-12 h-7',
+        lg: 'w-14 h-8',
+        xl: 'w-16 h-10'
+      };
+      trackClasses.push(toggleSizes[size] || toggleSizes.md);
+    } else {
+      // Fallback size classes
+      const sizeClasses = {
+        sm: 'w-10 h-6',
+        md: 'w-12 h-7', 
+        lg: 'w-14 h-8'
+      };
+      trackClasses.push(sizeClasses[size] || sizeClasses.md);
+    }
 
-    // Toggle thumb classes
+    // Toggle thumb classes using enhanced global config
     let thumbClasses = [
       'block',
-      'bg-white',
+      'bg-surface',
       'rounded-full',
-      'shadow-sm',
-      'transition-transform',
-      'duration-medium1',
-      'border'
-    ];
+      'shadow-elevation1',
+      'border',
+      stateConfig.base || 'transition-transform duration-medium1'
+    ].filter(Boolean);
 
-    // Thumb size classes
-    const thumbSizeClasses = {
-      sm: ['w-4', 'h-4'],
-      md: ['w-5', 'h-5'],
-      lg: ['w-6', 'h-6']
+    // Thumb size classes using enhanced config
+    const thumbSizes = {
+      xs: 'w-3 h-3',
+      sm: 'w-4 h-4',
+      md: 'w-5 h-5',
+      lg: 'w-6 h-6',
+      xl: 'w-8 h-8'
     };
-    thumbClasses.push(...(thumbSizeClasses[size] || thumbSizeClasses.md));
+    thumbClasses.push(thumbSizes[size] || thumbSizes.md);
 
-    // Get toggle variant classes from global config
-    const variantKey = checked ? 'checked' : 'unchecked';
-    const variantConfig = config.variants?.toggle?.[variantKey] || '';
+    // Get toggle variant classes from enhanced global config
+    const trackVariant = checked ? 'checked' : 'unchecked';
+    const thumbVariant = checked ? 'checked' : 'unchecked';
     
-    if (variantConfig) {
-      trackClasses.push(...variantConfig.split(' ').filter(Boolean));
+    const trackConfig = config.variants?.toggle?.track?.[trackVariant];
+    const thumbConfig = config.variants?.toggle?.thumb?.[thumbVariant];
+    
+    if (trackConfig) {
+      trackClasses.push(trackConfig);
     } else {
-      // Fallback styling
+      // Enhanced fallback styling using design tokens
       if (checked) {
-        trackClasses.push('bg-primary', 'border-primary');
-        thumbClasses.push('translate-x-full', 'border-primary');
+        trackClasses.push('bg-primary/24', 'border-primary');
+        thumbClasses.push('translate-x-5', 'border-primary', 'bg-primary');
       } else {
-        trackClasses.push('bg-gray-200', 'border-gray-300');
-        thumbClasses.push('translate-x-0', 'border-gray-300');
+        trackClasses.push('bg-surface-variant', 'border-outline');
+        thumbClasses.push('translate-x-0', 'border-outline', 'bg-outline');
+      }
+    }
+    
+    if (thumbConfig) {
+      thumbClasses.push(thumbConfig);
+    }
+
+    // Apply enhanced state classes from global config
+    if (disabled) {
+      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:grayscale';
+      containerClasses.push(disabledState);
+    } else {
+      // Interactive states from enhanced config
+      if (stateConfig.hover) {
+        trackClasses.push(stateConfig.hover);
+      }
+      
+      if (stateConfig.active) {
+        trackClasses.push(stateConfig.active);
       }
     }
 
-    // Apply state classes from global config
-    const stateConfig = config.states || {};
-    
-    if (disabled) {
-      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
-      containerClasses.push(...disabledState.split(' ').filter(Boolean));
-    } else {
-      // Interactive states
-      const hoverState = stateConfig.hover || 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2';
-      trackClasses.push(...hoverState.split(' ').filter(Boolean));
-    }
-
-    // Error state
+    // Error state using enhanced config
     if (error) {
-      const errorState = stateConfig.error || 'border-error text-error bg-error/5';
-      trackClasses.push(...errorState.split(' ').filter(Boolean));
+      const errorState = stateConfig.error || 'border-error focus:border-error focus:ring-error/20';
+      trackClasses.push(errorState);
     }
 
     // Label classes
