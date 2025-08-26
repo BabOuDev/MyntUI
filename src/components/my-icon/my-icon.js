@@ -1,7 +1,10 @@
 /**
- * MyntUI my-icon Component
- * A component for rendering scalable vector icons with built-in SVG library and optional Material Icons fallback
+ * MyntUI my-icon Component - TailwindCSS Enhanced Version
+ * A component for rendering scalable vector icons using TailwindCSS for consistent styling
+ * Supports both built-in SVG icons and Material Icons font fallback
  */
+
+import { globalConfig } from '../../config/global-config.js';
 
 // Built-in SVG icon library with Material Design icons
 const BUILTIN_ICONS = {
@@ -43,20 +46,7 @@ const BUILTIN_ICONS = {
   phone: 'M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1-.45 1-1V20c0-.55-.45-1-1-1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z',
   email: 'M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z',
   location: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-  notification: 'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z',
-
-  // More common icons for better coverage
-  save: 'M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z',
-  clear: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
-  help: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z',
-  people: 'M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.996 2.996 0 0 0 17.09 7H14.9c-1.23 0-2.34.73-2.83 1.85L9.5 16H12v6h8zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zm1.5 1h-4A2.5 2.5 0 0 0 7.5 15v7h2v-6h4v6h2v-7A2.5 2.5 0 0 0 14 12.5zM7 16H4.5L7.04 8.37C7.53 7.25 8.64 6.5 9.87 6.5h2.19c.59 0 1.14.19 1.6.51A4.491 4.491 0 0 0 12.5 9c0 .73.18 1.41.49 2H9.87c-.2 0-.38.12-.46.29L7 16z',
-  analytics: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z',
-  download: 'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z',
-  upload: 'M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z',
-  share: 'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z',
-  print: 'M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z',
-  dashboard: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z',
-  folder: 'M10 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z'
+  notification: 'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z'
 };
 
 class MyIcon extends HTMLElement {
@@ -88,155 +78,196 @@ class MyIcon extends HTMLElement {
     }
   }
 
-  // Getter for icon name
+  // Getters and setters
   get icon() {
     return this.getAttribute('icon') || '';
   }
 
-  // Setter for icon name
   set icon(value) {
     this.setAttribute('icon', value);
   }
 
-  // Getter for size
   get size() {
     return this.getAttribute('size') || 'md';
   }
 
-  // Setter for size
   set size(value) {
     this.setAttribute('size', value);
   }
 
-  // Getter for color
   get color() {
     return this.getAttribute('color') || '';
   }
 
-  // Setter for color
   set color(value) {
     this.setAttribute('color', value);
   }
 
-  // Getter for disabled
   get disabled() {
     return this.hasAttribute('disabled');
   }
 
-  // Setter for disabled
   set disabled(value) {
-    if (value) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
-    }
+    this.toggleAttribute('disabled', Boolean(value));
   }
 
-  // Getter for interactive
   get interactive() {
     return this.hasAttribute('interactive');
   }
 
-  // Setter for interactive
   set interactive(value) {
-    if (value) {
-      this.setAttribute('interactive', '');
+    this.toggleAttribute('interactive', Boolean(value));
+  }
+
+  // Generate TailwindCSS classes based on props
+  getTailwindClasses() {
+    const size = this.size;
+    const color = this.color;
+    const disabled = this.disabled;
+    const interactive = this.interactive;
+    
+    // Base classes
+    let classes = [
+      'inline-flex',
+      'items-center',
+      'justify-center',
+      'flex-shrink-0'
+    ];
+
+    // Size classes
+    const sizeClasses = {
+      xs: ['w-4', 'h-4'],
+      sm: ['w-5', 'h-5'],
+      md: ['w-6', 'h-6'],
+      lg: ['w-7', 'h-7'],
+      xl: ['w-8', 'h-8'],
+      '2xl': ['w-10', 'h-10']
+    };
+
+    classes.push(...(sizeClasses[size] || sizeClasses.md));
+
+    // Color classes
+    if (color) {
+      // Handle predefined colors
+      const colorClasses = {
+        primary: 'text-primary',
+        secondary: 'text-secondary',
+        tertiary: 'text-tertiary',
+        success: 'text-success',
+        warning: 'text-warning',
+        error: 'text-error',
+        info: 'text-info',
+        'on-surface': 'text-surface-on-surface',
+        'on-primary': 'text-primary-on-primary',
+        outline: 'text-outline',
+        disabled: 'text-outline opacity-50'
+      };
+
+      classes.push(colorClasses[color] || `text-${color}`);
     } else {
-      this.removeAttribute('interactive');
+      // Default color
+      classes.push('text-surface-on-surface');
     }
-  }
 
-  // Getter for variant
-  get variant() {
-    return this.getAttribute('variant') || 'outlined';
-  }
-
-  // Setter for variant
-  set variant(value) {
-    this.setAttribute('variant', value);
-  }
-
-  // Getter for filled
-  get filled() {
-    return this.hasAttribute('filled');
-  }
-
-  // Setter for filled
-  set filled(value) {
-    if (value) {
-      this.setAttribute('filled', '');
-    } else {
-      this.removeAttribute('filled');
+    // Interactive states
+    if (interactive && !disabled) {
+      classes.push(
+        'cursor-pointer',
+        'transition-all',
+        'duration-medium1',
+        'ease-standard',
+        'hover:scale-105',
+        'hover:text-primary',
+        'active:scale-95',
+        'focus-visible:outline',
+        'focus-visible:outline-2',
+        'focus-visible:outline-primary',
+        'focus-visible:outline-offset-2'
+      );
     }
-  }
 
-  // Getter for use-font-fallback
-  get useFontFallback() {
-    return this.hasAttribute('use-font-fallback');
-  }
-
-  // Setter for use-font-fallback
-  set useFontFallback(value) {
-    if (value) {
-      this.setAttribute('use-font-fallback', '');
-    } else {
-      this.removeAttribute('use-font-fallback');
+    // Disabled state
+    if (disabled) {
+      classes.push('opacity-50', 'cursor-not-allowed');
     }
+
+    return classes.join(' ');
   }
 
-  // Check if icon exists in built-in library
-  hasBuiltinIcon() {
-    return BUILTIN_ICONS.hasOwnProperty(this.icon);
-  }
-
-  // Get SVG content for built-in icon
-  getBuiltinIconSvg() {
-    if (!this.hasBuiltinIcon()) return null;
+  // Generate SVG icon
+  generateSvgIcon(iconName, pathData) {
+    const size = this.size;
+    const classes = this.getTailwindClasses();
     
     return `
       <svg 
-        class="builtin-icon" 
+        class="${classes}" 
         viewBox="0 0 24 24" 
-        fill="currentColor" 
-        aria-hidden="true"
-        role="${this.interactive ? 'button' : 'img'}" 
-        aria-label="${this.getAttribute('aria-label') || this.icon || 'icon'}"
-        ${this.disabled ? 'aria-disabled="true"' : ''}
-        ${this.interactive && !this.disabled ? 'tabindex="0"' : ''}
+        fill="currentColor"
+        role="img"
+        aria-labelledby="icon-title"
+        aria-hidden="${this.interactive ? 'false' : 'true'}"
       >
-        <path d="${BUILTIN_ICONS[this.icon]}"/>
+        <title id="icon-title">${this.getAttribute('aria-label') || iconName}</title>
+        <path d="${pathData}"/>
       </svg>
     `;
   }
 
-  // Handle click events for interactive icons
+  // Generate Material Icon font fallback
+  generateFontIcon(iconName) {
+    const classes = this.getTailwindClasses().replace(/w-\d+|h-\d+/g, '');
+    
+    // Size mapping for font icons
+    const fontSizeClasses = {
+      xs: 'text-base',      // 16px
+      sm: 'text-lg',        // 18px  
+      md: 'text-xl',        // 20px
+      lg: 'text-2xl',       // 24px
+      xl: 'text-3xl',       // 30px
+      '2xl': 'text-4xl'     // 36px
+    };
+
+    const sizeClass = fontSizeClasses[this.size] || fontSizeClasses.md;
+    
+    return `
+      <span 
+        class="material-icons ${classes} ${sizeClass} leading-none"
+        role="img"
+        aria-label="${this.getAttribute('aria-label') || iconName}"
+        aria-hidden="${this.interactive ? 'false' : 'true'}"
+      >
+        ${iconName}
+      </span>
+    `;
+  }
+
+  // Handle click events
   handleClick(event) {
-    if (this.disabled || !this.interactive) {
+    if (this.disabled) {
       event.preventDefault();
       event.stopPropagation();
       return;
     }
 
-    // Emit custom click event
-    this.dispatchEvent(new CustomEvent('icon-click', {
-      detail: {
-        icon: this.icon,
-        size: this.size,
-        color: this.color
-      },
-      bubbles: true,
-      cancelable: true
-    }));
+    if (this.interactive) {
+      // Emit custom event
+      this.dispatchEvent(new CustomEvent('icon-click', {
+        detail: {
+          icon: this.icon,
+          size: this.size,
+          color: this.color
+        },
+        bubbles: true,
+        composed: true
+      }));
+    }
   }
 
-  // Handle keyboard events for interactive icons
+  // Handle keyboard events
   handleKeyDown(event) {
-    if (this.disabled || !this.interactive) {
-      event.preventDefault();
-      return;
-    }
+    if (this.disabled || !this.interactive) return;
 
-    // Handle Enter and Space keys
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.handleClick(event);
@@ -246,105 +277,70 @@ class MyIcon extends HTMLElement {
   // Attach event listeners
   attachEventListeners() {
     // Remove existing listeners
-    this.removeEventListener('click', this.handleClick);
-    this.removeEventListener('keydown', this.handleKeyDown);
+    const iconElement = this.shadowRoot.querySelector('[role="img"]');
+    if (iconElement) {
+      iconElement.removeEventListener('click', this.handleClick);
+      iconElement.removeEventListener('keydown', this.handleKeyDown);
+    }
 
-    // Add listeners only for interactive icons
     if (this.interactive && !this.disabled) {
-      this.addEventListener('click', this.handleClick);
-      this.addEventListener('keydown', this.handleKeyDown);
-      this.setAttribute('tabindex', '0');
-      this.setAttribute('role', 'button');
-    } else {
-      this.removeAttribute('tabindex');
-      this.removeAttribute('role');
+      const newIconElement = this.shadowRoot.querySelector('[role="img"]');
+      if (newIconElement) {
+        newIconElement.addEventListener('click', this.handleClick);
+        newIconElement.addEventListener('keydown', this.handleKeyDown);
+        
+        // Make interactive icons focusable
+        if (!newIconElement.hasAttribute('tabindex')) {
+          newIconElement.setAttribute('tabindex', '0');
+        }
+      }
     }
   }
 
   // Render the component
   render() {
-    const useBuiltinIcon = this.hasBuiltinIcon();
-    const useFontFallback = this.useFontFallback && !useBuiltinIcon;
+    const iconName = this.icon;
+    const useFontFallback = this.hasAttribute('use-font-fallback');
     
-    // Generate font link tags only when use-font-fallback is enabled
-    const fontLinks = this.useFontFallback ? `
-      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-    ` : '';
+    if (!iconName) {
+      this.shadowRoot.innerHTML = `
+        <style>
+          @import '/src/styles/tailwind.css';
+          
+          :host {
+            display: inline-flex;
+          }
+        </style>
+        <div class="w-6 h-6 bg-outline rounded flex items-center justify-center text-surface text-xs">?</div>
+      `;
+      return;
+    }
+
+    // Check if we have a built-in SVG icon
+    const pathData = BUILTIN_ICONS[iconName];
+    let iconHtml;
+
+    if (pathData && !useFontFallback) {
+      // Use built-in SVG icon
+      iconHtml = this.generateSvgIcon(iconName, pathData);
+    } else {
+      // Use Material Icons font fallback
+      iconHtml = this.generateFontIcon(iconName);
+    }
 
     this.shadowRoot.innerHTML = `
-      ${fontLinks}
       <style>
+        @import '/src/styles/tailwind.css';
+        
         :host {
-          /* Icon-specific variables using global semantic variables */
-          --_icon-color: ${this.color || 'var(--_global-color-on-surface)'};
-          --_icon-size-xs: 12px;
-          --_icon-size-sm: 16px;
-          --_icon-size-md: 20px;
-          --_icon-size-lg: 24px;
-          --_icon-size-xl: 32px;
-          --_icon-size-xxl: 48px;
-          --_icon-size: var(--_icon-size-${this.size});
-          
-          --_icon-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
-          --_icon-focus-ring: 2px solid var(--_global-color-primary);
-          --_icon-focus-offset: 2px;
-          --_icon-border-radius: var(--_global-border-radius-full);
-          --_icon-state-layer-size: calc(var(--_icon-size) + 16px);
-          
-          /* Material Design 3 state layer colors */
-          --_icon-state-layer-color: var(--_global-color-on-surface);
-          --_icon-state-layer-opacity-hover: var(--_global-state-layer-hover);
-          --_icon-state-layer-opacity-pressed: var(--_global-state-layer-pressed);
-          --_icon-state-layer-opacity-focus: var(--_global-state-layer-focus);
-          
-          /* Semantic color variants */
-          --_icon-color-primary: var(--_global-color-primary);
-          --_icon-color-secondary: var(--_global-color-secondary);
-          --_icon-color-success: var(--_global-color-success);
-          --_icon-color-warning: var(--_global-color-warning);
-          --_icon-color-error: var(--_global-color-error);
-          --_icon-color-info: var(--_global-color-info);
-          
           display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-width: var(--_icon-size);
-          min-height: var(--_icon-size);
-          color: var(--_icon-color);
-          transition: all var(--_icon-transition);
-          position: relative;
-          box-sizing: border-box;
         }
         
-        /* Ensure icons are always visible with proper contrast */
-        :host(:not([color])) {
-          color: var(--_global-color-on-surface);
-        }
-
-        /* Built-in SVG icon styling */
-        .builtin-icon {
-          width: var(--_icon-size);
-          height: var(--_icon-size);
-          display: block;
-          color: inherit;
-          fill: currentColor;
-          flex-shrink: 0;
-        }
-        
-        /* Ensure SVG paths use currentColor */
-        .builtin-icon path {
-          fill: currentColor;
-        }
-
-        /* Material font icon styling - only when font fallback is used */
-        .material-icons,
-        .material-symbols {
+        /* Material Icons font support */
+        .material-icons {
+          font-family: 'Material Icons';
           font-weight: normal;
           font-style: normal;
-          font-size: var(--_icon-size);
           line-height: 1;
           letter-spacing: normal;
           text-transform: none;
@@ -354,160 +350,55 @@ class MyIcon extends HTMLElement {
           direction: ltr;
           -webkit-font-feature-settings: 'liga';
           -webkit-font-smoothing: antialiased;
-          color: inherit;
-          user-select: none;
         }
-
-        .material-icons {
-          font-family: 'Material Icons';
+        
+        /* Interactive states */
+        [role="img"]:focus {
+          outline: 2px solid theme(colors.primary.DEFAULT);
+          outline-offset: 2px;
         }
-
-        .material-symbols.outlined {
-          font-family: 'Material Symbols Outlined';
-          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        .material-symbols.filled {
-          font-family: 'Material Symbols Outlined';
-          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        .material-symbols.rounded {
-          font-family: 'Material Symbols Rounded';
-          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        .material-symbols.sharp {
-          font-family: 'Material Symbols Sharp';
-          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        /* Filled variants */
-        :host([filled]) .material-symbols {
-          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        /* Size variants */
-        :host([size="xs"]) { --_icon-size: var(--_icon-size-xs); }
-        :host([size="sm"]) { --_icon-size: var(--_icon-size-sm); }
-        :host([size="md"]) { --_icon-size: var(--_icon-size-md); }
-        :host([size="lg"]) { --_icon-size: var(--_icon-size-lg); }
-        :host([size="xl"]) { --_icon-size: var(--_icon-size-xl); }
-        :host([size="xxl"]) { --_icon-size: var(--_icon-size-xxl); }
-
-        /* Color variants - semantic naming */
-        :host([color="primary"]) { --_icon-color: var(--_icon-color-primary); }
-        :host([color="secondary"]) { --_icon-color: var(--_icon-color-secondary); }
-        :host([color="success"]) { --_icon-color: var(--_icon-color-success); }
-        :host([color="warning"]) { --_icon-color: var(--_icon-color-warning); }
-        :host([color="error"]) { --_icon-color: var(--_icon-color-error); }
-        :host([color="info"]) { --_icon-color: var(--_icon-color-info); }
-        :host([color="muted"]) { --_icon-color: var(--_global-color-on-surface-variant); }
-
-        /* Interactive states - only apply to interactive icons */
-        :host([interactive]) {
-          cursor: pointer;
-          border-radius: var(--_icon-border-radius);
-          transition: all var(--_icon-transition);
-          min-width: var(--_icon-state-layer-size);
-          min-height: var(--_icon-state-layer-size);
-          position: relative;
-        }
-
-        /* Material Design 3 State Layer */
-        :host([interactive])::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: var(--_icon-state-layer-size);
-          height: var(--_icon-state-layer-size);
-          border-radius: 50%;
-          background-color: var(--_icon-state-layer-color);
-          opacity: 0;
-          transform: translate(-50%, -50%);
-          transition: opacity var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
-          pointer-events: none;
-          z-index: -1;
-        }
-
-        :host([interactive]:hover)::before {
-          opacity: var(--_icon-state-layer-opacity-hover);
-        }
-
-        :host([interactive]:active)::before {
-          opacity: var(--_icon-state-layer-opacity-pressed);
-          transform: translate(-50%, -50%) scale(0.95);
-          transition-duration: var(--_global-motion-duration-short1);
-        }
-
-        :host([interactive]:focus)::before,
-        :host([interactive]:focus-visible)::before {
-          opacity: var(--_icon-state-layer-opacity-focus);
-        }
-
-        /* Focus state for accessibility - only for interactive icons */
-        :host([interactive]:focus),
-        :host([interactive]:focus-visible) {
-          outline: var(--_icon-focus-ring);
-          outline-offset: var(--_icon-focus-offset);
-        }
-
-        /* Make interactive icons focusable */
-        :host([interactive]) {
-          tabindex: 0;
-        }
-
-        /* Disabled state */
-        :host([disabled]) {
-          opacity: 0.5;
-          pointer-events: none;
-          cursor: not-allowed;
-        }
-
-        /* Non-interactive icons should not be focusable */
-        :host(:not([interactive])) {
-          pointer-events: none;
-        }
-
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {
-          :host([interactive]:focus) {
-            outline-width: 3px;
-            outline-color: var(--_global-color-text-primary);
-          }
-        }
-
-        /* Reduced motion support */
+        
+        /* Accessibility enhancements */
         @media (prefers-reduced-motion: reduce) {
-          :host([interactive]) {
-            transition: none;
+          [role="img"] {
+            transition: none !important;
+            transform: none !important;
           }
-          
-          :host([interactive]:hover) {
-            transform: none;
-          }
-          
-          :host([interactive]:active) {
-            transform: none;
+        }
+        
+        @media (prefers-contrast: high) {
+          [role="img"] {
+            outline: 1px solid currentColor;
+            outline-offset: 1px;
           }
         }
       </style>
-      ${useBuiltinIcon 
-        ? this.getBuiltinIconSvg()
-        : `<span 
-            class="${this.variant === 'symbols' || this.variant === 'outlined' || this.variant === 'rounded' || this.variant === 'sharp' ? `material-symbols ${this.variant}` : 'material-icons'}" 
-            role="${this.interactive ? 'button' : 'img'}" 
-            aria-label="${this.getAttribute('aria-label') || this.icon || 'icon'}"
-            ${this.disabled ? 'aria-disabled="true"' : ''}
-            ${this.interactive && !this.disabled ? 'tabindex="0"' : ''}
-          >${this.icon}</span>`
-      }
+      
+      ${iconHtml}
     `;
+
+    // Attach event listeners after rendering
+    this.attachEventListeners();
+  }
+
+  // Lifecycle callbacks
+  connectedCallback() {
+    this.render();
+  }
+
+  disconnectedCallback() {
+    // Clean up event listeners
+    const iconElement = this.shadowRoot.querySelector('[role="img"]');
+    if (iconElement) {
+      iconElement.removeEventListener('click', this.handleClick);
+      iconElement.removeEventListener('keydown', this.handleKeyDown);
+    }
   }
 }
 
-// Register the custom element only if it hasn't been registered already
+// Register the custom element
 if (!customElements.get('my-icon')) {
   customElements.define('my-icon', MyIcon);
 }
+
+export { MyIcon };
