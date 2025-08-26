@@ -210,15 +210,28 @@ export default {
         'section-gap': '24px',
         'page-margin': '32px'
       },
-      // Border radius system
+      // Enhanced border radius system aligned with global config
       borderRadius: {
         none: '0',
+        xs: '2px',
         sm: '4px',
         DEFAULT: '8px',
         md: '8px',
         lg: '12px',
         xl: '16px',
-        full: '9999px'
+        '2xl': '20px',
+        '3xl': '24px',
+        full: '9999px',
+        // Component-specific radius values from global config
+        card: '12px',
+        button: '9999px',
+        input: '8px',
+        modal: '16px',
+        dropdown: '8px',
+        notification: '12px',
+        tooltip: '4px',
+        fab: '16px',
+        chip: '9999px'
       },
       // Typography system - Material Design 3
       fontFamily: {
@@ -542,6 +555,98 @@ export default {
             '&:hover::file-selector-button': {
               backgroundColor: theme('colors.primary.hover')
             }
+          }
+        },
+        '.mynt-otp-input': {
+          display: 'flex',
+          gap: theme('spacing.2'),
+          '& input': {
+            width: theme('spacing.12'),
+            height: theme('spacing.12'),
+            textAlign: 'center',
+            fontSize: theme('fontSize.title-large[0]'),
+            fontWeight: '600',
+            border: `1px solid ${theme('colors.outline.variant')}`,
+            borderRadius: theme('borderRadius.md'),
+            '&:focus': {
+              borderColor: theme('colors.primary.DEFAULT'),
+              outline: 'none',
+              boxShadow: `0 0 0 2px ${theme('colors.primary.DEFAULT')}20`
+            }
+          }
+        },
+        '.mynt-tag-input': {
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: theme('spacing.2'),
+          minHeight: theme('height.input-md'),
+          padding: theme('spacing.2'),
+          border: `1px solid ${theme('colors.outline.variant')}`,
+          borderRadius: theme('borderRadius.input'),
+          '&:focus-within': {
+            borderColor: theme('colors.primary.DEFAULT'),
+            outline: 'none',
+            boxShadow: `0 0 0 2px ${theme('colors.primary.DEFAULT')}20`
+          }
+        },
+        '.mynt-tag': {
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: theme('spacing.1'),
+          padding: `${theme('spacing.1')} ${theme('spacing.2')}`,
+          backgroundColor: theme('colors.primary.container'),
+          color: theme('colors.primary.on-container'),
+          borderRadius: theme('borderRadius.chip'),
+          fontSize: theme('fontSize.label-small[0]'),
+          fontWeight: '500',
+          '& button': {
+            background: 'none',
+            border: 'none',
+            color: 'inherit',
+            cursor: 'pointer',
+            padding: theme('spacing.0.5'),
+            borderRadius: '50%',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.1)'
+            }
+          }
+        },
+        '.mynt-slider': {
+          '& input[type="range"]': {
+            appearance: 'none',
+            width: '100%',
+            height: '4px',
+            borderRadius: '2px',
+            background: theme('colors.outline.variant'),
+            outline: 'none',
+            '&::-webkit-slider-thumb': {
+              appearance: 'none',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: theme('colors.primary.DEFAULT'),
+              cursor: 'pointer',
+              boxShadow: theme('boxShadow.elevation1')
+            },
+            '&::-moz-range-thumb': {
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: theme('colors.primary.DEFAULT'),
+              cursor: 'pointer',
+              border: 'none',
+              boxShadow: theme('boxShadow.elevation1')
+            }
+          }
+        },
+        '.mynt-signature-pad': {
+          border: `1px solid ${theme('colors.outline.variant')}`,
+          borderRadius: theme('borderRadius.md'),
+          cursor: 'crosshair',
+          '&:focus': {
+            borderColor: theme('colors.primary.DEFAULT'),
+            outline: 'none',
+            boxShadow: `0 0 0 2px ${theme('colors.primary.DEFAULT')}20`
           }
         }
       });
