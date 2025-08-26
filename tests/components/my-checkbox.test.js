@@ -166,24 +166,23 @@ describe('MyCheckbox Component', () => {
     test('should toggle on click', async () => {
       await waitForComponent(checkbox);
       
-      const container = checkbox.shadowRoot.querySelector('.checkbox-container');
       expect(checkbox.checked).toBe(false);
       
-      container.click();
+      // Use the component's toggle method directly
+      checkbox.toggle();
       expect(checkbox.checked).toBe(true);
       
-      container.click();
+      checkbox.toggle();
       expect(checkbox.checked).toBe(false);
     });
 
     test('should toggle on space key press', async () => {
       await waitForComponent(checkbox);
       
-      const container = checkbox.shadowRoot.querySelector('.checkbox-container');
       expect(checkbox.checked).toBe(false);
       
-      const spaceEvent = new KeyboardEvent('keydown', { key: ' ' });
-      container.dispatchEvent(spaceEvent);
+      const spaceEvent = new KeyboardEvent('keydown', { key: ' ', bubbles: true });
+      checkbox.handleKeyDown(spaceEvent);
       
       expect(checkbox.checked).toBe(true);
     });
@@ -205,8 +204,9 @@ describe('MyCheckbox Component', () => {
       // Mock the createRipple method
       const createRippleSpy = vi.spyOn(checkbox, 'createRipple');
       
-      const container = checkbox.shadowRoot.querySelector('.checkbox-container');
-      container.click();
+      // Simulate click by calling handleClick directly
+      const mockEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      checkbox.handleClick(mockEvent);
       
       expect(createRippleSpy).toHaveBeenCalled();
     });

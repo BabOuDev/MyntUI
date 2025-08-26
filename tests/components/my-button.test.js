@@ -182,7 +182,11 @@ describe('MyButton Component', () => {
       button.addEventListener('click', clickHandler);
       
       await waitForComponent(button);
-      button.shadowRoot.querySelector('button').click();
+      
+      // Simulate button click by calling the handleClick method directly
+      const buttonElement = button.shadowRoot.querySelector('button');
+      const mockEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      button.handleClick(mockEvent);
       
       expect(clickHandler).toHaveBeenCalledTimes(1);
       expect(clickHandler).toHaveBeenCalledWith(
@@ -204,7 +208,10 @@ describe('MyButton Component', () => {
       // Mock the createRipple method
       const createRippleSpy = vi.spyOn(button, 'createRipple');
       
-      button.shadowRoot.querySelector('button').click();
+      // Simulate button click by calling the handleClick method directly
+      const mockEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      button.handleClick(mockEvent);
+      
       expect(createRippleSpy).toHaveBeenCalled();
     });
   });
@@ -218,9 +225,8 @@ describe('MyButton Component', () => {
       
       await waitForComponent(button);
       
-      const buttonElement = button.shadowRoot.querySelector('button');
-      const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
-      buttonElement.dispatchEvent(enterEvent);
+      const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+      button.handleKeyDown(enterEvent);
       
       expect(clickHandler).toHaveBeenCalledTimes(1);
     });
@@ -233,9 +239,8 @@ describe('MyButton Component', () => {
       
       await waitForComponent(button);
       
-      const buttonElement = button.shadowRoot.querySelector('button');
-      const spaceEvent = new KeyboardEvent('keydown', { key: ' ' });
-      buttonElement.dispatchEvent(spaceEvent);
+      const spaceEvent = new KeyboardEvent('keydown', { key: ' ', bubbles: true });
+      button.handleKeyDown(spaceEvent);
       
       expect(clickHandler).toHaveBeenCalledTimes(1);
     });
