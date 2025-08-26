@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyntUI Enhanced Component Showcase</title>
+    <link rel="stylesheet" href="/src/styles/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+        
+        .showcase-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+        
+        .component-demo {
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .component-demo h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+        
+        .component-demo p {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .component-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row > * {
+            flex: 1;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 1rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-radius: 0.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="showcase-container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>MyntUI Enhanced Components</h1>
+            <p>A comprehensive showcase of all enhanced input types, components, and features using TailwindCSS and Material Design 3 principles.</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value">17+</div>
+                    <div class="stat-label">Input Types</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">20+</div>
+                    <div class="stat-label">Components</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">TailwindCSS</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">A11y</div>
+                    <div class="stat-label">Accessible</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Input Types -->
+        <div class="section">
+            <h2>🎯 Enhanced Input Types</h2>
+            <p>All input types from CONTRIBUTING.md specification with advanced features and validation.</p>
+            
+            <div class="grid">
+                <div class="component-demo">
+                    <h3>Basic Text Inputs</h3>
+                    <my-input type="text" label="Text Input" placeholder="Enter text"></my-input>
+                    <br><br>
+                    <my-input type="email" label="Email Input" placeholder="user@example.com"></my-input>
+                    <br><br>
+                    <my-input type="url" label="URL Input" placeholder="https://example.com"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Password with Visibility Toggle</h3>
+                    <p>Enhanced password input with strength indicator support</p>
+                    <my-input type="password" label="Password" placeholder="Enter password" helper-text="Password must be at least 8 characters"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Search with Clear Button</h3>
+                    <p>Search input with built-in search icon and debounced input</p>
+                    <my-input type="search" label="Search" placeholder="Search for anything..."></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Number and Currency</h3>
+                    <my-input type="number" label="Quantity" min="0" max="100" placeholder="0"></my-input>
+                    <br><br>
+                    <my-input type="currency" label="Price" placeholder="0.00"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Date and Time Inputs</h3>
+                    <my-input type="date" label="Event Date"></my-input>
+                    <br><br>
+                    <my-input type="time" label="Event Time"></my-input>
+                    <br><br>
+                    <my-input type="datetime-local" label="Date & Time"></my-input>
+                    <br><br>
+                    <my-input type="date-of-birth" label="Date of Birth"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Country Selector with Intl API</h3>
+                    <p>Complete country list with flags and phone codes using Intl.DisplayNames</p>
+                    <my-input type="country" label="Country"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Phone Number Input</h3>
+                    <p>International phone number input with formatting</p>
+                    <my-input type="phone" label="Phone Number" placeholder="+1 (555) 123-4567"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>File Upload with Drag & Drop</h3>
+                    <p>Enhanced file upload with preview and size restrictions</p>
+                    <my-input type="file" label="Upload Document"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Image Upload with Preview</h3>
+                    <p>Specialized image upload with preview and crop capabilities</p>
+                    <my-input type="image" label="Upload Image"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Range Slider</h3>
+                    <p>Range input with value display and tick marks</p>
+                    <my-input type="range" label="Volume" min="0" max="100" value="50"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Color Picker</h3>
+                    <p>Color picker with hex input and format options</p>
+                    <my-input type="color" label="Brand Color" value="#6750a4"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Advanced Selects</h3>
+                    <my-input type="select" label="Simple Select" options='[{"label":"Option 1","value":"1"},{"label":"Option 2","value":"2"}]'></my-input>
+                    <br><br>
+                    <my-input type="dynamic-select" label="Dynamic Select" placeholder="Type to search..."></my-input>
+                    <br><br>
+                    <my-input type="multiple" label="Multiple Select" options='[{"label":"Tag 1","value":"tag1"},{"label":"Tag 2","value":"tag2"},{"label":"Tag 3","value":"tag3"}]'></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Textarea</h3>
+                    <p>Resizable textarea with character counting</p>
+                    <my-input type="textarea" label="Message" placeholder="Enter your message..." rows="4" character-count maxlength="500"></my-input>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button Variations -->
+        <div class="section">
+            <h2>🚀 Enhanced Buttons</h2>
+            <p>Material Design 3 buttons with state layers, ripple effects, and comprehensive accessibility.</p>
+            
+            <div class="grid">
+                <div class="component-demo">
+                    <h3>Button Variants</h3>
+                    <div class="component-group">
+                        <my-button variant="filled" label="Filled"></my-button>
+                        <my-button variant="outlined" label="Outlined"></my-button>
+                        <my-button variant="text" label="Text"></my-button>
+                        <my-button elevated label="Elevated"></my-button>
+                        <my-button filled-tonal label="Filled Tonal"></my-button>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Button Sizes</h3>
+                    <div class="component-group">
+                        <my-button size="sm" label="Small"></my-button>
+                        <my-button size="md" label="Medium"></my-button>
+                        <my-button size="lg" label="Large"></my-button>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Button States</h3>
+                    <div class="component-group">
+                        <my-button label="Normal"></my-button>
+                        <my-button disabled label="Disabled"></my-button>
+                        <my-button loading label="Loading"></my-button>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>FAB & Icon Buttons</h3>
+                    <div class="component-group">
+                        <my-button fab><my-icon icon="add"></my-icon></my-button>
+                        <my-button icon-only><my-icon icon="favorite"></my-icon></my-button>
+                        <my-button label="With Icon"><my-icon icon="download"></my-icon></my-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boolean Inputs -->
+        <div class="section">
+            <h2>☑️ Boolean Inputs</h2>
+            <p>Checkboxes, toggles, and radio buttons with enhanced states and animations.</p>
+            
+            <div class="grid">
+                <div class="component-demo">
+                    <h3>Checkboxes</h3>
+                    <my-checkbox label="Accept Terms" checked></my-checkbox>
+                    <br><br>
+                    <my-checkbox label="Subscribe to newsletter"></my-checkbox>
+                    <br><br>
+                    <my-checkbox label="Indeterminate state" indeterminate></my-checkbox>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Toggle Switches</h3>
+                    <my-toggle label="Enable notifications" checked></my-toggle>
+                    <br><br>
+                    <my-toggle label="Dark mode"></my-toggle>
+                    <br><br>
+                    <my-toggle label="Auto-sync" disabled></my-toggle>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Radio Groups</h3>
+                    <my-radio-group name="theme" value="light">
+                        <my-radio value="light" label="Light Theme"></my-radio>
+                        <my-radio value="dark" label="Dark Theme"></my-radio>
+                        <my-radio value="auto" label="System Default"></my-radio>
+                    </my-radio-group>
+                </div>
+            </div>
+        </div>
+
+        <!-- Label Positions -->
+        <div class="section">
+            <h2>📍 Label Positioning</h2>
+            <p>Different label positions as specified in global configuration.</p>
+            
+            <div class="grid">
+                <div class="component-demo">
+                    <h3>Top Labels (Default)</h3>
+                    <my-input type="text" label="Top Label" label-position="top" placeholder="Label above input"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Left Labels</h3>
+                    <my-input type="text" label="Left Label" label-position="left" placeholder="Label to the left"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Floating Labels</h3>
+                    <my-input type="text" label="Floating Label" label-position="over" placeholder=""></my-input>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component Variants -->
+        <div class="section">
+            <h2>🎨 Input Variants</h2>
+            <p>Different visual styles for inputs using TailwindCSS variants.</p>
+            
+            <div class="grid">
+                <div class="component-demo">
+                    <h3>Outlined (Default)</h3>
+                    <my-input type="text" label="Outlined Input" variant="outlined" placeholder="Outlined style"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Filled</h3>
+                    <my-input type="text" label="Filled Input" variant="filled" placeholder="Filled style"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Underlined</h3>
+                    <my-input type="text" label="Underlined Input" variant="underlined" placeholder="Underlined style"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Text Only</h3>
+                    <my-input type="text" label="Text Input" variant="text" placeholder="Text only style"></my-input>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validation & States -->
+        <div class="section">
+            <h2>⚡ Validation & States</h2>
+            <p>Real-time validation with comprehensive error messages and state feedback.</p>
+            
+            <div class="grid">
+                <div class="component-demo">
+                    <h3>Required Fields</h3>
+                    <my-input type="email" label="Email" required placeholder="Required field" helper-text="This field is required"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Character Counting</h3>
+                    <my-input type="text" label="Bio" character-count maxlength="100" placeholder="Tell us about yourself..."></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Pattern Validation</h3>
+                    <my-input type="text" label="Username" pattern="[a-zA-Z0-9_]{3,16}" placeholder="Username" helper-text="3-16 characters, letters, numbers, underscore only"></my-input>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Size Variants</h3>
+                    <my-input type="text" label="Small" size="sm" placeholder="Small input"></my-input>
+                    <br><br>
+                    <my-input type="text" label="Medium" size="md" placeholder="Medium input"></my-input>
+                    <br><br>
+                    <my-input type="text" label="Large" size="lg" placeholder="Large input"></my-input>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features List -->
+        <div class="section">
+            <h2>✨ Key Features</h2>
+            <ul class="feature-list">
+                <li>Global configuration system for consistent theming</li>
+                <li>Complete TailwindCSS integration with semantic utilities</li>
+                <li>17+ input types with specialized behaviors</li>
+                <li>Material Design 3 principles and components</li>
+                <li>Comprehensive accessibility (A11y) support</li>
+                <li>Real-time validation with debounced input</li>
+                <li>Intl API integration for country/locale support</li>
+                <li>State management with proper ARIA attributes</li>
+                <li>Responsive design with mobile-first approach</li>
+                <li>Web Components standard (framework-agnostic)</li>
+                <li>Shadow DOM encapsulation for style isolation</li>
+                <li>Customizable color schemes and spacing</li>
+                <li>Advanced input features (drag-drop, preview, etc.)</li>
+                <li>Loading states and interactive feedback</li>
+                <li>Proper focus management and keyboard navigation</li>
+                <li>Component library ready for production use</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Load all components -->
+    <script type="module" src="/src/index.js"></script>
+    
+    <script>
+        // Demo interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 MyntUI Enhanced Showcase loaded');
+            
+            // Add some demo event listeners
+            document.querySelectorAll('my-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    console.log('Input changed:', e.detail);
+                });
+                
+                input.addEventListener('change', (e) => {
+                    console.log('Value changed:', e.detail);
+                });
+            });
+            
+            document.querySelectorAll('my-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    console.log('Button clicked:', e.target.label || 'Button');
+                });
+            });
+            
+            document.querySelectorAll('my-checkbox, my-toggle').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    console.log('Checkbox/Toggle changed:', e.detail);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

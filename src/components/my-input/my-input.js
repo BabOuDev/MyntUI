@@ -383,7 +383,7 @@ class MyInput extends MyntUIBaseComponent {
     const rows = this._schema.rows || 3;
     const resize = this._schema.resize || 'vertical';
     
-    return `<textarea ${commonAttributes.join(' ')} rows="${rows}" style="resize: ${resize}"></textarea>`;
+    return `<textarea ${commonAttributes.join(' ')} rows="${rows}" style="resize: ${resize};"></textarea>`;
   }
 
   // Generate select element with options
