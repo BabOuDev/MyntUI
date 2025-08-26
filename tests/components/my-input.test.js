@@ -76,6 +76,9 @@ describe('my-input Component', () => {
       input.setAttribute('placeholder', 'Enter your name');
       container.appendChild(input);
 
+      // Wait for render to complete
+      input.render();
+      
       const shadowInput = input.shadowRoot.querySelector('input');
       expect(shadowInput).toBeTruthy();
       expect(shadowInput.type).toBe('text');
@@ -90,6 +93,9 @@ describe('my-input Component', () => {
       input.setAttribute('label', 'Email Address');
       container.appendChild(input);
 
+      // Wait for render to complete
+      input.render();
+      
       const shadowInput = input.shadowRoot.querySelector('input');
       expect(shadowInput).toBeTruthy();
       expect(shadowInput.type).toBe('email');
@@ -271,7 +277,11 @@ describe('my-input Component', () => {
       input.setAttribute('required', '');
       container.appendChild(input);
 
+      // Wait for render to complete
+      input.render();
+      
       const shadowInput = input.shadowRoot.querySelector('input');
+      expect(shadowInput).toBeTruthy();
       expect(shadowInput.required).toBe(true);
     });
 
@@ -282,7 +292,11 @@ describe('my-input Component', () => {
       input.setAttribute('disabled', '');
       container.appendChild(input);
 
+      // Wait for render to complete
+      input.render();
+      
       const shadowInput = input.shadowRoot.querySelector('input');
+      expect(shadowInput).toBeTruthy();
       expect(shadowInput.disabled).toBe(true);
     });
 

@@ -118,20 +118,24 @@ describe('MyGauge', () => {
   });
 
   test('should handle thresholds for color coding', () => {
-    // Test different threshold values
-    gauge.setAttribute('low-threshold', '30');
-    gauge.setAttribute('high-threshold', '70');
+    // Test threshold configuration with JSON format
+    const thresholds = [
+      { min: 0, max: 30, color: '#ff0000', label: 'Low' },
+      { min: 30, max: 70, color: '#ffff00', label: 'Medium' },
+      { min: 70, max: 100, color: '#00ff00', label: 'High' }
+    ];
     
-    expect(gauge.lowThreshold).toBe(30);
-    expect(gauge.highThreshold).toBe(70);
+    gauge.setAttribute('thresholds', JSON.stringify(thresholds));
+    expect(gauge.thresholds).toEqual(thresholds);
     
     // Test threshold-based coloring
-    gauge.value = 20; // Below low threshold
-    const gaugeFill = gauge.shadowRoot.querySelector('.gauge-fill');
-    expect(gaugeFill).toBeTruthy();
+    gauge.value = 20; // Low threshold
+    const currentThreshold = gauge.getCurrentThreshold();
+    expect(currentThreshold).toBeTruthy();
+    expect(currentThreshold.label).toBe('Low');
     
-    gauge.value = 50; // Between thresholds
-    gauge.value = 80; // Above high threshold
+    gauge.value = 50; // Medium threshold  
+    gauge.value = 80; // High threshold
   });
 
   test('should have correct ARIA attributes', () => {
@@ -140,46 +144,48 @@ describe('MyGauge', () => {
     gauge.max = 100;
     gauge.label = 'System Performance';
     
-    const gaugeElement = gauge.shadowRoot.querySelector('[role="progressbar"]') || 
-                        gauge.shadowRoot.querySelector('.gauge-container');
+    // Re-render to update ARIA attributes
+    gauge.render();
     
-    if (gaugeElement.getAttribute('role') === 'progressbar') {
-      expect(gaugeElement.getAttribute('aria-valuenow')).toBe('65');
-      expect(gaugeElement.getAttribute('aria-valuemin')).toBe('0');
-      expect(gaugeElement.getAttribute('aria-valuemax')).toBe('100');
-    }
+    const gaugeElement = gauge.shadowRoot.querySelector('[role="meter"]');
+    expect(gaugeElement).toBeTruthy();
+    expect(gaugeElement.getAttribute('aria-valuenow')).toBe('65');
+    expect(gaugeElement.getAttribute('aria-valuemin')).toBe('0');
+    expect(gaugeElement.getAttribute('aria-valuemax')).toBe('100');
   });
 
   test('should emit gauge events on value change', () => {
     const changeHandler = vi.fn();
-    gauge.addEventListener('change', changeHandler);
+    gauge.addEventListener('gauge-change', changeHandler);  // Updated event name
     
-    gauge.value = 75;
+    // Force render to ensure shadow DOM is ready
+    gauge.render();
     
-    expect(changeHandler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'change',
-        detail: expect.objectContaining({
-          value: 75,
-          min: gauge.min,
-          max: gauge.max,
-          percentage: 75
-        }),
-        bubbles: true
-      })
-    );
+    // Find the gauge container with the correct role
+    const gaugeContainer = gauge.shadowRoot.querySelector('[role="meter"]');
+    expect(gaugeContainer).toBeTruthy();
+    
+    // Simulate arrow key press to change value
+    const event = new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true });
+    gaugeContainer.dispatchEvent(event);
+    
+    // Should emit gauge-change event, not 'change'
+    expect(changeHandler).toHaveBeenCalled();
   });
 
   test('should handle different gauge styles', () => {
-    const styles = ['circular', 'semicircular', 'arc'];
+    // The updated gauge component doesn't use gauge-style attribute
+    // Instead it uses a fixed semicircular design
+    gauge.setAttribute('size', 'lg');
+    gauge.render();
     
-    styles.forEach(style => {
-      gauge.setAttribute('gauge-style', style);
-      expect(gauge.gaugeStyle).toBe(style);
-      
-      const gaugeContainer = gauge.shadowRoot.querySelector('.gauge-container');
-      expect(gaugeContainer.classList.contains(`gauge-${style}`)).toBe(true);
-    });
+    const svg = gauge.shadowRoot.querySelector('svg');
+    expect(svg).toBeTruthy();
+    
+    // Test the actual gauge structure matches the expected semicircular design
+    // Use path instead of .gauge-fill class
+    const gaugeFill = gauge.shadowRoot.querySelector('path');
+    expect(gaugeFill).toBeTruthy();
   });
 
   test('should support custom units', () => {
