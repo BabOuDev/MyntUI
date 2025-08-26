@@ -3,6 +3,23 @@ import { globalConfig } from './src/config/global-config.js';
 // Get theme configuration for dynamic values
 const themeConfig = globalConfig.get('theme');
 
+// Helper function to generate color variants
+const generateColorVariants = (base) => ({
+  DEFAULT: base,
+  hover: `color-mix(in srgb, ${base} 80%, white)`,
+  active: `color-mix(in srgb, ${base} 120%, black)`,
+  50: `color-mix(in srgb, ${base} 5%, white)`,
+  100: `color-mix(in srgb, ${base} 10%, white)`,
+  200: `color-mix(in srgb, ${base} 20%, white)`,
+  300: `color-mix(in srgb, ${base} 40%, white)`,
+  400: `color-mix(in srgb, ${base} 60%, white)`,
+  500: base,
+  600: `color-mix(in srgb, ${base} 80%, black)`,
+  700: `color-mix(in srgb, ${base} 60%, black)`,
+  800: `color-mix(in srgb, ${base} 40%, black)`,
+  900: `color-mix(in srgb, ${base} 20%, black)`,
+});
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
