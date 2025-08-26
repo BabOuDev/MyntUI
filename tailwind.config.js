@@ -1,7 +1,9 @@
 import { globalConfig } from './src/config/global-config.js';
 
-// Get theme configuration for dynamic values
+// Get configuration values for dynamic generation
 const themeConfig = globalConfig.get('theme');
+const tailwindConfig = globalConfig.get('theme.tailwind');
+const apiConfig = globalConfig.get('api');
 
 // Helper function to generate color variants
 const generateColorVariants = (base) => ({
@@ -19,6 +21,41 @@ const generateColorVariants = (base) => ({
   800: `color-mix(in srgb, ${base} 40%, black)`,
   900: `color-mix(in srgb, ${base} 20%, black)`,
 });
+
+// Helper function to create component class variants from global config
+const createComponentVariants = (component) => {
+  const variants = tailwindConfig.variants[component] || {};
+  const result = {};
+  
+  Object.entries(variants).forEach(([variant, classes]) => {
+    if (typeof classes === 'object') {
+      // Handle nested variants (like toggle.track.checked)
+      result[variant] = {};
+      Object.entries(classes).forEach(([state, stateClasses]) => {
+        result[variant][state] = stateClasses;
+      });
+    } else {
+      result[variant] = classes;
+    }
+  });
+  
+  return result;
+};
+
+// Create size system from global config
+const createSizeSystem = () => {
+  const sizes = tailwindConfig.sizes || {};
+  const result = {};
+  
+  Object.entries(sizes).forEach(([size, config]) => {
+    Object.entries(config).forEach(([component, classes]) => {
+      if (!result[component]) result[component] = {};
+      result[component][size] = classes;
+    });
+  });
+  
+  return result;
+};
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -406,6 +443,53 @@ export default {
           backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-pressed')}, transparent)`
         }
       });
+    },
+    // Dynamic component variants from global config
+    function({ addComponents, addUtilities, theme }) {
+      // Add global config component variants
+      const componentVariants = createComponentVariants('input');
+      const buttonVariants = createComponentVariants('button');
+      const sizeSystem = createSizeSystem();
+
+      // Generate dynamic component classes from global config
+      const components = {};
+      
+      // Input variants from global config
+      Object.entries(componentVariants).forEach(([variant, classes]) => {
+        components[`.mynt-input-${variant}`] = typeof classes === 'string' ? 
+          classes.split(' ').reduce((acc, cls) => ({ ...acc, [cls]: true }), {}) :
+          classes;
+      });
+
+      // Button variants from global config
+      Object.entries(buttonVariants).forEach(([variant, classes]) => {
+        components[`.mynt-button-${variant}`] = typeof classes === 'string' ? 
+          classes.split(' ').reduce((acc, cls) => ({ ...acc, [cls]: true }), {}) :
+          classes;
+      });
+
+      // Size variants from global config
+      Object.entries(sizeSystem).forEach(([component, sizes]) => {
+        Object.entries(sizes).forEach(([size, classes]) => {
+          components[`.mynt-${component}-${size}`] = classes.split(' ').reduce((acc, cls) => ({ 
+            ...acc, 
+            [cls.replace(/^\./, '')]: true 
+          }), {});
+        });
+      });
+
+      addComponents(components);
+
+      // Add state utilities from global config
+      const stateUtilities = {};
+      Object.entries(tailwindConfig.states || {}).forEach(([state, classes]) => {
+        stateUtilities[`.mynt-state-${state}`] = classes.split(' ').reduce((acc, cls) => ({ 
+          ...acc, 
+          [cls.replace(/^\./, '')]: true 
+        }), {});
+      });
+
+      addUtilities(stateUtilities);
     },
     // Custom plugin for component-specific utilities
     function({ addUtilities, theme, addComponents }) {
