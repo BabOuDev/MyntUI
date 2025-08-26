@@ -133,108 +133,94 @@ class MyInput extends MyntUIBaseComponent {
     return autoIconMapping[this._schema.type] || '';
   }
 
-  // Generate TailwindCSS classes based on schema
+  // Generate TailwindCSS classes based on schema using enhanced global config
   getTailwindClasses() {
     const { variant, size, labelPosition } = this._schema;
     const config = globalConfig.get('theme.tailwind', {});
     
-    // Base container classes
-    let containerClasses = [
-      'relative',
-      'w-full',
-      'font-sans'
-    ];
-
-    // Get variant classes from config
-    const variantClasses = config.variants?.input?.[variant] || config.variants?.input?.outlined || '';
-    
-    // Input field classes using mynt-input-base and size utilities
-    let inputClasses = [
-      'w-full',
-      'bg-transparent',
-      'border-0',
-      'focus:outline-none',
-      'placeholder:text-outline/60',
-      `mynt-size-${size}`
-    ];
-
-    // Wrapper classes using global config
-    let wrapperClasses = [
-      'mynt-input-base',
-      ...variantClasses.split(' ').filter(Boolean)
-    ];
-
-    // State classes from config
+    // Use label position config from global config
+    const labelPositionConfig = config.labelPositions?.[labelPosition] || config.labelPositions?.top;
+    const componentConfig = config.components?.input || {};
+    const sizeConfig = config.sizes?.[size] || config.sizes?.md;
+    const variantConfig = config.variants?.input?.[variant] || config.variants?.input?.outlined || '';
     const stateConfig = config.states || {};
     
-    // Hover and focus states
-    wrapperClasses.push(
-      stateConfig.hover || 'hover:bg-opacity-state-hover',
-      stateConfig.focus || 'focus-within:ring-2 focus-within:ring-primary/60 focus-within:ring-offset-2'
-    );
+    // Container classes from global config
+    let containerClasses = [
+      componentConfig.container || 'relative w-full',
+      labelPositionConfig.container || ''
+    ].filter(Boolean);
 
-    // Error state classes
+    // Input field classes from global config
+    let inputClasses = [
+      componentConfig.field || 'w-full bg-transparent outline-none',
+      sizeConfig.input || 'h-input-md px-md py-sm text-body-medium',
+      'placeholder:text-outline/60'
+    ].filter(Boolean);
+
+    // Wrapper classes using enhanced global config
+    let wrapperClasses = [
+      componentConfig.base || 'rounded-lg border font-sans transition-all duration-medium1 ease-standard',
+      variantConfig,
+      labelPositionConfig.wrapper || 'relative'
+    ].filter(Boolean);
+
+    // State classes from enhanced config
+    if (stateConfig.base) {
+      wrapperClasses.push(stateConfig.base);
+    }
+    
+    if (stateConfig.focusWithin) {
+      wrapperClasses.push(stateConfig.focusWithin);
+    }
+    
+    if (stateConfig.hover) {
+      wrapperClasses.push(stateConfig.hover);
+    }
+
+    // Error state classes from config
     if (this._errors.length > 0) {
-      const errorState = stateConfig.error || 'border-error text-error bg-error/5';
-      wrapperClasses.push(...errorState.split(' '));
+      const errorState = stateConfig.error || 'border-error text-error bg-error-light/10';
+      wrapperClasses.push(errorState);
       inputClasses.push('text-error');
     }
 
-    // Disabled state classes
+    // Disabled state classes from config
     if (this._schema.disabled) {
       const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
-      wrapperClasses.push(...disabledState.split(' '));
+      wrapperClasses.push(disabledState);
       inputClasses.push('cursor-not-allowed');
     }
 
-    // Loading state classes
+    // Loading state classes from config
     if (this._schema.loading) {
-      const loadingState = stateConfig.loading || 'opacity-75 cursor-wait';
-      wrapperClasses.push(...loadingState.split(' '));
+      const loadingState = stateConfig.loading || 'opacity-75 cursor-wait animate-pulse';
+      wrapperClasses.push(loadingState);
     }
 
-    // Label classes
-    let labelClasses = [
-      'text-outline',
-      'transition-all',
-      'duration-medium1',
-      'select-none'
-    ];
-
-    if (labelPosition === 'over') {
-      labelClasses.push(
-        'absolute',
-        'left-3',
-        'pointer-events-none',
-        'origin-left'
-      );
+    // Label classes from enhanced global config
+    let labelClasses = [];
+    
+    if (labelPosition === 'over' || labelPosition === 'floating') {
+      const labelConfig = config.labelPositions?.floating || config.labelPositions?.over;
+      labelClasses.push(labelConfig.label || 'absolute left-3 transition-all duration-200 pointer-events-none text-outline');
       
       if (this._focused || this._value) {
-        labelClasses.push(
-          'top-0',
-          'transform',
-          '-translate-y-1/2',
-          'scale-75',
-          'bg-surface',
-          'px-1',
-          'text-primary'
-        );
+        labelClasses.push(labelConfig.labelFloating || labelConfig.labelActive || 'top-0 transform -translate-y-1/2 bg-surface px-1 text-label-small text-primary scale-90');
       } else {
-        labelClasses.push('top-1/2', 'transform', '-translate-y-1/2');
+        labelClasses.push(labelConfig.labelResting || 'top-1/2 transform -translate-y-1/2 text-body-medium');
       }
-    } else if (labelPosition === 'left') {
-      containerClasses.push('flex', 'items-center', 'gap-4');
-      labelClasses.push('flex-shrink-0', 'w-32');
     } else {
-      labelClasses.push('block', 'mb-1');
+      const labelConfig = config.labelPositions?.[labelPosition] || config.labelPositions?.top;
+      labelClasses.push(labelConfig.label || 'text-label-medium text-surface-on-surface');
     }
 
-    // Focus state for label
-    if (this._focused) {
+    // Focus state for label from config
+    if (this._focused && labelPosition !== 'over' && labelPosition !== 'floating') {
       labelClasses.push('text-primary');
     }
 
-    // Required indicator
+    // Required indicator from config
     if (this._schema.required) {
       labelClasses.push('after:content-["*"]', 'after:text-error', 'after:ml-1');
     }
@@ -243,7 +229,10 @@ class MyInput extends MyntUIBaseComponent {
       container: containerClasses.join(' '),
       wrapper: wrapperClasses.join(' '),
       input: inputClasses.join(' '),
-      label: labelClasses.join(' ')
+      label: labelClasses.join(' '),
+      helperText: componentConfig.helperText || 'text-label-small text-outline mt-xs',
+      errorText: componentConfig.errorText || 'text-label-small text-error mt-xs flex items-center gap-xs',
+      addon: componentConfig.addon || 'flex items-center justify-center text-outline'
     };
   }
 
