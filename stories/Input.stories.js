@@ -1,12 +1,13 @@
 import '../src/components/my-input/my-input.js';
 import '../src/components/my-icon/my-icon.js';
+import { globalConfig } from '../src/config/global-config.js';
 
 export default {
   title: 'Components/my-input',
   parameters: {
     docs: {
       description: {
-        component: 'A Material Design 3 input component with enhanced state layers, floating labels, validation, and accessibility. Supports both outlined and filled variants.',
+        component: 'A comprehensive Material Design 3 input component with enhanced state layers, floating labels, validation, accessibility, and conditional icon visibility. Supports all required input types from CONTRIBUTING.md with full light/dark theme compatibility and grid system integration.',
       },
     },
   },
@@ -428,6 +429,355 @@ Textarea.parameters = {
   docs: {
     description: {
       story: 'Textarea input for multi-line text input.',
+    },
+  },
+};
+
+// Comprehensive showcase with automatic icon assignment and conditional visibility
+export const ConditionalIconShowcase = () => {
+  const container = document.createElement('div');
+  container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+  
+  // Header
+  const header = document.createElement('div');
+  header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+  header.innerHTML = `
+    <h3 style="margin: 0 0 8px 0; font-size: 18px; color: var(--_global-color-primary);">
+      Conditional Icon Visibility & Auto-Assignment
+    </h3>
+    <p style="margin: 0; font-size: 14px; color: var(--_global-color-on-surface-variant);">
+      Icons are automatically assigned based on input type and only shown when relevant. This follows the Material Design guidelines and global config settings.
+    </p>
+  `;
+  container.appendChild(header);
+  
+  const inputTypesWithIcons = [
+    { type: 'email', label: 'Email Address', placeholder: 'user@example.com', expectedIcon: 'mail' },
+    { type: 'password', label: 'Password', placeholder: 'Enter password', expectedIcon: 'lock' },
+    { type: 'search', label: 'Search', placeholder: 'Search...', expectedIcon: 'search' },
+    { type: 'date', label: 'Date', expectedIcon: 'event' },
+    { type: 'datetime-local', label: 'Date & Time', expectedIcon: 'schedule' },
+    { type: 'time', label: 'Time', expectedIcon: 'access_time' },
+    { type: 'date-of-birth', label: 'Date of Birth', expectedIcon: 'cake' },
+    { type: 'tel', label: 'Phone Number', placeholder: '+1 (555) 123-4567', expectedIcon: 'phone' },
+    { type: 'url', label: 'Website', placeholder: 'https://example.com', expectedIcon: 'link' },
+    { type: 'number', label: 'Amount', placeholder: '100', expectedIcon: 'tag' },
+    { type: 'text', label: 'Plain Text', placeholder: 'No automatic icon', expectedIcon: null },
+    { type: 'textarea', label: 'Description', placeholder: 'No automatic icon', expectedIcon: null },
+  ];
+  
+  inputTypesWithIcons.forEach(({ type, label, placeholder, expectedIcon }) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
+    
+    const input = document.createElement('my-input');
+    input.setAttribute('type', type);
+    input.setAttribute('label', label);
+    if (placeholder) input.setAttribute('placeholder', placeholder);
+    
+    // Add helper text explaining the expected behavior
+    const helperText = expectedIcon 
+      ? `Auto-assigned icon: ${expectedIcon}` 
+      : 'No automatic icon assigned';
+    input.setAttribute('helper-text', helperText);
+    
+    wrapper.appendChild(input);
+    container.appendChild(wrapper);
+  });
+  
+  return container;
+};
+ConditionalIconShowcase.parameters = {
+  docs: {
+    description: {
+      story: 'Demonstrates automatic icon assignment based on input type with conditional visibility. Icons are only shown when they provide meaningful context to the user, following Material Design principles and the global configuration settings.',
+    },
+  },
+};
+
+// Grid system integration showcase
+export const GridSystemShowcase = () => {
+  const container = document.createElement('div');
+  container.style.cssText = 'max-width: 1200px; display: flex; flex-direction: column; gap: 32px;';
+  
+  // Header
+  const header = document.createElement('div');
+  header.innerHTML = `
+    <h3 style="margin: 0 0 16px 0; font-size: 18px; color: var(--_global-color-primary);">
+      Grid System Integration
+    </h3>
+    <p style="margin: 0 0 24px 0; font-size: 14px; color: var(--_global-color-on-surface-variant);">
+      MyntUI inputs work seamlessly with the built-in grid system utilities for responsive layouts.
+    </p>
+  `;
+  container.appendChild(header);
+  
+  // Simple 2-column grid
+  const grid2Col = document.createElement('div');
+  grid2Col.className = 'u-display-grid u-grid-cols-2 u-gap-md';
+  grid2Col.style.cssText = 'margin-bottom: 32px;';
+  
+  const grid2Title = document.createElement('h4');
+  grid2Title.textContent = '2-Column Grid Layout';
+  grid2Title.style.cssText = 'grid-column: 1 / -1; margin: 0 0 16px 0; font-size: 16px;';
+  grid2Col.appendChild(grid2Title);
+  
+  ['First Name', 'Last Name'].forEach((label, index) => {
+    const input = document.createElement('my-input');
+    input.setAttribute('label', label);
+    input.setAttribute('placeholder', `Enter your ${label.toLowerCase()}`);
+    input.setAttribute('required', '');
+    grid2Col.appendChild(input);
+  });
+  
+  container.appendChild(grid2Col);
+  
+  // Responsive 3-column grid
+  const grid3Col = document.createElement('div');
+  grid3Col.className = 'u-display-grid u-grid-cols-1 u-md-grid-cols-3 u-gap-md';
+  grid3Col.style.cssText = 'margin-bottom: 32px;';
+  
+  const grid3Title = document.createElement('h4');
+  grid3Title.textContent = 'Responsive 3-Column Grid (1 col on mobile, 3 cols on tablet+)';
+  grid3Title.style.cssText = 'grid-column: 1 / -1; margin: 0 0 16px 0; font-size: 16px;';
+  grid3Col.appendChild(grid3Title);
+  
+  [
+    { type: 'email', label: 'Email', placeholder: 'user@example.com' },
+    { type: 'tel', label: 'Phone', placeholder: '+1 (555) 123-4567' },
+    { type: 'date', label: 'Birth Date' }
+  ].forEach(({ type, label, placeholder }) => {
+    const input = document.createElement('my-input');
+    input.setAttribute('type', type);
+    input.setAttribute('label', label);
+    if (placeholder) input.setAttribute('placeholder', placeholder);
+    grid3Col.appendChild(input);
+  });
+  
+  container.appendChild(grid3Col);
+  
+  // Mixed span grid
+  const gridMixed = document.createElement('div');
+  gridMixed.className = 'u-display-grid u-grid-cols-4 u-gap-md';
+  gridMixed.style.cssText = 'margin-bottom: 32px;';
+  
+  const gridMixedTitle = document.createElement('h4');
+  gridMixedTitle.textContent = 'Mixed Column Spans';
+  gridMixedTitle.style.cssText = 'grid-column: 1 / -1; margin: 0 0 16px 0; font-size: 16px;';
+  gridMixed.appendChild(gridMixedTitle);
+  
+  // Full width input
+  const fullInput = document.createElement('my-input');
+  fullInput.className = 'u-col-span-full';
+  fullInput.setAttribute('type', 'textarea');
+  fullInput.setAttribute('label', 'Full Width Description');
+  fullInput.setAttribute('placeholder', 'This textarea spans all 4 columns...');
+  gridMixed.appendChild(fullInput);
+  
+  // Two half-width inputs
+  const halfInput1 = document.createElement('my-input');
+  halfInput1.className = 'u-col-span-2';
+  halfInput1.setAttribute('label', 'Half Width 1');
+  halfInput1.setAttribute('placeholder', 'Spans 2 columns');
+  gridMixed.appendChild(halfInput1);
+  
+  const halfInput2 = document.createElement('my-input');
+  halfInput2.className = 'u-col-span-2';
+  halfInput2.setAttribute('label', 'Half Width 2');
+  halfInput2.setAttribute('placeholder', 'Spans 2 columns');
+  gridMixed.appendChild(halfInput2);
+  
+  container.appendChild(gridMixed);
+  
+  return container;
+};
+GridSystemShowcase.parameters = {
+  docs: {
+    description: {
+      story: 'Demonstrates how MyntUI inputs integrate with the grid system utilities for responsive layouts. Uses utility classes like u-grid-cols-2, u-md-grid-cols-3, u-col-span-full, etc.',
+    },
+  },
+};
+
+// Theme compatibility showcase
+export const ThemeCompatibilityShowcase = () => {
+  const container = document.createElement('div');
+  container.style.cssText = 'max-width: 800px;';
+  
+  // Theme controls
+  const controls = document.createElement('div');
+  controls.style.cssText = 'margin-bottom: 32px; padding: 16px; background: var(--_global-color-surface-container); border-radius: var(--_global-border-radius-md);';
+  controls.innerHTML = `
+    <h4 style="margin: 0 0 16px 0; font-size: 16px;">Theme Controls</h4>
+    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+      <button id="light-theme" style="padding: 8px 16px; border: 1px solid var(--_global-color-outline); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface); cursor: pointer;">
+        Light Theme
+      </button>
+      <button id="dark-theme" style="padding: 8px 16px; border: 1px solid var(--_global-color-outline); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface); cursor: pointer;">
+        Dark Theme
+      </button>
+      <button id="auto-theme" style="padding: 8px 16px; border: 1px solid var(--_global-color-outline); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface); cursor: pointer;">
+        Auto (System)
+      </button>
+    </div>
+  `;
+  container.appendChild(controls);
+  
+  // Theme demonstration grid
+  const themeDemo = document.createElement('div');
+  themeDemo.className = 'u-display-grid u-grid-cols-2 u-gap-md';
+  themeDemo.style.cssText = 'padding: 24px; background: var(--_global-color-surface); border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-md);';
+  
+  [
+    { type: 'email', label: 'Email Address', variant: 'outlined' },
+    { type: 'password', label: 'Password', variant: 'filled' },
+    { type: 'search', label: 'Search', variant: 'outlined' },
+    { type: 'date', label: 'Date', variant: 'filled' }
+  ].forEach(({ type, label, variant }) => {
+    const input = document.createElement('my-input');
+    input.setAttribute('type', type);
+    input.setAttribute('label', label);
+    input.setAttribute('variant', variant);
+    input.setAttribute('helper-text', `${variant} variant in current theme`);
+    themeDemo.appendChild(input);
+  });
+  
+  container.appendChild(themeDemo);
+  
+  // Add theme switching functionality
+  setTimeout(() => {
+    const lightBtn = container.querySelector('#light-theme');
+    const darkBtn = container.querySelector('#dark-theme');
+    const autoBtn = container.querySelector('#auto-theme');
+    
+    lightBtn?.addEventListener('click', () => {
+      document.documentElement.setAttribute('data-color-scheme', 'light');
+      globalConfig.set('theme.colorScheme', 'light');
+    });
+    
+    darkBtn?.addEventListener('click', () => {
+      document.documentElement.setAttribute('data-color-scheme', 'dark');
+      globalConfig.set('theme.colorScheme', 'dark');
+    });
+    
+    autoBtn?.addEventListener('click', () => {
+      document.documentElement.removeAttribute('data-color-scheme');
+      globalConfig.set('theme.colorScheme', 'auto');
+    });
+  }, 100);
+  
+  return container;
+};
+ThemeCompatibilityShowcase.parameters = {
+  docs: {
+    description: {
+      story: 'Demonstrates light/dark theme compatibility. Use the theme controls to switch between light, dark, and auto (system preference) themes. All input variants and states work correctly across themes.',
+    },
+  },
+};
+
+// Global configuration showcase
+export const GlobalConfigShowcase = () => {
+  const container = document.createElement('div');
+  container.style.cssText = 'max-width: 1000px;';
+  
+  // Configuration controls
+  const configControls = document.createElement('div');
+  configControls.style.cssText = 'margin-bottom: 32px; padding: 20px; background: var(--_global-color-surface-container); border-radius: var(--_global-border-radius-md);';
+  configControls.innerHTML = `
+    <h4 style="margin: 0 0 20px 0; font-size: 16px; color: var(--_global-color-primary);">Global Configuration Controls</h4>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+      <div>
+        <label style="display: block; margin-bottom: 8px; font-weight: var(--_global-font-weight-medium);">Default Label Position:</label>
+        <select id="label-position" style="width: 100%; padding: 8px; border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface);">
+          <option value="top">Top</option>
+          <option value="left">Left</option>
+          <option value="over">Over (Floating)</option>
+        </select>
+      </div>
+      
+      <div>
+        <label style="display: block; margin-bottom: 8px; font-weight: var(--_global-font-weight-medium);">Default Size:</label>
+        <select id="default-size" style="width: 100%; padding: 8px; border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface);">
+          <option value="small">Small</option>
+          <option value="medium" selected>Medium</option>
+          <option value="large">Large</option>
+        </select>
+      </div>
+      
+      <div>
+        <label style="display: block; margin-bottom: 8px; font-weight: var(--_global-font-weight-medium);">Default Variant:</label>
+        <select id="default-variant" style="width: 100%; padding: 8px; border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface);">
+          <option value="outlined" selected>Outlined</option>
+          <option value="filled">Filled</option>
+        </select>
+      </div>
+    </div>
+    
+    <button id="apply-config" style="padding: 12px 24px; background: var(--_global-color-primary); color: var(--_global-color-on-primary); border: none; border-radius: var(--_global-border-radius-sm); cursor: pointer; font-weight: var(--_global-font-weight-medium);">
+      Apply Configuration
+    </button>
+  `;
+  container.appendChild(configControls);
+  
+  // Sample inputs that will reflect the configuration
+  const sampleInputs = document.createElement('div');
+  sampleInputs.id = 'sample-inputs';
+  sampleInputs.className = 'u-display-grid u-grid-cols-2 u-gap-lg';
+  sampleInputs.style.cssText = 'padding: 24px; background: var(--_global-color-surface); border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-md);';
+  
+  const renderSampleInputs = () => {
+    sampleInputs.innerHTML = '';
+    
+    const inputConfig = globalConfig.get('components.input') || {};
+    const themeConfig = globalConfig.get('theme') || {};
+    
+    [
+      { type: 'text', label: 'Sample Text Input', placeholder: 'Using global config...' },
+      { type: 'email', label: 'Sample Email', placeholder: 'user@example.com' },
+      { type: 'password', label: 'Sample Password', placeholder: 'Password...' },
+      { type: 'textarea', label: 'Sample Textarea', placeholder: 'Multi-line text...' }
+    ].forEach(({ type, label, placeholder }) => {
+      const input = document.createElement('my-input');
+      input.setAttribute('type', type);
+      input.setAttribute('label', label);
+      input.setAttribute('placeholder', placeholder);
+      input.setAttribute('label-position', themeConfig.labelPosition || inputConfig.labelPosition || 'top');
+      input.setAttribute('size', inputConfig.size || 'medium');
+      input.setAttribute('variant', inputConfig.variant || 'outlined');
+      input.setAttribute('helper-text', `Using: ${input.getAttribute('label-position')} label, ${input.getAttribute('size')} size, ${input.getAttribute('variant')} variant`);
+      sampleInputs.appendChild(input);
+    });
+  };
+  
+  renderSampleInputs();
+  container.appendChild(sampleInputs);
+  
+  // Add configuration change functionality
+  setTimeout(() => {
+    const applyBtn = container.querySelector('#apply-config');
+    const labelPosSelect = container.querySelector('#label-position');
+    const sizeSelect = container.querySelector('#default-size');
+    const variantSelect = container.querySelector('#default-variant');
+    
+    applyBtn?.addEventListener('click', () => {
+      // Update global configuration
+      globalConfig.set('theme.labelPosition', labelPosSelect.value);
+      globalConfig.set('components.input.size', sizeSelect.value);
+      globalConfig.set('components.input.variant', variantSelect.value);
+      
+      // Re-render sample inputs
+      renderSampleInputs();
+    });
+  }, 100);
+  
+  return container;
+};
+GlobalConfigShowcase.parameters = {
+  docs: {
+    description: {
+      story: 'Demonstrates the global configuration system. Change the default settings and see how new inputs automatically use the updated configuration. This showcases centralized control over themes, component behavior, and API contracts.',
     },
   },
 };
