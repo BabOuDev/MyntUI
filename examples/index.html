@@ -9,15 +9,17 @@
     <style>
         body {
             padding: var(--_global-spacing-lg);
-            background-color: var(--_global-color-background-white);
+            background: linear-gradient(135deg, var(--_global-color-surface-container-lowest) 0%, var(--_global-color-surface) 100%);
+            min-height: 100vh;
         }
         
         .demo-section {
-            background: var(--_global-color-surface-container-low);
+            background: var(--_global-color-surface);
             border-radius: var(--_global-border-radius-lg);
             padding: var(--_global-spacing-lg);
             margin-bottom: var(--_global-spacing-lg);
-            box-shadow: var(--_global-elevation-1);
+            box-shadow: var(--_global-elevation-2);
+            border: 1px solid var(--_global-color-outline-variant);
         }
         
         .demo-title {
@@ -36,10 +38,16 @@
         }
         
         .demo-item {
-            padding: var(--_global-spacing-md);
+            padding: var(--_global-spacing-lg);
             border: 1px solid var(--_global-color-outline-variant);
             border-radius: var(--_global-border-radius-md);
-            background: var(--_global-color-surface);
+            background: var(--_global-color-surface-container-lowest);
+            transition: all var(--_global-interaction-feedback-duration) var(--_global-interaction-feedback-easing);
+        }
+        
+        .demo-item:hover {
+            border-color: var(--_global-color-outline);
+            box-shadow: var(--_global-elevation-1);
         }
         
         .demo-label {
