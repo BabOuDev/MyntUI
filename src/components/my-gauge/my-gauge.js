@@ -1,10 +1,11 @@
 /**
  * MyntUI my-gauge Component
  * Visualizes a single numerical value within a defined range, often with a radial or arc-shaped display
- * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
+ * Enhanced version using MyntUIBaseComponent with pure TailwindCSS and global config integration
  */
 
 import { MyntUIBaseComponent } from '../../core/base-component.js';
+import { globalConfig } from '../../config/global-config.js';
 
 class MyGauge extends MyntUIBaseComponent {
   constructor() {
@@ -245,6 +246,48 @@ class MyGauge extends MyntUIBaseComponent {
       case 'secondary': return 'var(--_global-color-secondary)';
       default: return 'var(--_global-color-primary)';
     }
+  }
+
+  // Get TailwindCSS classes from global config
+  getGaugeClasses() {
+    const config = globalConfig.get('theme.tailwind');
+    const size = this.size || 'md';
+    const variant = this.variant || 'primary';
+    
+    return {
+      container: `relative inline-flex items-center justify-center bg-gradient-to-br from-surface to-surface-container-low rounded-2xl border border-outline-variant shadow-elevation-3 transition-all duration-300 hover:shadow-elevation-4 hover:-translate-y-1 hover:scale-105 focus-within:outline-2 focus-within:outline-primary cursor-pointer ${
+        size === 'sm' ? 'w-36 h-28 p-4' : size === 'lg' ? 'w-60 h-44 p-8' : 'w-48 h-36 p-6'
+      }`,
+      svg: `transform -rotate-90 drop-shadow-lg transition-all duration-500 ${
+        size === 'sm' ? 'w-24 h-24' : size === 'lg' ? 'w-40 h-40' : 'w-32 h-32'
+      }`,
+      track: `fill-none stroke-surface-container-high opacity-30 transition-all duration-300 ${
+        size === 'sm' ? 'stroke-2' : size === 'lg' ? 'stroke-4' : 'stroke-3'
+      }`,
+      fill: `fill-none stroke-linecap-round transition-all duration-700 ease-out filter drop-shadow-sm ${
+        variant === 'success' ? 'stroke-success' :
+        variant === 'warning' ? 'stroke-warning' :
+        variant === 'error' ? 'stroke-error' :
+        variant === 'info' ? 'stroke-info' :
+        variant === 'secondary' ? 'stroke-secondary' : 'stroke-primary'
+      } ${
+        size === 'sm' ? 'stroke-3' : size === 'lg' ? 'stroke-5' : 'stroke-4'
+      }`,
+      content: 'absolute inset-0 flex flex-col items-center justify-center pointer-events-none',
+      value: `font-mono font-bold text-surface-on-surface transition-all duration-300 tabular-nums ${
+        size === 'sm' ? 'text-lg' : size === 'lg' ? 'text-3xl' : 'text-2xl'
+      }`,
+      label: `font-medium text-surface-on-surface-variant text-center uppercase tracking-wide mt-1 ${
+        size === 'sm' ? 'text-2xs' : size === 'lg' ? 'text-sm' : 'text-xs'
+      }`,
+      range: `absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-between w-5/6 font-mono text-surface-on-surface-variant tabular-nums ${
+        size === 'sm' ? 'text-2xs' : size === 'lg' ? 'text-xs' : 'text-2xs'
+      }`,
+      thresholds: `absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2 text-surface-on-surface-variant ${
+        size === 'sm' ? 'text-3xs' : size === 'lg' ? 'text-xs' : 'text-2xs'
+      }`,
+      thresholdDot: 'inline-block w-1.5 h-1.5 rounded-full'
+    };
   }
 
   // Animate value change with spring physics
@@ -531,366 +574,66 @@ class MyGauge extends MyntUIBaseComponent {
     }
   }
 
-  // Render the component
+  // Render the component using TailwindCSS classes
   render() {
+    const classes = this.getGaugeClasses();
     const color = this.getColor();
     const percentage = this.percentage;
-    const circumference = Math.PI * 40; // Half circle
+    const size = this.size || 'md';
+    const radius = size === 'sm' ? 20 : size === 'lg' ? 35 : 28;
+    const circumference = Math.PI * radius; // Half circle for gauge
     const offset = circumference - (circumference * percentage) / 100;
+    const centerX = size === 'sm' ? 48 : size === 'lg' ? 80 : 64;
+    const centerY = centerX;
     
     this.shadowRoot.innerHTML = `
       <style>
+        @import 'tailwindcss/base';
+        @import 'tailwindcss/components';
+        @import 'tailwindcss/utilities';
+        
         :host {
-          /* Component-specific variables using global variables */
-          --_gauge-size-sm: 140px;
-          --_gauge-size-md: 180px;
-          --_gauge-size-lg: 240px;
-          --_gauge-size: var(--_gauge-size-md);
-          --_gauge-stroke-width: 12;
-          --_gauge-stroke-width-bg: 8;
-          --_gauge-needle-width: 3;
-          --_gauge-bg-color: var(--_global-color-surface);
-          --_gauge-track-color: var(--_global-color-surface-container-high);
-          --_gauge-fill-color: var(--_global-color-primary);
-          --_gauge-text-color: var(--_global-color-on-surface);
-          --_gauge-label-color: var(--_global-color-on-surface-variant);
-          --_gauge-range-color: var(--_global-color-on-surface-variant);
-          --_gauge-needle-color: var(--_global-color-on-surface);
-          --_gauge-shadow: var(--_global-elevation-3);
-          --_gauge-transition: all var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized);
-          --_gauge-tooltip-bg: var(--_global-color-inverse-surface);
-          --_gauge-tooltip-text: var(--_global-color-inverse-on-surface);
-          --_gauge-glow-color: rgba(103, 80, 164, 0.3);
-          --_gauge-pulse-duration: 2s;
-          
           display: inline-block;
-          width: var(--_gauge-size);
-          height: calc(var(--_gauge-size) * 0.75);
-          font-family: var(--_global-font-family-sans);
-          background: linear-gradient(145deg, var(--_gauge-bg-color), var(--_global-color-surface-container-low));
-          border-radius: var(--_global-border-radius-xl);
-          box-shadow: var(--_gauge-shadow);
-          padding: var(--_global-spacing-lg);
-          box-sizing: border-box;
-          position: relative;
-          transition: var(--_gauge-transition);
-          cursor: pointer;
-          border: 1px solid var(--_global-color-outline-variant);
-        }
-
-        .gauge-container {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .gauge-svg {
-          width: var(--_gauge-size);
-          height: calc(var(--_gauge-size) * 0.6);
-          overflow: visible;
-        }
-
-        .gauge-track {
-          fill: none;
-          stroke: var(--_gauge-track-color);
-          stroke-width: var(--_gauge-stroke-width-bg);
-          stroke-linecap: round;
-          opacity: 0.3;
-        }
-
-        .gauge-fill {
-          fill: none;
-          stroke: ${this.gradient ? 'url(#gaugeGradient)' : color};
-          stroke-width: var(--_gauge-stroke-width);
-          stroke-linecap: round;
-          stroke-dasharray: ${circumference};
-          stroke-dashoffset: ${offset};
-          transition: var(--_gauge-transition);
-          transform: rotate(-180deg);
-          transform-origin: center;
-          filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
-        }
-
-        .gauge-center {
-          fill: var(--_gauge-bg-color);
-          stroke: var(--_gauge-needle-color);
-          stroke-width: var(--_gauge-needle-width);
-          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
-        }
-
-        .gauge-needle {
-          fill: var(--_gauge-needle-color);
-          transform-origin: 50px 50px;
-          transform: rotate(${this.angle}deg);
-          transition: var(--_gauge-transition);
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-        }
-
-        .gauge-content {
-          position: absolute;
-          bottom: 20%;
-          left: 50%;
-          transform: translateX(-50%);
-          text-align: center;
-          pointer-events: none;
-        }
-
-        .gauge-value {
-          font-size: calc(var(--_gauge-size) * 0.14);
-          font-weight: var(--_global-font-weight-bold);
-          color: var(--_gauge-text-color);
-          line-height: 1;
-          margin-bottom: var(--_global-spacing-xs);
-          transition: color var(--_global-motion-duration-short2) ease;
-          font-variant-numeric: tabular-nums;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .gauge-label {
-          font-size: calc(var(--_gauge-size) * 0.09);
-          font-weight: var(--_global-font-weight-medium);
-          color: var(--_gauge-label-color);
-          line-height: 1;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .gauge-range {
-          position: absolute;
-          bottom: 8%;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          justify-content: space-between;
-          width: 85%;
-          font-size: calc(var(--_gauge-size) * 0.07);
-          font-weight: var(--_global-font-weight-medium);
-          color: var(--_gauge-range-color);
-          font-variant-numeric: tabular-nums;
-        }
-
-        .gauge-thresholds {
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: var(--_global-spacing-xs);
-          font-size: calc(var(--_gauge-size) * 0.055);
-          color: var(--_global-color-text-muted);
-        }
-
-        .threshold-indicator {
-          display: inline-flex;
-          align-items: center;
-          gap: 2px;
-        }
-
-        .threshold-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          display: inline-block;
-        }
-
-        /* Size variants */
-        :host([size="sm"]) {
-          --_gauge-size: var(--_gauge-size-sm);
-          --_gauge-stroke-width: 6;
-        }
-
-        :host([size="lg"]) {
-          --_gauge-size: var(--_gauge-size-lg);
-          --_gauge-stroke-width: 10;
-        }
-
-        /* Disabled state */
-        :host([disabled]) {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-
-        /* Accessibility improvements - High Contrast Mode Support */
-        @media (prefers-contrast: high) {
-          .gauge-track {
-            stroke: currentColor;
-            opacity: 0.5;
-            stroke-width: calc(var(--_gauge-stroke-width-bg) + 2px);
-          }
-          
-          .gauge-fill {
-            stroke-width: calc(var(--_gauge-stroke-width) + 2px);
-            filter: none;
-          }
-          
-          .gauge-needle {
-            stroke: currentColor;
-            stroke-width: 2px;
-            filter: none;
-          }
-          
-          .gauge-value,
-          .gauge-label {
-            font-weight: var(--_global-font-weight-bold);
-            text-shadow: none;
-          }
-        }
-
-        /* Accessibility improvements - Reduced Motion Support */
-        @media (prefers-reduced-motion: reduce) {
-          .gauge-fill,
-          .gauge-needle,
-          .gauge-value {
-            animation: none;
-            transition: none;
-          }
-        }
-
-        /* Responsive adjustments */
-        /* Enhanced hover effects with sophisticated micro-interactions */
-        :host(:hover) {
-          transform: translateY(-3px) scale(1.02);
-          transition: transform var(--_global-motion-duration-medium2) var(--_global-spring-bouncy),
-                      box-shadow var(--_global-motion-duration-medium2) var(--_global-motion-easing-emphasized);
-          box-shadow: 
-            var(--_global-shadow-interaction-strong),
-            0 0 40px var(--_gauge-current-color, var(--_global-color-primary))30,
-            var(--_gauge-shadow);
-          cursor: pointer;
+          font-family: var(--_global-font-family-sans, system-ui);
         }
         
-        :host(:hover) .gauge-needle {
-          filter: 
-            drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8))
-            drop-shadow(0 0 8px var(--_gauge-current-color, var(--_global-color-primary))80);
-          transition: filter var(--_global-motion-duration-medium1) var(--_global-spring-gentle);
-          transform-origin: 50px 50px;
-          animation: gauge-needle-hover-pulse 1.5s var(--_global-spring-gentle) infinite alternate;
-        }
-        
-        :host(:hover) .gauge-fill {
-          stroke-width: calc(var(--_gauge-stroke-width) + 2px);
-          filter: 
-            drop-shadow(0 0 16px var(--_gauge-current-color, var(--_global-color-primary))60)
-            drop-shadow(0 4px 16px rgba(0, 0, 0, 0.3))
-            brightness(1.15) 
-            saturate(1.2) 
-            contrast(1.05);
-          transition: all var(--_global-motion-duration-medium1) var(--_global-spring-wobbly);
-        }
-        
-        :host(:hover) .gauge-track {
-          opacity: calc(0.2 + var(--_gauge-current-intensity, 0) * 0.2);
-          stroke-width: calc(var(--_gauge-stroke-width-bg) + 1px);
-          transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
-        }
-        
-        :host(:hover) .gauge-value {
-          transform: scale(calc(1.05 + var(--_gauge-current-intensity, 0) * 0.1));
-          text-shadow: 0 0 12px var(--_gauge-current-color, var(--_global-color-primary))50;
-          transition: all var(--_global-motion-duration-medium1) var(--_global-spring-wobbly);
-        }
-        
-        /* Enhanced active/pressed state with spring physics */
-        :host(:active) {
-          transform: translateY(-1px) scale(0.985);
-          transition: transform var(--_global-motion-duration-short1) var(--_global-spring-energetic);
-          box-shadow: 
-            var(--_global-shadow-interaction-moderate),
-            0 0 30px var(--_gauge-current-color, var(--_global-color-primary))40,
-            inset 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        :host(:active) .gauge-fill {
-          stroke-width: calc(var(--_gauge-stroke-width) + 3px);
-          filter: 
-            drop-shadow(0 0 20px var(--_gauge-current-color, var(--_global-color-primary))80)
-            brightness(1.2) 
-            saturate(1.3);
-        }
-        
-        :host(:active) .gauge-needle {
-          filter: 
-            drop-shadow(0 5px 16px rgba(0, 0, 0, 0.9))
-            drop-shadow(0 0 12px var(--_gauge-current-color, var(--_global-color-primary))90);
-        }
-        
-        /* Enhanced focus state */
-        :host(:focus-within) .gauge-container {
-          box-shadow: 0 0 0 3px var(--_global-color-primary-container);
-          transition: box-shadow var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
-        }
-        
-        /* Enhanced pulse animations with sophisticated physics */
+        /* Gauge needle animation */
         @keyframes gauge-needle-pulse {
-          0% {
-            filter: 
-              drop-shadow(0 3px 8px var(--_gauge-current-color, var(--_global-color-primary))60)
-              drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4));
-          }
-          100% {
-            filter: 
-              drop-shadow(0 4px 16px var(--_gauge-current-color, var(--_global-color-primary))80)
-              drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6))
-              brightness(1.1);
-          }
-        }
-        
-        @keyframes gauge-needle-hover-pulse {
-          0% {
-            filter: 
-              drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8))
-              drop-shadow(0 0 8px var(--_gauge-current-color, var(--_global-color-primary))80);
-          }
-          100% {
-            filter: 
-              drop-shadow(0 6px 20px rgba(0, 0, 0, 0.9))
-              drop-shadow(0 0 16px var(--_gauge-current-color, var(--_global-color-primary))90)
-              brightness(1.05);
-          }
+          0% { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); }
+          100% { filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6)) brightness(1.1); }
         }
         
         @keyframes gauge-threshold-reached {
-          0% {
-            stroke-width: var(--_gauge-stroke-width);
-            filter: none;
-          }
-          50% {
-            stroke-width: calc(var(--_gauge-stroke-width) + 4px);
-            filter: 
-              drop-shadow(0 0 20px var(--_gauge-current-color, var(--_global-color-primary))90)
-              brightness(1.3) 
-              saturate(1.4);
-          }
-          100% {
-            stroke-width: calc(var(--_gauge-stroke-width) + 1px);
-            filter: 
-              drop-shadow(0 0 12px var(--_gauge-current-color, var(--_global-color-primary))70)
-              brightness(1.1);
-          }
+          0% { transform: scale(1); filter: none; }
+          50% { transform: scale(1.05); filter: brightness(1.2) saturate(1.3); }
+          100% { transform: scale(1.02); filter: brightness(1.1); }
         }
         
-        /* Tooltip styles */
+        /* Gauge needle */
+        .gauge-needle {
+          transform-origin: ${centerX}px ${centerY}px;
+          transition: transform 0.7s ease-out, filter 0.3s ease;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+        }
+        
+        /* Tooltip */
         .gauge-tooltip {
           position: absolute;
-          top: -45px;
+          top: -2.5rem;
           left: 50%;
           transform: translateX(-50%);
-          background: var(--_gauge-tooltip-bg);
-          color: var(--_gauge-tooltip-text);
-          padding: var(--_global-spacing-xs) var(--_global-spacing-sm);
-          border-radius: var(--_global-border-radius-md);
-          font-size: var(--_global-font-size-xs);
-          font-weight: var(--_global-font-weight-medium);
+          background: var(--_global-color-inverse-surface, #1f2937);
+          color: var(--_global-color-inverse-on-surface, #f9fafb);
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.375rem;
+          font-size: 0.75rem;
+          font-weight: 500;
           white-space: nowrap;
           opacity: 0;
           pointer-events: none;
-          transition: opacity var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          transition: opacity 0.2s;
           z-index: 10;
-          box-shadow: var(--_global-elevation-2);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
         .gauge-tooltip::after {
@@ -900,21 +643,42 @@ class MyGauge extends MyntUIBaseComponent {
           left: 50%;
           transform: translateX(-50%);
           border: 4px solid transparent;
-          border-top-color: var(--_gauge-tooltip-bg);
+          border-top-color: var(--_global-color-inverse-surface, #1f2937);
         }
         
+        /* Hover effects */
         :host(:hover) .gauge-tooltip {
           opacity: 1;
         }
         
-        @media (max-width: 480px) {
-          :host {
-            --_gauge-size: var(--_gauge-size-sm);
+        /* Accessibility and reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .gauge-needle,
+          .gauge-fill {
+            animation: none !important;
+            transition: none !important;
           }
+        }
+        
+        /* High contrast support */
+        @media (prefers-contrast: high) {
+          .gauge-track {
+            stroke-width: calc(var(--gauge-track-width, 3) + 1px);
+          }
+          
+          .gauge-fill {
+            stroke-width: calc(var(--gauge-fill-width, 4) + 1px);
+          }
+        }
+        
+        /* Disabled state */
+        :host([disabled]) {
+          opacity: 0.5;
+          pointer-events: none;
         }
       </style>
 
-      <div class="gauge-container" 
+      <div class="${classes.container}" 
            role="meter" 
            aria-valuenow="${this._value}"
            aria-valuemin="${this.min}"
@@ -925,7 +689,11 @@ class MyGauge extends MyntUIBaseComponent {
            ${this.disabled ? 'aria-disabled="true"' : 'tabindex="0"'}
       >
         ${this.tooltip ? `<div class="gauge-tooltip">${this.tooltip}</div>` : ''}
-        <svg class="gauge-svg" viewBox="0 0 100 60" aria-hidden="true">
+        <svg class="${classes.svg}" 
+             width="${size === 'sm' ? 96 : size === 'lg' ? 160 : 128}" 
+             height="${size === 'sm' ? 60 : size === 'lg' ? 100 : 80}" 
+             viewBox="0 0 ${size === 'sm' ? 96 : size === 'lg' ? 160 : 128} ${size === 'sm' ? 60 : size === 'lg' ? 100 : 80}" 
+             aria-hidden="true">
           <defs>
             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" style="stop-color:${color};stop-opacity:0.85" />
@@ -935,7 +703,7 @@ class MyGauge extends MyntUIBaseComponent {
             </linearGradient>
             <radialGradient id="gaugeNeedleGradient" cx="50%" cy="20%" r="80%">
               <stop offset="0%" style="stop-color:rgba(255, 255, 255, 0.9)" />
-              <stop offset="100%" style="stop-color:var(--_gauge-needle-color)" />
+              <stop offset="100%" style="stop-color:var(--_global-color-on-surface, #374151)" />
             </radialGradient>
             <filter id="gaugeShadow">
               <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
@@ -951,43 +719,49 @@ class MyGauge extends MyntUIBaseComponent {
           </defs>
           
           <!-- Track (background arc) -->
-          <path class="gauge-track" 
-                d="M 20,50 A 30,30 0 0,1 80,50" 
+          <path class="${classes.track}" 
+                d="M ${centerX * 0.4},${centerY * 0.8} A ${radius},${radius} 0 0,1 ${centerX * 1.6},${centerY * 0.8}" 
                 stroke-dasharray="none"/>
           
           <!-- Fill arc -->
-          <path class="gauge-fill" 
-                d="M 20,50 A 30,30 0 0,1 80,50"
+          <path class="${classes.fill}" 
+                d="M ${centerX * 0.4},${centerY * 0.8} A ${radius},${radius} 0 0,1 ${centerX * 1.6},${centerY * 0.8}"
                 stroke-dasharray="${circumference}"
                 stroke-dashoffset="${offset}"
+                fill="${this.gradient ? 'url(#gaugeGradient)' : 'none'}"
+                stroke="${this.gradient ? 'url(#gaugeGradient)' : color}"
                 filter="url(#glow)"/>
           
           <!-- Center circle -->
-          <circle class="gauge-center" cx="50" cy="50" r="4"/>
+          <circle cx="${centerX}" cy="${centerY * 0.8}" r="4" 
+                  fill="var(--_global-color-surface, #ffffff)" 
+                  stroke="var(--_global-color-on-surface, #374151)" 
+                  stroke-width="2" 
+                  filter="url(#gaugeShadow)"/>
           
           <!-- Enhanced needle with gradient and better shape -->
           <polygon class="gauge-needle" 
-                   points="49,50 51,50 50.5,24 49.5,24"
+                   points="${centerX - 1},${centerY * 0.8} ${centerX + 1},${centerY * 0.8} ${centerX + 0.5},${centerY * 0.4} ${centerX - 0.5},${centerY * 0.4}"
                    fill="url(#gaugeNeedleGradient)"
                    filter="url(#gaugeShadow)"
-                   transform="rotate(${this.angle} 50 50)"/>
+                   transform="rotate(${this.angle} ${centerX} ${centerY * 0.8})"/>
         </svg>
 
-        <div class="gauge-content">
-          ${this.showValue ? `<div class="gauge-value">${this.formatValue(this._value)}${this.unit}</div>` : ''}
-          ${this.label ? `<div class="gauge-label">${this.label}</div>` : ''}
+        <div class="${classes.content}">
+          ${this.showValue ? `<div class="${classes.value}">${this.formatValue(this._value)}${this.unit}</div>` : ''}
+          ${this.label ? `<div class="${classes.label}">${this.label}</div>` : ''}
         </div>
 
-        <div class="gauge-range">
+        <div class="${classes.range}">
           <span>${this.formatValue(this.min)}</span>
           <span>${this.formatValue(this.max)}</span>
         </div>
 
         ${this.thresholds.length > 0 ? `
-          <div class="gauge-thresholds">
+          <div class="${classes.thresholds}">
             ${this.thresholds.map(threshold => `
-              <div class="threshold-indicator">
-                <span class="threshold-dot" style="background-color: ${threshold.color || color}"></span>
+              <div class="inline-flex items-center gap-1">
+                <span class="${classes.thresholdDot}" style="background-color: ${threshold.color || color}"></span>
                 <span>${threshold.label || threshold.min}+</span>
               </div>
             `).join('')}

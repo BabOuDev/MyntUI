@@ -1,14 +1,15 @@
 /**
  * MyntUI my-sparkline Component
  * A small, simple line chart without axes or labels, designed to show trends in data within a compact space
+ * Enhanced version using MyntUIBaseComponent with pure TailwindCSS and global config integration
  */
 
-class MySparkline extends HTMLElement {
+import { MyntUIBaseComponent } from '../../core/base-component.js';
+import { globalConfig } from '../../config/global-config.js';
+
+class MySparkline extends MyntUIBaseComponent {
   constructor() {
     super();
-    
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
     
     // Internal state
     this._data = [];
@@ -18,28 +19,37 @@ class MySparkline extends HTMLElement {
     // Bind event handlers
     this.handleResize = this.handleResize.bind(this);
     
-    // Initialize component
-    this.parseData(); // Parse data first
-    this.render();
-    this.attachEventListeners();
+    // Initialize with base component pattern
+    this.log('Sparkline component initializing...');
   }
 
-  // Define which attributes to observe for changes
+  // Extended observed attributes (inherits base ones)
   static get observedAttributes() {
     return [
+      ...super.observedAttributes,
       'data', 'color', 'width', 'height', 'line-width', 'animated', 
       'variant', 'size', 'fill', 'gradient', 'dots', 'smooth'
     ];
   }
 
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      if (name === 'data') {
+  // Component-specific attribute handling
+  handleAttributeChange(name, oldValue, newValue) {
+    super.handleAttributeChange(name, oldValue, newValue);
+    
+    switch (name) {
+      case 'data':
         this.parseData();
-      }
-      this.render();
-      this.attachEventListeners();
+        this.announceToScreenReader(
+          `Sparkline data updated with ${this._data.length} points`,
+          'polite'
+        );
+        break;
+      case 'animated':
+        this.announceToScreenReader(
+          `Sparkline animation ${newValue !== null ? 'enabled' : 'disabled'}`,
+          'polite'
+        );
+        break;
     }
   }
 
@@ -74,7 +84,7 @@ class MySparkline extends HTMLElement {
   }
 
   get color() {
-    return this.getAttribute('color') || 'var(--_global-color-primary)';
+    return this.getAttribute('color') || 'currentColor';
   }
 
   set color(value) {
@@ -181,6 +191,46 @@ class MySparkline extends HTMLElement {
     }
   }
 
+  // Get TailwindCSS classes from global config
+  getSparklineClasses() {
+    const config = globalConfig.get('theme.tailwind');
+    const size = this.size || 'md';
+    const variant = this.variant || 'line';
+    
+    return {
+      container: `inline-block relative bg-gradient-to-br from-surface to-surface-container-low rounded-lg border border-outline-variant shadow-elevation-1 overflow-hidden transition-all duration-300 hover:shadow-elevation-2 hover:-translate-y-0.5 hover:scale-105 ${
+        size === 'sm' ? 'p-2' : size === 'lg' ? 'p-4' : 'p-3'
+      }`,
+      svg: `block transition-all duration-300 hover:drop-shadow-lg ${
+        size === 'sm' ? 'w-20 h-6' : size === 'lg' ? 'w-40 h-14' : 'w-32 h-10'
+      }`,
+      path: `fill-none stroke-current transition-all duration-500 ease-out ${
+        size === 'sm' ? 'stroke-1' : size === 'lg' ? 'stroke-2' : 'stroke-1.5'
+      } stroke-linecap-round stroke-linejoin-round`,
+      area: `stroke-none opacity-0 transition-all duration-500 ${
+        this.gradient ? 'fill-url(#sparkline-gradient)' : 'fill-current'
+      }`,
+      dot: `opacity-0 transition-all duration-300 hover:opacity-100 hover:scale-150 ${
+        size === 'sm' ? 'r-1' : size === 'lg' ? 'r-2' : 'r-1.5'
+      }`,
+      noData: `flex items-center justify-center border-dashed border-2 border-outline-variant bg-surface-container rounded-md text-surface-on-surface-variant font-medium relative overflow-hidden ${
+        size === 'sm' ? 'w-20 h-6 text-2xs' : size === 'lg' ? 'w-40 h-14 text-sm' : 'w-32 h-10 text-xs'
+      }`
+    };
+  }
+
+  // Get color based on variant
+  getVariantColor() {
+    switch (this.variant) {
+      case 'success': return 'text-success';
+      case 'warning': return 'text-warning';
+      case 'error': return 'text-error';
+      case 'info': return 'text-info';
+      case 'secondary': return 'text-secondary';
+      default: return 'text-primary';
+    }
+  }
+
   // Create SVG path from data points
   createPath() {
     if (this._data.length < 2) return '';
@@ -271,40 +321,35 @@ class MySparkline extends HTMLElement {
     this.render();
   }
 
-  // Standardized event handling pattern for MyntUI components
-  attachEventListeners() {
-    // Clean up existing listeners first
-    this.removeEventListeners();
-    
-    // Listen for resize events if responsive
-    if (this.hasAttribute('responsive')) {
-      window.addEventListener('resize', this.handleResize);
-      this._eventTargets = [
-        { element: window, events: ['resize'] }
-      ];
-    }
+  // Override base connected callback
+  onConnected() {
+    this.parseData();
+    this.log('Sparkline component connected with data points:', this._data.length);
   }
 
-  // Standardized event listener cleanup
-  removeEventListeners() {
-    if (this._eventTargets) {
-      this._eventTargets.forEach(target => {
-        target.element.removeEventListener('resize', this.handleResize);
-      });
-      this._eventTargets = null;
-    }
-    
-    // Clean up animation
+  // Override base disconnected callback
+  onDisconnected() {
     if (this._animationId) {
       cancelAnimationFrame(this._animationId);
       this._animationId = null;
     }
+    this.log('Sparkline component disconnected');
   }
 
-  // Standardized lifecycle cleanup
-  disconnectedCallback() {
-    this.removeEventListeners();
-    this.stopAnimation();
+  // Attach event listeners using base component pattern
+  attachEventListeners() {
+    this.removeEventListeners(); // Clean up existing listeners
+    
+    // Listen for resize events if responsive
+    if (this.hasAttribute('responsive')) {
+      this.addEventListeners([
+        {
+          element: window,
+          events: ['resize'],
+          handler: this.handleResize
+        }
+      ]);
+    }
   }
 
   // Enhanced animation frame with spring physics
@@ -421,17 +466,17 @@ class MySparkline extends HTMLElement {
       return `<circle
         cx="${x}" 
         cy="${y}" 
-        r="2"
         class="sparkline-dot"
         fill="currentColor"
       />`;
     }).join('');
   }
 
-  // Render the component
+  // Render the component using TailwindCSS classes
   render() {
     this.parseData();
-
+    const classes = this.getSparklineClasses();
+    const variantColor = this.getVariantColor();
     const width = this.width;
     const height = this.height;
     const color = this.color;
@@ -442,239 +487,55 @@ class MySparkline extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <style>
+        @import 'tailwindcss/base';
+        @import 'tailwindcss/components';
+        @import 'tailwindcss/utilities';
+        
         :host {
-          /* Enhanced sparkline variables with premium styling */
-          --_sparkline-color: ${color};
-          --_sparkline-line-width: ${lineWidth}px;
-          --_sparkline-width: ${width}px;
-          --_sparkline-height: ${height}px;
-          
-          /* Size variants with refined dimensions */
-          --_sparkline-width-sm: 80px;
-          --_sparkline-height-sm: 24px;
-          --_sparkline-width-md: 120px;
-          --_sparkline-height-md: 40px;
-          --_sparkline-width-lg: 160px;
-          --_sparkline-height-lg: 56px;
-          
-          /* Enhanced transitions and effects */
-          --_sparkline-transition: all var(--_global-motion-duration-medium1) var(--_global-spring-gentle);
-          --_sparkline-gradient-start: var(--_sparkline-color);
-          --_sparkline-gradient-mid: color-mix(in srgb, var(--_sparkline-color) 70%, white 30%);
-          --_sparkline-gradient-end: transparent;
-          --_sparkline-glow-intensity: 0;
-          
           display: inline-block;
-          color: var(--_sparkline-color);
-          transition: var(--_sparkline-transition);
-          position: relative;
-          background: linear-gradient(145deg, 
-            var(--_global-color-surface) 0%, 
-            var(--_global-color-surface-container-low) 100%
-          );
-          border-radius: var(--_global-border-radius-lg);
-          padding: var(--_global-spacing-sm);
-          box-shadow: 
-            var(--_global-elevation-1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          border: 1px solid var(--_global-color-outline-variant);
-          overflow: hidden;
+          font-family: var(--_global-font-family-sans, system-ui);
+          color: ${color};
         }
-
-        /* Size variants */
-        :host([size="sm"]) {
-          --_sparkline-width: var(--_sparkline-width-sm);
-          --_sparkline-height: var(--_sparkline-height-sm);
+        
+        /* Custom animations */
+        @keyframes sparkline-draw {
+          from { stroke-dashoffset: 1000; }
+          to { stroke-dashoffset: 0; }
         }
-
-        :host([size="lg"]) {
-          --_sparkline-width: var(--_sparkline-width-lg);
-          --_sparkline-height: var(--_sparkline-height-lg);
+        
+        @keyframes sparkline-complete-pulse {
+          0% { filter: drop-shadow(0 0 4px currentColor) brightness(1); }
+          50% { filter: drop-shadow(0 0 12px currentColor) brightness(1.3) saturate(1.4); }
+          100% { filter: drop-shadow(0 0 6px currentColor) brightness(1.1); }
         }
-
-        svg {
-          width: var(--_sparkline-width);
-          height: var(--_sparkline-height);
-          display: block;
-          overflow: visible;
-          filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
-          transition: filter var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
+        
+        @keyframes no-data-shimmer {
+          0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+          100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
-
-        .sparkline-path {
-          fill: none;
-          stroke: currentColor;
-          stroke-width: var(--_sparkline-line-width);
-          stroke-linecap: round;
-          stroke-linejoin: round;
-          vector-effect: non-scaling-stroke;
-          transition: var(--_sparkline-transition);
-          filter: drop-shadow(0 0 4px currentColor);
-          opacity: 0.9;
+        
+        /* Animated path */
+        .sparkline-path.animated {
+          stroke-dasharray: 1000;
+          animation: sparkline-draw 1.5s ease-out;
         }
-
-        .sparkline-area {
-          stroke: none;
-          opacity: 0;
-          transition: var(--_sparkline-transition);
-          filter: url(#sparklineAreaGlow);
-        }
-
+        
         .sparkline-dot {
-          opacity: 0;
-          transition: var(--_sparkline-transition);
-          filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
-          transform: scale(0);
+          transition: opacity 0.3s, transform 0.3s;
           transform-origin: center;
         }
-
+        
         .sparkline-dot:hover {
-          opacity: 1;
-          transform: scale(1.4);
-          filter: 
-            drop-shadow(0 2px 8px currentColor)
-            drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+          opacity: 1 !important;
+          transform: scale(1.5);
         }
         
         .sparkline-dot.visible {
           opacity: 0.8;
           transform: scale(1);
         }
-
-        /* Gradient fill */
-        :host([gradient]) .sparkline-area {
-          fill: url(#sparkline-gradient);
-          opacity: 0.2;
-        }
-
-        /* Variant styles */
-        :host([variant="success"]) {
-          --_sparkline-color: var(--_global-color-success);
-        }
-
-        :host([variant="warning"]) {
-          --_sparkline-color: var(--_global-color-warning);
-        }
-
-        :host([variant="error"]) {
-          --_sparkline-color: var(--_global-color-error);
-        }
-
-        :host([variant="info"]) {
-          --_sparkline-color: var(--_global-color-info);
-        }
-
-        /* Enhanced hover effects with sophisticated micro-interactions */
-        :host(:hover) {
-          transform: translateY(-2px) scale(1.02);
-          transition: transform var(--_global-motion-duration-medium1) var(--_global-spring-bouncy),
-                      box-shadow var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
-          box-shadow: 
-            var(--_global-shadow-interaction-moderate),
-            0 0 20px var(--_sparkline-color)20,
-            inset 0 1px 0 rgba(255, 255, 255, 0.15);
-          --_sparkline-glow-intensity: 0.6;
-        }
-
-        :host(:hover) svg {
-          filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
-        }
-
-        :host(:hover) .sparkline-path {
-          stroke-width: calc(var(--_sparkline-line-width) + 1px);
-          filter: 
-            drop-shadow(0 0 8px currentColor)
-            brightness(1.15) 
-            saturate(1.2);
-        }
-
-        :host(:hover) .sparkline-area {
-          opacity: 0.2;
-          filter: 
-            url(#sparklineAreaGlow)
-            brightness(1.1);
-        }
         
-        :host(:hover) .sparkline-dot {
-          opacity: 0.9;
-          transform: scale(1.1);
-        }
-
-        /* Enhanced animation styles with spring physics */
-        :host([animated]) .sparkline-path {
-          stroke-dasharray: 0, 1000;
-          /* Animation handled by JavaScript for better control */
-        }
-        
-        @keyframes sparkline-complete-pulse {
-          0% {
-            filter: 
-              drop-shadow(0 0 4px currentColor)
-              brightness(1) 
-              saturate(1);
-          }
-          50% {
-            filter: 
-              drop-shadow(0 0 12px currentColor)
-              drop-shadow(0 0 20px currentColor)
-              brightness(1.3) 
-              saturate(1.4);
-            stroke-width: calc(var(--_sparkline-line-width) + 1px);
-          }
-          100% {
-            filter: 
-              drop-shadow(0 0 6px currentColor)
-              brightness(1.1) 
-              saturate(1.1);
-            stroke-width: var(--_sparkline-line-width);
-          }
-        }
-
-        /* Accessibility and reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-          :host([animated]) .sparkline-path {
-            animation: none;
-            stroke-dasharray: none;
-          }
-          
-          :host(:hover) {
-            transform: none;
-          }
-          
-          .sparkline-dot {
-            transition: none;
-          }
-        }
-
-        /* High contrast support */
-        @media (prefers-contrast: high) {
-          .sparkline-path {
-            stroke-width: calc(var(--_sparkline-line-width) + 1px);
-          }
-        }
-
-        /* Enhanced no data state */
-        .no-data {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: var(--_sparkline-width);
-          height: var(--_sparkline-height);
-          background: linear-gradient(145deg, 
-            var(--_global-color-surface-container) 0%, 
-            var(--_global-color-surface-container-high) 100%
-          );
-          border: 1px dashed var(--_global-color-outline-variant);
-          border-radius: var(--_global-border-radius-md);
-          font-size: var(--_global-font-size-xs);
-          font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-on-surface-variant);
-          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
-          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-          position: relative;
-          overflow: hidden;
-        }
-        
+        /* No data shimmer effect */
         .no-data::before {
           content: '';
           position: absolute;
@@ -682,64 +543,66 @@ class MySparkline extends HTMLElement {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: linear-gradient(
-            45deg,
-            transparent 30%,
-            rgba(255, 255, 255, 0.1) 50%,
-            transparent 70%
-          );
+          background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
           animation: no-data-shimmer 3s linear infinite;
         }
         
-        @keyframes no-data-shimmer {
-          0% {
-            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        /* Accessibility and reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .sparkline-path,
+          .sparkline-dot,
+          .no-data::before {
+            animation: none !important;
+            transition: none !important;
           }
-          100% {
-            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+        
+        /* High contrast support */
+        @media (prefers-contrast: high) {
+          .sparkline-path {
+            stroke-width: calc(var(--line-width, 2) + 1px);
           }
         }
       </style>
 
       ${this._data.length >= 2 ? `
-        <svg 
-          width="${width}" 
-          height="${height}"
-          viewBox="0 0 ${width} ${height}"
-          role="img"
-          aria-label="Sparkline chart showing trend for ${this._data.length} data points"
-          ${this.disabled ? 'aria-disabled="true"' : 'tabindex="0"'}
-        >
-          <defs>
-            <linearGradient id="sparkline-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color: var(--_sparkline-gradient-start); stop-opacity: 0.4"/>
-              <stop offset="40%" style="stop-color: var(--_sparkline-gradient-mid); stop-opacity: 0.25"/>
-              <stop offset="100%" style="stop-color: var(--_sparkline-gradient-end); stop-opacity: 0"/>
-            </linearGradient>
-            <filter id="sparklineAreaGlow">
-              <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            <filter id="sparklineGlow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          
-          ${this.fill ? `<path d="${areaPath}" class="sparkline-area" fill="${this.gradient ? 'url(#sparkline-gradient)' : 'currentColor'}"/>` : ''}
-          
-          <path d="${linePath}" class="sparkline-path"/>
-          
-          ${dots}
-        </svg>
+        <div class="${classes.container} ${variantColor}">
+          <svg class="${classes.svg}" 
+               width="${width}" 
+               height="${height}"
+               viewBox="0 0 ${width} ${height}"
+               role="img"
+               aria-label="Sparkline chart showing trend for ${this._data.length} data points"
+               ${this.disabled ? 'aria-disabled="true"' : 'tabindex="0"'}
+          >
+            <defs>
+              <linearGradient id="sparkline-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color: currentColor; stop-opacity: 0.4"/>
+                <stop offset="40%" style="stop-color: color-mix(in srgb, currentColor 70%, white 30%); stop-opacity: 0.25"/>
+                <stop offset="100%" style="stop-color: transparent; stop-opacity: 0"/>
+              </linearGradient>
+              <filter id="sparklineAreaGlow">
+                <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            
+            ${this.fill ? `<path d="${areaPath}" class="${classes.area}" fill="${this.gradient ? 'url(#sparkline-gradient)' : 'currentColor'}" opacity="0.2"/>` : ''}
+            
+            <path d="${linePath}" class="${classes.path} ${this.animated ? 'animated' : ''}"/>
+            
+            ${dots}
+          </svg>
+        </div>
       ` : `
-        <div class="no-data">No data</div>
+        <div class="${classes.container}">
+          <div class="${classes.noData}">
+            No data
+          </div>
+        </div>
       `}
     `;
 

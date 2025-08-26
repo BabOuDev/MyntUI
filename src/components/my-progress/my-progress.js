@@ -1,10 +1,11 @@
 /**
  * MyntUI my-progress Component
  * Displays the progress of a task or process, typically as a bar
- * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
+ * Enhanced version using MyntUIBaseComponent with pure TailwindCSS and global config integration
  */
 
 import { MyntUIBaseComponent } from '../../core/base-component.js';
+import { globalConfig } from '../../config/global-config.js';
 
 class MyProgress extends MyntUIBaseComponent {
   constructor() {
@@ -187,6 +188,44 @@ class MyProgress extends MyntUIBaseComponent {
     return ((bufferValue - this.min) / (this.max - this.min)) * 100;
   }
 
+  // Get TailwindCSS classes from global config
+  getProgressClasses() {
+    const config = globalConfig.get('theme.tailwind');
+    const size = this.size || 'md';
+    const variant = this.variant || 'primary';
+    
+    return {
+      container: 'flex flex-col gap-2',
+      header: 'flex justify-between items-center gap-4',
+      label: 'text-sm font-medium text-surface-on-surface leading-tight',
+      value: 'text-sm font-medium text-surface-on-surface-variant leading-tight font-mono',
+      track: `relative w-full bg-surface-container-highest border border-outline-variant rounded-full overflow-hidden cursor-pointer transition-all duration-300 hover:bg-surface-container shadow-inner ${
+        size === 'sm' ? 'h-1' : size === 'lg' ? 'h-2' : 'h-1.5'
+      }`,
+      fill: `h-full rounded-full transition-all duration-500 ease-out relative overflow-hidden ${
+        variant === 'success' ? 'bg-success' :
+        variant === 'warning' ? 'bg-warning' :
+        variant === 'error' ? 'bg-error' :
+        variant === 'info' ? 'bg-info' :
+        variant === 'secondary' ? 'bg-secondary' : 'bg-primary'
+      }`,
+      buffer: 'absolute top-0 left-0 h-full bg-current opacity-30 rounded-full transition-all duration-500',
+      circularContainer: 'relative inline-flex items-center justify-center bg-gradient-to-br from-surface to-surface-container-low rounded-2xl border border-outline-variant shadow-elevation-3 p-6',
+      circularSvg: 'transform -rotate-90 drop-shadow-lg',
+      circularTrack: 'fill-none stroke-surface-container-high opacity-30',
+      circularFill: `fill-none stroke-linecap-round transition-all duration-700 ease-out ${
+        variant === 'success' ? 'stroke-success' :
+        variant === 'warning' ? 'stroke-warning' :
+        variant === 'error' ? 'stroke-error' :
+        variant === 'info' ? 'stroke-info' :
+        variant === 'secondary' ? 'stroke-secondary' : 'stroke-primary'
+      }`,
+      circularText: `absolute inset-0 flex items-center justify-center text-xs font-bold text-surface-on-surface font-mono ${
+        size === 'sm' ? 'text-2xs' : size === 'lg' ? 'text-sm' : 'text-xs'
+      }`
+    };
+  }
+
   // Get display value
   getDisplayValue() {
     if (this.indeterminate) {
@@ -357,108 +396,56 @@ class MyProgress extends MyntUIBaseComponent {
     this.updateProgress(newValue);
   }
 
-  // Render the component
+  // Render the component using TailwindCSS classes
   render() {
+    const classes = this.getProgressClasses();
+    const isCircular = this.getAttribute('type') === 'circular';
+    const strokeWidth = this.size === 'sm' ? 4 : this.size === 'lg' ? 8 : 6;
+    const radius = this.size === 'sm' ? 16 : this.size === 'lg' ? 28 : 22;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (circumference * this.percentage) / 100;
+
     this.shadowRoot.innerHTML = `
       <style>
+        @import 'tailwindcss/base';
+        @import 'tailwindcss/components';
+        @import 'tailwindcss/utilities';
+        
         :host {
-          /* Component-specific variables using global variables */
-          --_progress-height-sm: 4px;
-          --_progress-height-md: 6px;
-          --_progress-height-lg: 8px;
-          --_progress-height: var(--_progress-height-md);
-          --_progress-border-radius: var(--_global-border-radius-full);
-          --_progress-track-bg: var(--_global-color-surface-container-highest);
-          --_progress-track-border: 1px solid var(--_global-color-outline-variant);
-          --_progress-buffer-opacity: 0.3;
-          --_progress-tooltip-bg: var(--_global-color-inverse-surface);
-          --_progress-tooltip-text: var(--_global-color-inverse-on-surface);
-          
-          /* Variant colors - Material Design 3 semantic colors */
-          --_progress-primary: var(--_global-color-primary);
-          --_progress-primary-container: var(--_global-color-primary-container);
-          --_progress-secondary: var(--_global-color-secondary);
-          --_progress-secondary-container: var(--_global-color-secondary-container);
-          --_progress-success: var(--_global-color-success);
-          --_progress-success-container: var(--_global-color-success-container);
-          --_progress-warning: var(--_global-color-warning);
-          --_progress-warning-container: var(--_global-color-warning-container);
-          --_progress-error: var(--_global-color-error);
-          --_progress-error-container: var(--_global-color-error-container);
-          --_progress-info: var(--_global-color-info);
-          --_progress-info-container: var(--_global-color-info-container);
-          
-          /* Transition and animation */
-          --_progress-transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
-          
           display: block;
           width: 100%;
-          font-family: var(--_global-font-family-sans);
+          font-family: var(--_global-font-family-sans, system-ui);
         }
 
-        .progress-container {
-          display: flex;
-          flex-direction: column;
-          gap: var(--_global-spacing-xs);
+        /* Custom animations for progress effects */
+        @keyframes progress-shine {
+          0% { transform: translateX(-100%); }
+          50%, 100% { transform: translateX(100%); }
         }
-
-        .progress-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: var(--_global-spacing-sm);
+        @keyframes progress-indeterminate {
+          0% { transform: translateX(-150%); }
+          100% { transform: translateX(400%); }
         }
-
-        .progress-label {
-          font-size: var(--_global-font-size-sm);
-          font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-on-surface);
-          line-height: var(--_global-line-height-tight);
+        @keyframes progress-striped {
+          0% { background-position-x: 0; }
+          100% { background-position-x: 1rem; }
         }
-
-        .progress-value {
-          font-size: var(--_global-font-size-sm);
-          font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-on-surface-variant);
-          line-height: var(--_global-line-height-tight);
-          font-variant-numeric: tabular-nums;
-        }
-
-        .progress-track {
-          position: relative;
-          width: 100%;
-          height: var(--_progress-height);
-          background-color: var(--_progress-track-bg);
-          border: var(--_progress-track-border);
-          border-radius: var(--_progress-border-radius);
-          overflow: hidden;
-          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-          cursor: pointer;
+        @keyframes circular-rotate {
+          0% { 
+            stroke-dashoffset: ${circumference};
+            transform: rotate(0deg);
+          }
+          50% {
+            stroke-dashoffset: ${circumference * 0.25};
+            transform: rotate(450deg);
+          }
+          100% {
+            stroke-dashoffset: ${circumference};
+            transform: rotate(1080deg);
+          }
         }
         
-        .progress-buffer {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          background-color: var(--_progress-primary);
-          opacity: var(--_progress-buffer-opacity);
-          border-radius: var(--_progress-border-radius);
-          transition: var(--_progress-transition);
-          width: ${this.bufferPercentage}%;
-        }
-
-        .progress-fill {
-          height: 100%;
-          background-color: var(--_progress-primary);
-          border-radius: var(--_progress-border-radius);
-          transition: var(--_progress-transition);
-          width: ${this.indeterminate ? '100%' : this.percentage + '%'};
-          position: relative;
-          overflow: hidden;
-        }
-        
-        /* Add subtle gradient and shine effect */
+        /* Shine effect */
         .progress-fill::before {
           content: '';
           position: absolute;
@@ -466,43 +453,52 @@ class MyProgress extends MyntUIBaseComponent {
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.4),
-            transparent
-          );
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
           animation: progress-shine 3s infinite;
         }
         
-        @keyframes progress-shine {
-          0% {
-            left: -100%;
-          }
-          50%,
-          100% {
-            left: 100%;
-          }
+        /* Indeterminate state */
+        .progress-fill.indeterminate {
+          animation: progress-indeterminate 2s infinite ease-in-out;
+          background: linear-gradient(90deg, transparent 0%, currentColor 25%, currentColor 75%, transparent 100%);
+          width: 40% !important;
         }
         
-        /* Tooltip styles */
+        .progress-fill.indeterminate::before {
+          display: none;
+        }
+        
+        /* Circular indeterminate */
+        .circular-progress.indeterminate {
+          stroke-dasharray: ${circumference * 0.25};
+          animation: circular-rotate 2s linear infinite;
+        }
+        
+        /* Striped variant */
+        .progress-striped {
+          background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+          background-size: 1rem 1rem;
+          animation: progress-striped 1s linear infinite;
+        }
+        
+        /* Tooltip */
         .progress-tooltip {
           position: absolute;
-          top: -40px;
+          top: -2.5rem;
           left: 50%;
           transform: translateX(-50%);
-          background: var(--_progress-tooltip-bg);
-          color: var(--_progress-tooltip-text);
-          padding: var(--_global-spacing-xs) var(--_global-spacing-sm);
-          border-radius: var(--_global-border-radius-md);
-          font-size: var(--_global-font-size-xs);
-          font-weight: var(--_global-font-weight-medium);
+          background: var(--_global-color-inverse-surface, #1f2937);
+          color: var(--_global-color-inverse-on-surface, #f9fafb);
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.375rem;
+          font-size: 0.75rem;
+          font-weight: 500;
           white-space: nowrap;
           opacity: 0;
           pointer-events: none;
-          transition: opacity var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
+          transition: opacity 0.2s;
           z-index: 10;
-          box-shadow: var(--_global-elevation-2);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
         .progress-tooltip::after {
@@ -512,392 +508,109 @@ class MyProgress extends MyntUIBaseComponent {
           left: 50%;
           transform: translateX(-50%);
           border: 4px solid transparent;
-          border-top-color: var(--_progress-tooltip-bg);
+          border-top-color: var(--_global-color-inverse-surface, #1f2937);
         }
         
         .progress-track:hover .progress-tooltip {
           opacity: 1;
         }
-
-        /* Indeterminate animation */
-        .progress-fill.indeterminate {
-          animation: progress-indeterminate 2s infinite var(--_global-motion-easing-standard);
-          background: linear-gradient(
-            90deg, 
-            transparent 0%,
-            var(--_progress-primary) 25%,
-            var(--_progress-primary) 75%, 
-            transparent 100%
-          );
-          width: 40%;
-        }
         
-        .progress-fill.indeterminate::before {
-          display: none;
-        }
-
-        @keyframes progress-indeterminate {
-          0% { 
-            transform: translateX(-150%);
-          }
-          100% { 
-            transform: translateX(400%);
-          }
-        }
-
-        /* Size variants */
-        :host([size="sm"]) {
-          --_progress-height: var(--_progress-height-sm);
-        }
-
-        :host([size="lg"]) {
-          --_progress-height: var(--_progress-height-lg);
-        }
-
-        /* Variant colors */
-        :host([variant="primary"]) {
-          --_progress-fill-color: var(--_progress-primary);
-        }
-
-        :host([variant="secondary"]) .progress-fill {
-          background-color: var(--_progress-secondary);
-        }
-
-        :host([variant="success"]) .progress-fill {
-          background-color: var(--_progress-success);
-        }
-
-        :host([variant="warning"]) .progress-fill {
-          background-color: var(--_progress-warning);
-        }
-
-        :host([variant="error"]) .progress-fill {
-          background-color: var(--_progress-error);
-        }
-
-        :host([variant="info"]) .progress-fill {
-          background-color: var(--_progress-info);
-        }
-
-        /* Striped variant */
-        :host([variant="striped"]) .progress-fill {
-          background-image: linear-gradient(
-            45deg,
-            rgba(255, 255, 255, 0.15) 25%,
-            transparent 25%,
-            transparent 50%,
-            rgba(255, 255, 255, 0.15) 50%,
-            rgba(255, 255, 255, 0.15) 75%,
-            transparent 75%,
-            transparent
-          );
-          background-size: 1rem 1rem;
-          animation: progress-striped 1s linear infinite;
-        }
-
-        @keyframes progress-striped {
-          0% {
-            background-position-x: 0;
-          }
-          100% {
-            background-position-x: 1rem;
-          }
-        }
-
-        /* Pulsing variant */
-        :host([variant="pulse"]) .progress-fill {
-          animation: progress-pulse 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes progress-pulse {
-          0% {
-            opacity: 0.6;
-          }
-          100% {
-            opacity: 1;
-          }
-        }
-
-        /* Accessibility improvements - High Contrast Mode Support */
-        @media (prefers-contrast: high) {
-          .progress-track {
-            border: 2px solid currentColor;
-            background-color: var(--_global-color-surface);
-          }
-          
-          .progress-fill {
-            outline: 2px solid;
-            outline-offset: -2px;
-          }
-          
-          .progress-label,
-          .progress-value {
-            font-weight: var(--_global-font-weight-bold);
-          }
-        }
-
-        /* Accessibility improvements - Reduced Motion Support */
+        /* Accessibility and reduced motion */
         @media (prefers-reduced-motion: reduce) {
           .progress-fill,
           .progress-fill.indeterminate,
           .progress-fill::before,
           .circular-progress,
           .circular-progress.indeterminate {
-            animation: none;
-            transition: none;
-          }
-        }
-
-        /* Circular progress variant */
-        :host([type="circular"]) .progress-track {
-          height: 56px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: none;
-          border: none;
-          box-shadow: none;
-          position: relative;
-        }
-
-        :host([type="circular"]) .progress-fill {
-          display: none;
-        }
-
-        .circular-svg {
-          width: 56px;
-          height: 56px;
-          transform: rotate(-90deg);
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-        }
-
-        .circular-bg {
-          fill: none;
-          stroke: var(--_progress-track-bg);
-          stroke-width: 6;
-          opacity: 0.3;
-        }
-
-        .circular-progress {
-          fill: none;
-          stroke: var(--_progress-primary);
-          stroke-width: 6;
-          stroke-linecap: round;
-          stroke-dasharray: 163.36;
-          stroke-dashoffset: ${163.36 - (163.36 * this.percentage) / 100};
-          transition: stroke-dashoffset var(--_progress-transition);
-        }
-        
-        /* Circular indeterminate animation */
-        .circular-progress.indeterminate {
-          stroke-dasharray: 40.84;
-          animation: circular-rotate 2s linear infinite;
-        }
-        
-        @keyframes circular-rotate {
-          0% {
-            stroke-dashoffset: 163.36;
-            transform: rotate(0deg);
-          }
-          50% {
-            stroke-dashoffset: 40.84;
-            transform: rotate(450deg);
-          }
-          100% {
-            stroke-dashoffset: 163.36;
-            transform: rotate(1080deg);
-          }
-        }
-
-        .circular-text {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: var(--_global-font-size-xs);
-          font-weight: var(--_global-font-weight-semibold);
-          color: var(--_global-color-on-surface);
-          font-variant-numeric: tabular-nums;
-        }
-        
-        /* Circular size variants */
-        :host([type="circular"][size="sm"]) .progress-track {
-          height: 40px;
-        }
-        
-        :host([type="circular"][size="sm"]) .circular-svg {
-          width: 40px;
-          height: 40px;
-        }
-        
-        :host([type="circular"][size="sm"]) .circular-bg,
-        :host([type="circular"][size="sm"]) .circular-progress {
-          stroke-width: 4;
-        }
-        
-        :host([type="circular"][size="lg"]) .progress-track {
-          height: 72px;
-        }
-        
-        :host([type="circular"][size="lg"]) .circular-svg {
-          width: 72px;
-          height: 72px;
-        }
-        
-        :host([type="circular"][size="lg"]) .circular-bg,
-        :host([type="circular"][size="lg"]) .circular-progress {
-          stroke-width: 8;
-        }
-
-        /* Enhanced styling for better Material Design 3 alignment */
-        .progress-container {
-          position: relative;
-        }
-        
-        .progress-track {
-          box-sizing: border-box;
-        }
-        
-        /* Enhanced hover and interaction states with micro-interactions */
-        :host(:hover) {
-          --_progress-track-bg: var(--_global-color-surface-container);
-          transform: var(--_global-micro-translate-subtle);
-          transition: transform var(--_global-motion-duration-short2) var(--_global-spring-gentle),
-                      box-shadow var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
-          box-shadow: var(--_global-shadow-interaction-subtle);
-        }
-        
-        :host(:hover) .progress-fill {
-          filter: brightness(1.08) saturate(1.1);
-          transform: scaleY(1.1);
-          transition: filter var(--_global-motion-duration-short2) var(--_global-spring-gentle),
-                      transform var(--_global-motion-duration-short2) var(--_global-spring-wobbly);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-        
-        :host(:hover) .progress-buffer {
-          opacity: calc(var(--_progress-buffer-opacity) + 0.1);
-          transition: opacity var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
-        }
-        
-        /* Enhanced active/pressed states */
-        :host(:active) {
-          transform: var(--_global-micro-translate-noticeable);
-          transition: transform var(--_global-motion-duration-short1) var(--_global-spring-energetic);
-        }
-        
-        :host(:active) .progress-fill {
-          transform: scaleY(1.15);
-          filter: brightness(1.12) saturate(1.15);
-        }
-        
-        /* Focus states for accessibility */
-        .progress-track:focus {
-          outline: 2px solid var(--_global-color-primary);
-          outline-offset: 2px;
-        }
-        
-        .progress-track:focus-visible {
-          outline: 2px solid var(--_global-color-primary);
-          outline-offset: 2px;
-        }
-        
-        /* Enhanced animation states */
-        :host([animated]) .progress-fill {
-          animation: progress-pulse 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes progress-pulse {
-          0% {
-            filter: brightness(1) saturate(1);
-          }
-          100% {
-            filter: brightness(1.05) saturate(1.05);
+            animation: none !important;
+            transition: none !important;
           }
         }
         
-        /* Enhanced circular progress with sophisticated styling */
-        :host([type="circular"]) {
-          background: radial-gradient(circle at center, 
-            var(--_gauge-bg-color) 0%,
-            var(--_global-color-surface-container-low) 100%
-          );
-          border: 1px solid var(--_global-color-outline-variant);
-          box-shadow: 
-            var(--_global-elevation-2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        :host([type="circular"]) .circular-text {
-          font-feature-settings: 'tnum';
-          letter-spacing: -0.02em;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-          font-weight: var(--_global-font-weight-bold);
-        }
-        
-        :host([type="circular"]) .circular-svg {
-          filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
-        }
-        
-        :host([type="circular"]) .circular-progress {
-          filter: drop-shadow(0 0 6px rgba(var(--_progress-primary-rgb, 103, 80, 164), 0.4));
-          stroke: url(#circularGradient);
-        }
-        
-        :host([type="circular"]:hover) {
-          transform: translateY(-2px) scale(1.02);
-          box-shadow: 
-            var(--_global-shadow-interaction-moderate),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15),
-            0 0 30px rgba(var(--_progress-primary-rgb, 103, 80, 164), 0.2);
-        }
-        
-        :host([type="circular"]:hover) .circular-progress {
-          stroke-width: calc(6px + 1px);
-          filter: drop-shadow(0 0 12px rgba(var(--_progress-primary-rgb, 103, 80, 164), 0.6));
+        /* High contrast support */
+        @media (prefers-contrast: high) {
+          .progress-track {
+            border: 2px solid currentColor;
+          }
+          
+          .progress-fill {
+            outline: 2px solid;
+            outline-offset: -2px;
+          }
         }
       </style>
 
-      <div class="progress-container">
+      <div class="${classes.container}">
         ${this.label || this.showValue ? `
-          <div class="progress-header">
-            ${this.label ? `<span class="progress-label">${this.label}</span>` : ''}
-            ${this.showValue ? `<span class="progress-value">${this.getDisplayValue()}</span>` : ''}
+          <div class="${classes.header}">
+            ${this.label ? `<span class="${classes.label}">${this.label}</span>` : ''}
+            ${this.showValue ? `<span class="${classes.value}">${this.getDisplayValue()}</span>` : ''}
           </div>
         ` : ''}
         
-        <div class="progress-track" role="progressbar" 
-             aria-valuenow="${this.indeterminate ? undefined : this._value}"
-             aria-valuemin="${this.min}"
-             aria-valuemax="${this.max}"
-             ${this.label ? `aria-label="${this.label}"` : ''}
-             ${this.indeterminate ? 'aria-describedby="indeterminate-progress"' : ''}
-             ${this.tooltip ? `title="${this.tooltip}"` : ''}
-        >
-          ${this.bufferValue > 0 ? `<div class="progress-buffer"></div>` : ''}
-          ${this.tooltip ? `<div class="progress-tooltip">${this.tooltip}</div>` : ''}
-          ${this.getAttribute('type') === 'circular' ? `
-            <svg class="circular-svg" viewBox="0 0 60 60">
+        ${isCircular ? `
+          <div class="${classes.circularContainer}" 
+               role="progressbar" 
+               aria-valuenow="${this.indeterminate ? undefined : this._value}"
+               aria-valuemin="${this.min}"
+               aria-valuemax="${this.max}"
+               ${this.label ? `aria-label="${this.label}"` : ''}
+               ${this.indeterminate ? 'aria-describedby="indeterminate-progress"' : ''}
+               ${this.tooltip ? `title="${this.tooltip}"` : ''}
+               tabindex="0"
+          >
+            ${this.tooltip ? `<div class="progress-tooltip">${this.tooltip}</div>` : ''}
+            <svg class="${classes.circularSvg}" 
+                 width="${this.size === 'sm' ? 48 : this.size === 'lg' ? 80 : 64}" 
+                 height="${this.size === 'sm' ? 48 : this.size === 'lg' ? 80 : 64}" 
+                 viewBox="0 0 ${this.size === 'sm' ? 48 : this.size === 'lg' ? 80 : 64} ${this.size === 'sm' ? 48 : this.size === 'lg' ? 80 : 64}">
               <defs>
                 <linearGradient id="circularGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:var(--_progress-primary);stop-opacity:0.9" />
-                  <stop offset="50%" style="stop-color:color-mix(in srgb, var(--_progress-primary) 80%, white 20%);stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:var(--_progress-primary);stop-opacity:0.95" />
+                  <stop offset="0%" style="stop-color:currentColor;stop-opacity:0.9" />
+                  <stop offset="50%" style="stop-color:color-mix(in srgb, currentColor 80%, white 20%);stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:currentColor;stop-opacity:0.95" />
                 </linearGradient>
               </defs>
-              <circle class="circular-bg" cx="30" cy="30" r="26"></circle>
-              <circle class="circular-progress ${this.indeterminate ? 'indeterminate' : ''}" cx="30" cy="30" r="26"></circle>
+              <circle class="${classes.circularTrack}" 
+                      cx="${this.size === 'sm' ? 24 : this.size === 'lg' ? 40 : 32}" 
+                      cy="${this.size === 'sm' ? 24 : this.size === 'lg' ? 40 : 32}" 
+                      r="${radius}"
+                      stroke-width="${strokeWidth}"></circle>
+              <circle class="${classes.circularFill} ${this.indeterminate ? 'indeterminate' : ''}" 
+                      cx="${this.size === 'sm' ? 24 : this.size === 'lg' ? 40 : 32}" 
+                      cy="${this.size === 'sm' ? 24 : this.size === 'lg' ? 40 : 32}" 
+                      r="${radius}"
+                      stroke-width="${strokeWidth}"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${this.indeterminate ? circumference * 0.75 : strokeDashoffset}"
+                      fill="url(#circularGradient)"></circle>
             </svg>
-            ${this.showValue ? `<span class="circular-text">${this.getDisplayValue()}</span>` : ''}
-          ` : `
-            <div class="progress-fill ${this.indeterminate ? 'indeterminate' : ''}" 
-                 ${this.indeterminate ? 'id="indeterminate-progress"' : ''}></div>
-          `}
-        </div>
+            ${this.showValue ? `<span class="${classes.circularText}">${this.getDisplayValue()}</span>` : ''}
+          </div>
+        ` : `
+          <div class="${classes.track} group" 
+               role="progressbar" 
+               aria-valuenow="${this.indeterminate ? undefined : this._value}"
+               aria-valuemin="${this.min}"
+               aria-valuemax="${this.max}"
+               ${this.label ? `aria-label="${this.label}"` : ''}
+               ${this.indeterminate ? 'aria-describedby="indeterminate-progress"' : ''}
+               ${this.tooltip ? `title="${this.tooltip}"` : ''}
+               tabindex="0"
+          >
+            ${this.bufferValue > 0 ? `
+              <div class="${classes.buffer}" 
+                   style="width: ${this.bufferPercentage}%"></div>
+            ` : ''}
+            ${this.tooltip ? `<div class="progress-tooltip">${this.tooltip}</div>` : ''}
+            <div class="${classes.fill} ${this.indeterminate ? 'indeterminate' : ''} ${this.getAttribute('variant') === 'striped' ? 'progress-striped' : ''}" 
+                 ${this.indeterminate ? 'id="indeterminate-progress"' : ''}
+                 style="width: ${this.indeterminate ? '100%' : this.percentage + '%'}"></div>
+          </div>
+        `}
       </div>
 
-      ${this.indeterminate ? '<div id="indeterminate-progress" style="display: none;">Loading in progress</div>' : ''}
+      ${this.indeterminate ? '<div id="indeterminate-progress" class="sr-only">Loading in progress</div>' : ''}
     `;
   }
 }
