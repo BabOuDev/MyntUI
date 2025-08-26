@@ -413,31 +413,181 @@ class MyInput extends MyntUIBaseComponent {
     return `<select ${selectAttributes.join(' ')}>${optionsHtml}</select>`;
   }
 
-  // Generate country selector with flags
+  // Generate country selector with flags using Intl API
   generateCountrySelectElement(commonAttributes) {
     const typeConfig = globalConfig.get('components.input.typeConfigs.country', {});
+    const locale = typeConfig.locale || 'auto';
+    const actualLocale = locale === 'auto' ? navigator.language || 'en-US' : locale;
     
-    // Basic countries list (subset for demo)
-    const countries = [
-      { code: 'US', name: 'United States', flag: '🇺🇸' },
-      { code: 'CA', name: 'Canada', flag: '🇨🇦' },
-      { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
-      { code: 'DE', name: 'Germany', flag: '🇩🇪' },
-      { code: 'FR', name: 'France', flag: '🇫🇷' },
-      { code: 'ES', name: 'Spain', flag: '🇪🇸' },
-      { code: 'IT', name: 'Italy', flag: '🇮🇹' },
-      { code: 'JP', name: 'Japan', flag: '🇯🇵' },
-      { code: 'AU', name: 'Australia', flag: '🇦🇺' },
-      { code: 'BR', name: 'Brazil', flag: '🇧🇷' }
-    ];
+    // Get comprehensive country list using Intl.DisplayNames
+    const countries = this.getCountriesList(actualLocale, typeConfig);
 
     const optionsHtml = countries.map(country => {
       const selected = this._value === country.code;
-      const displayText = typeConfig.includeFlag ? `${country.flag} ${country.name}` : country.name;
+      let displayText = country.name;
+      
+      if (typeConfig.includeFlag && country.flag) {
+        displayText = `${country.flag} ${country.name}`;
+      }
+      
+      if (typeConfig.includePhoneCode && country.phoneCode) {
+        displayText += ` (+${country.phoneCode})`;
+      }
+      
       return `<option value="${country.code}" ${selected ? 'selected' : ''}>${displayText}</option>`;
     }).join('');
 
+    // Add search capability if requested
+    if (typeConfig.searchable) {
+      const datalistId = `${this._schema.name}-countries`;
+      const datalistHtml = `
+        <datalist id="${datalistId}">
+          ${optionsHtml}
+        </datalist>
+      `;
+      
+      return `
+        <input ${[...commonAttributes, `list="${datalistId}"`, 'type="text"'].join(' ')} />
+        ${datalistHtml}
+      `;
+    }
+
     return `<select ${commonAttributes.join(' ')}>${optionsHtml}</select>`;
+  }
+
+  // Get countries list using Intl API and comprehensive data
+  getCountriesList(locale, config) {
+    try {
+      const displayNames = new Intl.DisplayNames([locale], { type: 'region' });
+      
+      // Comprehensive country codes with additional data
+      const countryData = {
+        'AD': { phoneCode: '376', flag: '🇦🇩' }, 'AE': { phoneCode: '971', flag: '🇦🇪' }, 'AF': { phoneCode: '93', flag: '🇦🇫' },
+        'AG': { phoneCode: '1', flag: '🇦🇬' }, 'AI': { phoneCode: '1', flag: '🇦🇮' }, 'AL': { phoneCode: '355', flag: '🇦🇱' },
+        'AM': { phoneCode: '374', flag: '🇦🇲' }, 'AO': { phoneCode: '244', flag: '🇦🇴' }, 'AQ': { phoneCode: '672', flag: '🇦🇶' },
+        'AR': { phoneCode: '54', flag: '🇦🇷' }, 'AS': { phoneCode: '1', flag: '🇦🇸' }, 'AT': { phoneCode: '43', flag: '🇦🇹' },
+        'AU': { phoneCode: '61', flag: '🇦🇺' }, 'AW': { phoneCode: '297', flag: '🇦🇼' }, 'AX': { phoneCode: '358', flag: '🇦🇽' },
+        'AZ': { phoneCode: '994', flag: '🇦🇿' }, 'BA': { phoneCode: '387', flag: '🇧🇦' }, 'BB': { phoneCode: '1', flag: '🇧🇧' },
+        'BD': { phoneCode: '880', flag: '🇧🇩' }, 'BE': { phoneCode: '32', flag: '🇧🇪' }, 'BF': { phoneCode: '226', flag: '🇧🇫' },
+        'BG': { phoneCode: '359', flag: '🇧🇬' }, 'BH': { phoneCode: '973', flag: '🇧🇭' }, 'BI': { phoneCode: '257', flag: '🇧🇮' },
+        'BJ': { phoneCode: '229', flag: '🇧🇯' }, 'BL': { phoneCode: '590', flag: '🇧🇱' }, 'BM': { phoneCode: '1', flag: '🇧🇲' },
+        'BN': { phoneCode: '673', flag: '🇧🇳' }, 'BO': { phoneCode: '591', flag: '🇧🇴' }, 'BQ': { phoneCode: '599', flag: '🇧🇶' },
+        'BR': { phoneCode: '55', flag: '🇧🇷' }, 'BS': { phoneCode: '1', flag: '🇧🇸' }, 'BT': { phoneCode: '975', flag: '🇧🇹' },
+        'BV': { phoneCode: '47', flag: '🇧🇻' }, 'BW': { phoneCode: '267', flag: '🇧🇼' }, 'BY': { phoneCode: '375', flag: '🇧🇾' },
+        'BZ': { phoneCode: '501', flag: '🇧🇿' }, 'CA': { phoneCode: '1', flag: '🇨🇦' }, 'CC': { phoneCode: '61', flag: '🇨🇨' },
+        'CD': { phoneCode: '243', flag: '🇨🇩' }, 'CF': { phoneCode: '236', flag: '🇨🇫' }, 'CG': { phoneCode: '242', flag: '🇨🇬' },
+        'CH': { phoneCode: '41', flag: '🇨🇭' }, 'CI': { phoneCode: '225', flag: '🇨🇮' }, 'CK': { phoneCode: '682', flag: '🇨🇰' },
+        'CL': { phoneCode: '56', flag: '🇨🇱' }, 'CM': { phoneCode: '237', flag: '🇨🇲' }, 'CN': { phoneCode: '86', flag: '🇨🇳' },
+        'CO': { phoneCode: '57', flag: '🇨🇴' }, 'CR': { phoneCode: '506', flag: '🇨🇷' }, 'CU': { phoneCode: '53', flag: '🇨🇺' },
+        'CV': { phoneCode: '238', flag: '🇨🇻' }, 'CW': { phoneCode: '599', flag: '🇨🇼' }, 'CX': { phoneCode: '61', flag: '🇨🇽' },
+        'CY': { phoneCode: '357', flag: '🇨🇾' }, 'CZ': { phoneCode: '420', flag: '🇨🇿' }, 'DE': { phoneCode: '49', flag: '🇩🇪' },
+        'DJ': { phoneCode: '253', flag: '🇩🇯' }, 'DK': { phoneCode: '45', flag: '🇩🇰' }, 'DM': { phoneCode: '1', flag: '🇩🇲' },
+        'DO': { phoneCode: '1', flag: '🇩🇴' }, 'DZ': { phoneCode: '213', flag: '🇩🇿' }, 'EC': { phoneCode: '593', flag: '🇪🇨' },
+        'EE': { phoneCode: '372', flag: '🇪🇪' }, 'EG': { phoneCode: '20', flag: '🇪🇬' }, 'EH': { phoneCode: '212', flag: '🇪🇭' },
+        'ER': { phoneCode: '291', flag: '🇪🇷' }, 'ES': { phoneCode: '34', flag: '🇪🇸' }, 'ET': { phoneCode: '251', flag: '🇪🇹' },
+        'FI': { phoneCode: '358', flag: '🇫🇮' }, 'FJ': { phoneCode: '679', flag: '🇫🇯' }, 'FK': { phoneCode: '500', flag: '🇫🇰' },
+        'FM': { phoneCode: '691', flag: '🇫🇲' }, 'FO': { phoneCode: '298', flag: '🇫🇴' }, 'FR': { phoneCode: '33', flag: '🇫🇷' },
+        'GA': { phoneCode: '241', flag: '🇬🇦' }, 'GB': { phoneCode: '44', flag: '🇬🇧' }, 'GD': { phoneCode: '1', flag: '🇬🇩' },
+        'GE': { phoneCode: '995', flag: '🇬🇪' }, 'GF': { phoneCode: '594', flag: '🇬🇫' }, 'GG': { phoneCode: '44', flag: '🇬🇬' },
+        'GH': { phoneCode: '233', flag: '🇬🇭' }, 'GI': { phoneCode: '350', flag: '🇬🇮' }, 'GL': { phoneCode: '299', flag: '🇬🇱' },
+        'GM': { phoneCode: '220', flag: '🇬🇲' }, 'GN': { phoneCode: '224', flag: '🇬🇳' }, 'GP': { phoneCode: '590', flag: '🇬🇵' },
+        'GQ': { phoneCode: '240', flag: '🇬🇶' }, 'GR': { phoneCode: '30', flag: '🇬🇷' }, 'GS': { phoneCode: '500', flag: '🇬🇸' },
+        'GT': { phoneCode: '502', flag: '🇬🇹' }, 'GU': { phoneCode: '1', flag: '🇬🇺' }, 'GW': { phoneCode: '245', flag: '🇬🇼' },
+        'GY': { phoneCode: '592', flag: '🇬🇾' }, 'HK': { phoneCode: '852', flag: '🇭🇰' }, 'HM': { phoneCode: '672', flag: '🇭🇲' },
+        'HN': { phoneCode: '504', flag: '🇭🇳' }, 'HR': { phoneCode: '385', flag: '🇭🇷' }, 'HT': { phoneCode: '509', flag: '🇭🇹' },
+        'HU': { phoneCode: '36', flag: '🇭🇺' }, 'ID': { phoneCode: '62', flag: '🇮🇩' }, 'IE': { phoneCode: '353', flag: '🇮🇪' },
+        'IL': { phoneCode: '972', flag: '🇮🇱' }, 'IM': { phoneCode: '44', flag: '🇮🇲' }, 'IN': { phoneCode: '91', flag: '🇮🇳' },
+        'IO': { phoneCode: '246', flag: '🇮🇴' }, 'IQ': { phoneCode: '964', flag: '🇮🇶' }, 'IR': { phoneCode: '98', flag: '🇮🇷' },
+        'IS': { phoneCode: '354', flag: '🇮🇸' }, 'IT': { phoneCode: '39', flag: '🇮🇹' }, 'JE': { phoneCode: '44', flag: '🇯🇪' },
+        'JM': { phoneCode: '1', flag: '🇯🇲' }, 'JO': { phoneCode: '962', flag: '🇯🇴' }, 'JP': { phoneCode: '81', flag: '🇯🇵' },
+        'KE': { phoneCode: '254', flag: '🇰🇪' }, 'KG': { phoneCode: '996', flag: '🇰🇬' }, 'KH': { phoneCode: '855', flag: '🇰🇭' },
+        'KI': { phoneCode: '686', flag: '🇰🇮' }, 'KM': { phoneCode: '269', flag: '🇰🇲' }, 'KN': { phoneCode: '1', flag: '🇰🇳' },
+        'KP': { phoneCode: '850', flag: '🇰🇵' }, 'KR': { phoneCode: '82', flag: '🇰🇷' }, 'KW': { phoneCode: '965', flag: '🇰🇼' },
+        'KY': { phoneCode: '1', flag: '🇰🇾' }, 'KZ': { phoneCode: '7', flag: '🇰🇿' }, 'LA': { phoneCode: '856', flag: '🇱🇦' },
+        'LB': { phoneCode: '961', flag: '🇱🇧' }, 'LC': { phoneCode: '1', flag: '🇱🇨' }, 'LI': { phoneCode: '423', flag: '🇱🇮' },
+        'LK': { phoneCode: '94', flag: '🇱🇰' }, 'LR': { phoneCode: '231', flag: '🇱🇷' }, 'LS': { phoneCode: '266', flag: '🇱🇸' },
+        'LT': { phoneCode: '370', flag: '🇱🇹' }, 'LU': { phoneCode: '352', flag: '🇱🇺' }, 'LV': { phoneCode: '371', flag: '🇱🇻' },
+        'LY': { phoneCode: '218', flag: '🇱🇾' }, 'MA': { phoneCode: '212', flag: '🇲🇦' }, 'MC': { phoneCode: '377', flag: '🇲🇨' },
+        'MD': { phoneCode: '373', flag: '🇲🇩' }, 'ME': { phoneCode: '382', flag: '🇲🇪' }, 'MF': { phoneCode: '590', flag: '🇲🇫' },
+        'MG': { phoneCode: '261', flag: '🇲🇬' }, 'MH': { phoneCode: '692', flag: '🇲🇭' }, 'MK': { phoneCode: '389', flag: '🇲🇰' },
+        'ML': { phoneCode: '223', flag: '🇲🇱' }, 'MM': { phoneCode: '95', flag: '🇲🇲' }, 'MN': { phoneCode: '976', flag: '🇲🇳' },
+        'MO': { phoneCode: '853', flag: '🇲🇴' }, 'MP': { phoneCode: '1', flag: '🇲🇵' }, 'MQ': { phoneCode: '596', flag: '🇲🇶' },
+        'MR': { phoneCode: '222', flag: '🇲🇷' }, 'MS': { phoneCode: '1', flag: '🇲🇸' }, 'MT': { phoneCode: '356', flag: '🇲🇹' },
+        'MU': { phoneCode: '230', flag: '🇲🇺' }, 'MV': { phoneCode: '960', flag: '🇲🇻' }, 'MW': { phoneCode: '265', flag: '🇲🇼' },
+        'MX': { phoneCode: '52', flag: '🇲🇽' }, 'MY': { phoneCode: '60', flag: '🇲🇾' }, 'MZ': { phoneCode: '258', flag: '🇲🇿' },
+        'NA': { phoneCode: '264', flag: '🇳🇦' }, 'NC': { phoneCode: '687', flag: '🇳🇨' }, 'NE': { phoneCode: '227', flag: '🇳🇪' },
+        'NF': { phoneCode: '672', flag: '🇳🇫' }, 'NG': { phoneCode: '234', flag: '🇳🇬' }, 'NI': { phoneCode: '505', flag: '🇳🇮' },
+        'NL': { phoneCode: '31', flag: '🇳🇱' }, 'NO': { phoneCode: '47', flag: '🇳🇴' }, 'NP': { phoneCode: '977', flag: '🇳🇵' },
+        'NR': { phoneCode: '674', flag: '🇳🇷' }, 'NU': { phoneCode: '683', flag: '🇳🇺' }, 'NZ': { phoneCode: '64', flag: '🇳🇿' },
+        'OM': { phoneCode: '968', flag: '🇴🇲' }, 'PA': { phoneCode: '507', flag: '🇵🇦' }, 'PE': { phoneCode: '51', flag: '🇵🇪' },
+        'PF': { phoneCode: '689', flag: '🇵🇫' }, 'PG': { phoneCode: '675', flag: '🇵🇬' }, 'PH': { phoneCode: '63', flag: '🇵🇭' },
+        'PK': { phoneCode: '92', flag: '🇵🇰' }, 'PL': { phoneCode: '48', flag: '🇵🇱' }, 'PM': { phoneCode: '508', flag: '🇵🇲' },
+        'PN': { phoneCode: '64', flag: '🇵🇳' }, 'PR': { phoneCode: '1', flag: '🇵🇷' }, 'PS': { phoneCode: '970', flag: '🇵🇸' },
+        'PT': { phoneCode: '351', flag: '🇵🇹' }, 'PW': { phoneCode: '680', flag: '🇵🇼' }, 'PY': { phoneCode: '595', flag: '🇵🇾' },
+        'QA': { phoneCode: '974', flag: '🇶🇦' }, 'RE': { phoneCode: '262', flag: '🇷🇪' }, 'RO': { phoneCode: '40', flag: '🇷🇴' },
+        'RS': { phoneCode: '381', flag: '🇷🇸' }, 'RU': { phoneCode: '7', flag: '🇷🇺' }, 'RW': { phoneCode: '250', flag: '🇷🇼' },
+        'SA': { phoneCode: '966', flag: '🇸🇦' }, 'SB': { phoneCode: '677', flag: '🇸🇧' }, 'SC': { phoneCode: '248', flag: '🇸🇨' },
+        'SD': { phoneCode: '249', flag: '🇸🇩' }, 'SE': { phoneCode: '46', flag: '🇸🇪' }, 'SG': { phoneCode: '65', flag: '🇸🇬' },
+        'SH': { phoneCode: '290', flag: '🇸🇭' }, 'SI': { phoneCode: '386', flag: '🇸🇮' }, 'SJ': { phoneCode: '47', flag: '🇸🇯' },
+        'SK': { phoneCode: '421', flag: '🇸🇰' }, 'SL': { phoneCode: '232', flag: '🇸🇱' }, 'SM': { phoneCode: '378', flag: '🇸🇲' },
+        'SN': { phoneCode: '221', flag: '🇸🇳' }, 'SO': { phoneCode: '252', flag: '🇸🇴' }, 'SR': { phoneCode: '597', flag: '🇸🇷' },
+        'SS': { phoneCode: '211', flag: '🇸🇸' }, 'ST': { phoneCode: '239', flag: '🇸🇹' }, 'SV': { phoneCode: '503', flag: '🇸🇻' },
+        'SX': { phoneCode: '1', flag: '🇸🇽' }, 'SY': { phoneCode: '963', flag: '🇸🇾' }, 'SZ': { phoneCode: '268', flag: '🇸🇿' },
+        'TC': { phoneCode: '1', flag: '🇹🇨' }, 'TD': { phoneCode: '235', flag: '🇹🇩' }, 'TF': { phoneCode: '262', flag: '🇹🇫' },
+        'TG': { phoneCode: '228', flag: '🇹🇬' }, 'TH': { phoneCode: '66', flag: '🇹🇭' }, 'TJ': { phoneCode: '992', flag: '🇹🇯' },
+        'TK': { phoneCode: '690', flag: '🇹🇰' }, 'TL': { phoneCode: '670', flag: '🇹🇱' }, 'TM': { phoneCode: '993', flag: '🇹🇲' },
+        'TN': { phoneCode: '216', flag: '🇹🇳' }, 'TO': { phoneCode: '676', flag: '🇹🇴' }, 'TR': { phoneCode: '90', flag: '🇹🇷' },
+        'TT': { phoneCode: '1', flag: '🇹🇹' }, 'TV': { phoneCode: '688', flag: '🇹🇻' }, 'TW': { phoneCode: '886', flag: '🇹🇼' },
+        'TZ': { phoneCode: '255', flag: '🇹🇿' }, 'UA': { phoneCode: '380', flag: '🇺🇦' }, 'UG': { phoneCode: '256', flag: '🇺🇬' },
+        'UM': { phoneCode: '1', flag: '🇺🇲' }, 'US': { phoneCode: '1', flag: '🇺🇸' }, 'UY': { phoneCode: '598', flag: '🇺🇾' },
+        'UZ': { phoneCode: '998', flag: '🇺🇿' }, 'VA': { phoneCode: '39', flag: '🇻🇦' }, 'VC': { phoneCode: '1', flag: '🇻🇨' },
+        'VE': { phoneCode: '58', flag: '🇻🇪' }, 'VG': { phoneCode: '1', flag: '🇻🇬' }, 'VI': { phoneCode: '1', flag: '🇻🇮' },
+        'VN': { phoneCode: '84', flag: '🇻🇳' }, 'VU': { phoneCode: '678', flag: '🇻🇺' }, 'WF': { phoneCode: '681', flag: '🇼🇫' },
+        'WS': { phoneCode: '685', flag: '🇼🇸' }, 'YE': { phoneCode: '967', flag: '🇾🇪' }, 'YT': { phoneCode: '262', flag: '🇾🇹' },
+        'ZA': { phoneCode: '27', flag: '🇿🇦' }, 'ZM': { phoneCode: '260', flag: '🇿🇲' }, 'ZW': { phoneCode: '263', flag: '🇿🇼' }
+      };
+
+      const countries = Object.keys(countryData).map(code => {
+        try {
+          const name = displayNames.of(code);
+          return {
+            code,
+            name,
+            flag: countryData[code].flag,
+            phoneCode: countryData[code].phoneCode
+          };
+        } catch (error) {
+          // Fallback for unsupported country codes
+          return {
+            code,
+            name: code,
+            flag: countryData[code]?.flag || '',
+            phoneCode: countryData[code]?.phoneCode || ''
+          };
+        }
+      }).filter(country => country.name && country.name !== country.code);
+
+      // Sort countries alphabetically by name
+      countries.sort((a, b) => a.name.localeCompare(b.name, locale));
+      
+      return countries;
+    } catch (error) {
+      console.warn('Failed to generate countries list using Intl API, falling back to basic list:', error);
+      
+      // Fallback to basic list
+      return [
+        { code: 'US', name: 'United States', flag: '🇺🇸', phoneCode: '1' },
+        { code: 'CA', name: 'Canada', flag: '🇨🇦', phoneCode: '1' },
+        { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', phoneCode: '44' },
+        { code: 'DE', name: 'Germany', flag: '🇩🇪', phoneCode: '49' },
+        { code: 'FR', name: 'France', flag: '🇫🇷', phoneCode: '33' },
+        { code: 'ES', name: 'Spain', flag: '🇪🇸', phoneCode: '34' },
+        { code: 'IT', name: 'Italy', flag: '🇮🇹', phoneCode: '39' },
+        { code: 'JP', name: 'Japan', flag: '🇯🇵', phoneCode: '81' },
+        { code: 'AU', name: 'Australia', flag: '🇦🇺', phoneCode: '61' },
+        { code: 'BR', name: 'Brazil', flag: '🇧🇷', phoneCode: '55' }
+      ];
+    }
   }
 
   // Generate currency input with symbol
