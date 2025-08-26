@@ -308,6 +308,22 @@ class MyInput extends MyntUIBaseComponent {
       case 'number':
       case 'integer':
         return this.generateNumberInputElement(commonAttributes);
+      case 'otp':
+        return this.generateOTPInputElement(commonAttributes);
+      case 'tags':
+        return this.generateTagsInputElement(commonAttributes);
+      case 'slider':
+        return this.generateSliderInputElement(commonAttributes);
+      case 'signature':
+        return this.generateSignatureInputElement(commonAttributes);
+      case 'location':
+        return this.generateLocationInputElement(commonAttributes);
+      case 'json':
+        return this.generateJSONEditorElement(commonAttributes);
+      case 'code':
+        return this.generateCodeEditorElement(commonAttributes);
+      case 'markdown':
+        return this.generateMarkdownEditorElement(commonAttributes);
       default:
         return this.generateTextInputElement(commonAttributes, type);
     }
@@ -1671,6 +1687,558 @@ class MyInput extends MyntUIBaseComponent {
       this.showCountryDropdown(countrySelectId);
       event.preventDefault();
     }
+  }
+
+  // Generate OTP input with multiple digit fields
+  generateOTPInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.otp', {});
+    const length = typeConfig.length || 6;
+    const placeholder = typeConfig.placeholder || '•';
+    const otpId = `otp-${Math.random().toString(36).substr(2, 9)}`;
+    
+    let fields = '';
+    for (let i = 0; i < length; i++) {
+      fields += `
+        <input 
+          type="text" 
+          class="w-12 h-12 text-center text-title-large font-semibold border border-outline-variant rounded-md focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-medium1"
+          maxlength="1"
+          inputmode="numeric"
+          pattern="[0-9]"
+          placeholder="${typeConfig.mask === false ? '' : placeholder}"
+          data-otp-index="${i}"
+          onkeydown="this.parentElement.parentElement.parentElement.host.handleOTPKeydown(event, '${otpId}', ${i})"
+          oninput="this.parentElement.parentElement.parentElement.host.handleOTPInput(event, '${otpId}', ${i})"
+          onpaste="this.parentElement.parentElement.parentElement.host.handleOTPPaste(event, '${otpId}')"
+        />
+      `;
+    }
+    
+    return `
+      <div class="mynt-otp-input flex gap-2" id="${otpId}">
+        ${fields}
+      </div>
+    `;
+  }
+
+  // Generate tags input with chip-based UI
+  generateTagsInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.tags', {});
+    const delimiter = typeConfig.delimiter || ',';
+    const maxTags = typeConfig.maxTags || null;
+    const tagsId = `tags-${Math.random().toString(36).substr(2, 9)}`;
+    
+    const currentTags = Array.isArray(this._value) ? this._value : 
+                       (this._value ? this._value.toString().split(delimiter) : []);
+    
+    const tagsHtml = currentTags.map((tag, index) => `
+      <span class="mynt-tag inline-flex items-center gap-1 px-2 py-1 bg-primary-container text-primary-on-container rounded-chip text-label-small font-medium">
+        <span>${this.escapeHtml(tag.trim())}</span>
+        <button 
+          type="button"
+          class="p-0.5 rounded-full hover:bg-black/10 focus:outline-none focus:ring-1 focus:ring-primary"
+          onclick="this.parentElement.parentElement.parentElement.parentElement.host.removeTag(${index}, '${tagsId}')"
+          aria-label="Remove ${this.escapeHtml(tag.trim())}"
+        >
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </span>
+    `).join('');
+    
+    return `
+      <div class="mynt-tag-input flex flex-wrap gap-2 min-h-input-md p-2 border border-outline-variant rounded-input focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20" id="${tagsId}">
+        ${tagsHtml}
+        <input 
+          type="text"
+          class="flex-1 min-w-32 bg-transparent outline-none placeholder:text-outline"
+          placeholder="${currentTags.length === 0 ? this._schema.placeholder : 'Add tag...'}"
+          ${maxTags && currentTags.length >= maxTags ? 'disabled' : ''}
+          onkeydown="this.parentElement.parentElement.parentElement.host.handleTagInput(event, '${tagsId}')"
+          data-delimiter="${delimiter}"
+        />
+      </div>
+    `;
+  }
+
+  // Generate slider input with value display
+  generateSliderInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.slider', {});
+    const { min, max, step } = this._schema;
+    const sliderId = `slider-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="mynt-slider w-full" id="${sliderId}">
+        <input 
+          type="range"
+          class="w-full h-1 bg-outline-variant rounded-lg appearance-none cursor-pointer slider"
+          min="${min || 0}"
+          max="${max || 100}"
+          step="${step || 1}"
+          value="${this._value || min || 0}"
+          oninput="this.parentElement.parentElement.parentElement.host.handleSliderInput(event, '${sliderId}')"
+        />
+        ${typeConfig.showValue ? `
+          <div class="flex justify-between items-center mt-2">
+            <span class="text-sm text-outline">${min || 0}</span>
+            <output class="text-sm font-medium text-surface-on-surface px-2 py-1 bg-surface-variant rounded" for="${sliderId}">
+              ${this._value || min || 0}
+            </output>
+            <span class="text-sm text-outline">${max || 100}</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // Generate signature pad
+  generateSignatureInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.signature', {});
+    const width = typeConfig.width || 400;
+    const height = typeConfig.height || 200;
+    const signatureId = `signature-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="signature-container" id="${signatureId}">
+        <canvas 
+          class="mynt-signature-pad border border-outline-variant rounded-md cursor-crosshair focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          width="${width}"
+          height="${height}"
+          tabindex="0"
+          role="img"
+          aria-label="Signature canvas"
+        ></canvas>
+        <div class="flex justify-between mt-2">
+          <button 
+            type="button"
+            class="px-3 py-2 text-sm text-outline hover:text-primary transition-colors"
+            onclick="this.parentElement.parentElement.parentElement.host.clearSignature('${signatureId}')"
+          >
+            Clear
+          </button>
+          <button 
+            type="button"
+            class="px-3 py-2 text-sm text-primary hover:bg-primary/10 rounded transition-colors"
+            onclick="this.parentElement.parentElement.parentElement.host.saveSignature('${signatureId}')"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Generate location picker
+  generateLocationInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.location', {});
+    const locationId = `location-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="location-picker" id="${locationId}">
+        <div class="flex gap-2 mb-2">
+          <input 
+            type="text"
+            class="flex-1 h-input-md px-md py-sm border border-outline-variant rounded-input focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            placeholder="Enter location or click locate"
+            readonly
+            value="${this._value || ''}"
+          />
+          <button 
+            type="button"
+            class="px-4 py-2 bg-primary text-primary-on-primary rounded-button hover:shadow-elevation2 transition-all duration-medium1 focus:outline-none focus:ring-2 focus:ring-primary/60"
+            onclick="this.parentElement.parentElement.parentElement.host.getCurrentLocation('${locationId}')"
+            aria-label="Get current location"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+        ${typeConfig.showMap ? `
+          <div class="map-container h-64 border border-outline-variant rounded-md bg-surface-variant flex items-center justify-center">
+            <span class="text-outline">Map will load here</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // Generate JSON editor
+  generateJSONEditorElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.json', {});
+    const jsonId = `json-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="json-editor" id="${jsonId}">
+        <textarea 
+          class="w-full min-h-32 p-3 font-mono text-sm bg-surface-container rounded-md border border-outline-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-vertical"
+          placeholder='{"key": "value"}'
+          oninput="this.parentElement.parentElement.parentElement.host.handleJSONInput(event, '${jsonId}')"
+        >${this._value ? JSON.stringify(this._value, null, 2) : ''}</textarea>
+        <div class="flex justify-between items-center mt-2 text-sm">
+          <div class="validation-status text-outline" id="${jsonId}-status">
+            ${typeConfig.validate ? 'Valid JSON' : ''}
+          </div>
+          ${typeConfig.format ? `
+            <button 
+              type="button"
+              class="px-3 py-1 text-primary hover:bg-primary/10 rounded transition-colors"
+              onclick="this.parentElement.parentElement.parentElement.host.formatJSON('${jsonId}')"
+            >
+              Format
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // Generate code editor
+  generateCodeEditorElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.code', {});
+    const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="code-editor" id="${codeId}">
+        <div class="flex justify-between items-center mb-2">
+          <select class="px-2 py-1 text-sm border border-outline-variant rounded bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="json">JSON</option>
+            <option value="python">Python</option>
+          </select>
+          ${typeConfig.showLineNumbers ? `
+            <label class="flex items-center gap-2 text-sm">
+              <input type="checkbox" class="rounded" checked>
+              <span>Line numbers</span>
+            </label>
+          ` : ''}
+        </div>
+        <textarea 
+          class="w-full min-h-48 p-3 font-mono text-sm bg-surface-container rounded-md border border-outline-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-vertical"
+          placeholder="// Start coding..."
+          oninput="this.parentElement.parentElement.parentElement.host.handleCodeInput(event, '${codeId}')"
+        >${this._value || ''}</textarea>
+      </div>
+    `;
+  }
+
+  // Generate markdown editor
+  generateMarkdownEditorElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.markdown', {});
+    const markdownId = `markdown-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="markdown-editor" id="${markdownId}">
+        ${typeConfig.toolbar ? `
+          <div class="toolbar flex items-center gap-1 p-2 border-b border-outline-variant bg-surface-variant/50">
+            <button type="button" class="p-1.5 hover:bg-surface rounded text-sm font-bold" title="Bold">B</button>
+            <button type="button" class="p-1.5 hover:bg-surface rounded text-sm italic" title="Italic">I</button>
+            <button type="button" class="p-1.5 hover:bg-surface rounded text-sm" title="Link">#</button>
+            <button type="button" class="p-1.5 hover:bg-surface rounded text-sm" title="Code">&lt;/&gt;</button>
+          </div>
+        ` : ''}
+        <div class="flex ${typeConfig.preview ? 'divide-x divide-outline-variant' : ''}">
+          <div class="flex-1">
+            <textarea 
+              class="w-full min-h-64 p-3 font-mono text-sm bg-surface border-0 focus:outline-none resize-none"
+              placeholder="# Write your markdown here..."
+              oninput="this.parentElement.parentElement.parentElement.parentElement.host.handleMarkdownInput(event, '${markdownId}')"
+            >${this._value || ''}</textarea>
+          </div>
+          ${typeConfig.preview ? `
+            <div class="flex-1 p-3 bg-surface-container-low overflow-auto">
+              <div class="markdown-preview prose prose-sm max-w-none" id="${markdownId}-preview">
+                <p class="text-outline">Preview will appear here...</p>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // Helper method to escape HTML
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Event handlers for new input types
+
+  // OTP input handlers
+  handleOTPInput(event, otpId, index) {
+    const input = event.target;
+    const value = input.value;
+    
+    // Only allow digits
+    input.value = value.replace(/[^0-9]/g, '');
+    
+    // Move to next field if digit entered
+    if (input.value && index < this.getOTPLength() - 1) {
+      const nextInput = input.parentElement.querySelector(`[data-otp-index="${index + 1}"]`);
+      if (nextInput) nextInput.focus();
+    }
+    
+    this.updateOTPValue(otpId);
+  }
+
+  handleOTPKeydown(event, otpId, index) {
+    const input = event.target;
+    
+    if (event.key === 'Backspace' && !input.value && index > 0) {
+      const prevInput = input.parentElement.querySelector(`[data-otp-index="${index - 1}"]`);
+      if (prevInput) prevInput.focus();
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      const prevInput = input.parentElement.querySelector(`[data-otp-index="${index - 1}"]`);
+      if (prevInput) prevInput.focus();
+    } else if (event.key === 'ArrowRight' && index < this.getOTPLength() - 1) {
+      const nextInput = input.parentElement.querySelector(`[data-otp-index="${index + 1}"]`);
+      if (nextInput) nextInput.focus();
+    }
+  }
+
+  handleOTPPaste(event, otpId) {
+    event.preventDefault();
+    const paste = (event.clipboardData || window.clipboardData).getData('text');
+    const digits = paste.replace(/[^0-9]/g, '').split('');
+    
+    const inputs = event.target.parentElement.querySelectorAll('[data-otp-index]');
+    digits.forEach((digit, index) => {
+      if (inputs[index]) {
+        inputs[index].value = digit;
+      }
+    });
+    
+    this.updateOTPValue(otpId);
+  }
+
+  updateOTPValue(otpId) {
+    const container = this.shadowRoot.querySelector(`#${otpId}`);
+    const inputs = container.querySelectorAll('[data-otp-index]');
+    const value = Array.from(inputs).map(input => input.value).join('');
+    
+    this._value = value;
+    this.dispatchEvent(new CustomEvent('otpComplete', {
+      detail: { value, complete: value.length === inputs.length },
+      bubbles: true
+    }));
+  }
+
+  getOTPLength() {
+    return globalConfig.get('components.input.typeConfigs.otp.length', 6);
+  }
+
+  // Tags input handlers
+  handleTagInput(event, tagsId) {
+    const input = event.target;
+    const delimiter = input.dataset.delimiter || ',';
+    
+    if (event.key === 'Enter' || event.key === delimiter) {
+      event.preventDefault();
+      this.addTag(input.value.trim(), tagsId);
+      input.value = '';
+    } else if (event.key === 'Backspace' && !input.value) {
+      this.removeLastTag(tagsId);
+    }
+  }
+
+  addTag(tagValue, tagsId) {
+    if (!tagValue) return;
+    
+    const typeConfig = globalConfig.get('components.input.typeConfigs.tags', {});
+    const currentTags = Array.isArray(this._value) ? [...this._value] : [];
+    
+    // Check for duplicates if not allowed
+    if (!typeConfig.duplicates && currentTags.includes(tagValue)) return;
+    
+    // Check max tags limit
+    if (typeConfig.maxTags && currentTags.length >= typeConfig.maxTags) return;
+    
+    currentTags.push(tagValue);
+    this._value = currentTags;
+    this.render();
+    
+    this.dispatchEvent(new CustomEvent('tagAdded', {
+      detail: { tag: tagValue, tags: currentTags },
+      bubbles: true
+    }));
+  }
+
+  removeTag(index, tagsId) {
+    const currentTags = Array.isArray(this._value) ? [...this._value] : [];
+    const removedTag = currentTags.splice(index, 1)[0];
+    this._value = currentTags;
+    this.render();
+    
+    this.dispatchEvent(new CustomEvent('tagRemoved', {
+      detail: { tag: removedTag, tags: currentTags },
+      bubbles: true
+    }));
+  }
+
+  removeLastTag(tagsId) {
+    const currentTags = Array.isArray(this._value) ? [...this._value] : [];
+    if (currentTags.length > 0) {
+      const removedTag = currentTags.pop();
+      this._value = currentTags;
+      this.render();
+      
+      this.dispatchEvent(new CustomEvent('tagRemoved', {
+        detail: { tag: removedTag, tags: currentTags },
+        bubbles: true
+      }));
+    }
+  }
+
+  // Slider input handler
+  handleSliderInput(event, sliderId) {
+    const input = event.target;
+    const value = parseFloat(input.value);
+    this._value = value;
+    
+    // Update output display
+    const output = input.parentElement.querySelector('output');
+    if (output) output.textContent = value;
+    
+    this.dispatchEvent(new CustomEvent('sliderChange', {
+      detail: { value },
+      bubbles: true
+    }));
+  }
+
+  // Location handlers
+  getCurrentLocation(locationId) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        this._value = `${latitude}, ${longitude}`;
+        
+        const input = this.shadowRoot.querySelector(`#${locationId} input`);
+        if (input) input.value = this._value;
+        
+        this.dispatchEvent(new CustomEvent('locationSelected', {
+          detail: { latitude, longitude, value: this._value },
+          bubbles: true
+        }));
+      }, (error) => {
+        console.error('Geolocation error:', error);
+        this.dispatchEvent(new CustomEvent('locationError', {
+          detail: { error: error.message },
+          bubbles: true
+        }));
+      });
+    }
+  }
+
+  // JSON editor handlers
+  handleJSONInput(event, jsonId) {
+    const textarea = event.target;
+    const value = textarea.value;
+    
+    try {
+      const parsed = JSON.parse(value);
+      this._value = parsed;
+      
+      const status = this.shadowRoot.querySelector(`#${jsonId}-status`);
+      if (status) {
+        status.textContent = 'Valid JSON';
+        status.className = 'validation-status text-success';
+      }
+      
+      this.dispatchEvent(new CustomEvent('jsonValid', {
+        detail: { value: parsed },
+        bubbles: true
+      }));
+    } catch (error) {
+      const status = this.shadowRoot.querySelector(`#${jsonId}-status`);
+      if (status) {
+        status.textContent = `Invalid JSON: ${error.message}`;
+        status.className = 'validation-status text-error';
+      }
+      
+      this.dispatchEvent(new CustomEvent('jsonInvalid', {
+        detail: { error: error.message },
+        bubbles: true
+      }));
+    }
+  }
+
+  formatJSON(jsonId) {
+    const textarea = this.shadowRoot.querySelector(`#${jsonId} textarea`);
+    try {
+      const parsed = JSON.parse(textarea.value);
+      textarea.value = JSON.stringify(parsed, null, 2);
+      this._value = parsed;
+    } catch (error) {
+      // Invalid JSON, can't format
+    }
+  }
+
+  // Code editor handler
+  handleCodeInput(event, codeId) {
+    const textarea = event.target;
+    this._value = textarea.value;
+    
+    this.dispatchEvent(new CustomEvent('codeChange', {
+      detail: { value: textarea.value },
+      bubbles: true
+    }));
+  }
+
+  // Markdown editor handlers
+  handleMarkdownInput(event, markdownId) {
+    const textarea = event.target;
+    this._value = textarea.value;
+    
+    // Update preview if enabled
+    const preview = this.shadowRoot.querySelector(`#${markdownId}-preview`);
+    if (preview) {
+      // Simple markdown parsing (in a real implementation, you'd use a proper markdown parser)
+      let html = textarea.value
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/\*\*(.*)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*)\*/g, '<em>$1</em>')
+        .replace(/`(.*)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+      
+      preview.innerHTML = html || '<p class="text-outline">Preview will appear here...</p>';
+    }
+    
+    this.dispatchEvent(new CustomEvent('markdownChange', {
+      detail: { value: textarea.value },
+      bubbles: true
+    }));
+  }
+
+  // Signature pad handlers
+  clearSignature(signatureId) {
+    const canvas = this.shadowRoot.querySelector(`#${signatureId} canvas`);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this._value = '';
+    
+    this.dispatchEvent(new CustomEvent('signatureCleared', {
+      detail: { signatureId },
+      bubbles: true
+    }));
+  }
+
+  saveSignature(signatureId) {
+    const canvas = this.shadowRoot.querySelector(`#${signatureId} canvas`);
+    const dataURL = canvas.toDataURL();
+    this._value = dataURL;
+    
+    this.dispatchEvent(new CustomEvent('signatureSaved', {
+      detail: { signature: dataURL, signatureId },
+      bubbles: true
+    }));
   }
 
   connectedCallback() {
