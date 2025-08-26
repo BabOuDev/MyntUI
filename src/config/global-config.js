@@ -102,29 +102,49 @@ export class MyntUIConfig {
             }
           },
 
-          // Label positioning styles
+          // Enhanced label positioning styles with all variants
           labelPositions: {
             top: {
               container: 'flex flex-col gap-xs',
-              label: 'text-label-medium text-surface-on-surface mb-xs',
-              wrapper: 'relative'
+              label: 'text-label-medium text-surface-on-surface mb-xs block font-medium',
+              wrapper: 'relative',
+              animation: 'transition-colors duration-medium1'
             },
             left: {
               container: 'flex items-center gap-md',
-              label: 'text-label-medium text-surface-on-surface min-w-24 flex-shrink-0',
-              wrapper: 'flex-1'
+              label: 'text-label-medium text-surface-on-surface min-w-24 flex-shrink-0 font-medium',
+              wrapper: 'flex-1',
+              animation: 'transition-colors duration-medium1'
+            },
+            right: {
+              container: 'flex items-center gap-md flex-row-reverse',
+              label: 'text-label-medium text-surface-on-surface min-w-24 flex-shrink-0 font-medium',
+              wrapper: 'flex-1',
+              animation: 'transition-colors duration-medium1'
             },
             over: {
               container: 'relative',
-              label: 'absolute left-3 top-0 transform -translate-y-1/2 bg-surface px-1 text-label-small text-outline transition-all duration-200 pointer-events-none',
-              labelActive: 'text-primary scale-90',
+              label: 'absolute left-3 top-0 transform -translate-y-1/2 bg-surface px-1 text-label-small text-outline transition-all duration-medium1 pointer-events-none z-10',
+              labelActive: 'text-primary scale-90 font-medium',
+              labelInactive: 'text-outline scale-100',
               wrapper: 'relative'
             },
             floating: {
               container: 'relative',
-              label: 'absolute left-3 transition-all duration-200 pointer-events-none text-outline',
-              labelFloating: 'top-0 transform -translate-y-1/2 bg-surface px-1 text-label-small text-primary scale-90',
-              labelResting: 'top-1/2 transform -translate-y-1/2 text-body-medium',
+              label: 'absolute left-3 transition-all duration-medium1 pointer-events-none text-outline z-10',
+              labelFloating: 'top-0 transform -translate-y-1/2 bg-surface px-1 text-label-small text-primary scale-90 font-medium',
+              labelResting: 'top-1/2 transform -translate-y-1/2 text-body-medium scale-100',
+              wrapper: 'relative'
+            },
+            inside: {
+              container: 'relative',
+              label: 'absolute left-3 top-1/2 transform -translate-y-1/2 text-outline transition-all duration-medium1 pointer-events-none',
+              labelActive: 'top-2 left-2 text-label-small text-primary bg-surface px-1 scale-90 font-medium',
+              wrapper: 'relative pt-2'
+            },
+            none: {
+              container: 'relative',
+              label: 'sr-only',
               wrapper: 'relative'
             }
           },
@@ -257,14 +277,27 @@ export class MyntUIConfig {
           xxl: 'var(--_global-spacing-xxl)' // 48px
         },
         
-        // Border radius system
+        // Enhanced border radius system with theme variations
         corners: {
           none: 'var(--_global-border-radius-none)', // 0
-          sm: 'var(--_global-border-radius-sm)', // 4px
-          md: 'var(--_global-border-radius-md)', // 8px
-          lg: 'var(--_global-border-radius-lg)', // 12px
-          xl: 'var(--_global-border-radius-xl)', // 16px
-          full: 'var(--_global-border-radius-full)' // 9999px
+          xs: '2px', // Extra small corners
+          sm: 'var(--_global-border-radius-sm)', // 4px - Small corners
+          md: 'var(--_global-border-radius-md)', // 8px - Default corners
+          lg: 'var(--_global-border-radius-lg)', // 12px - Large corners
+          xl: 'var(--_global-border-radius-xl)', // 16px - Extra large corners
+          '2xl': '20px', // Double extra large
+          '3xl': '24px', // Triple extra large
+          full: 'var(--_global-border-radius-full)', // 9999px - Fully rounded
+          // Component-specific corner styles
+          card: 'var(--_global-border-radius-lg)', // 12px
+          button: 'var(--_global-border-radius-full)', // Fully rounded
+          input: 'var(--_global-border-radius-md)', // 8px
+          modal: 'var(--_global-border-radius-xl)', // 16px
+          dropdown: 'var(--_global-border-radius-md)', // 8px
+          notification: 'var(--_global-border-radius-lg)', // 12px
+          tooltip: 'var(--_global-border-radius-sm)', // 4px
+          fab: 'var(--_global-border-radius-xl)', // 16px
+          chip: 'var(--_global-border-radius-full)' // Fully rounded
         },
         
         // Color system
@@ -453,6 +486,83 @@ export class MyntUIConfig {
               showPreview: true,
               cropAspectRatio: null,
               resizeQuality: 0.8
+            },
+            'video': {
+              component: 'video-upload',
+              accept: 'video/*',
+              maxSize: '50MB',
+              showPreview: true,
+              previewThumbnail: true
+            },
+            'audio': {
+              component: 'audio-upload',
+              accept: 'audio/*',
+              maxSize: '10MB',
+              showWaveform: true,
+              showControls: true
+            },
+            'document': {
+              component: 'document-upload',
+              accept: '.pdf,.doc,.docx,.txt,.rtf',
+              maxSize: '25MB',
+              showPreview: false,
+              extractText: true
+            },
+            'json': {
+              component: 'json-editor',
+              syntax: 'json',
+              validate: true,
+              format: true,
+              showLineNumbers: true
+            },
+            'code': {
+              component: 'code-editor',
+              syntax: 'javascript',
+              showLineNumbers: true,
+              autoComplete: true,
+              theme: 'auto'
+            },
+            'markdown': {
+              component: 'markdown-editor',
+              preview: true,
+              toolbar: true,
+              autoPreview: false
+            },
+            'otp': {
+              component: 'otp-input',
+              length: 6,
+              mask: false,
+              placeholder: '•',
+              autoSubmit: true
+            },
+            'signature': {
+              component: 'signature-pad',
+              width: 400,
+              height: 200,
+              penColor: '#000000',
+              backgroundColor: '#ffffff'
+            },
+            'location': {
+              component: 'location-picker',
+              provider: 'browser', // 'browser' | 'google' | 'mapbox'
+              showMap: true,
+              accuracy: 'high'
+            },
+            'tags': {
+              component: 'tag-input',
+              delimiter: ',',
+              duplicates: false,
+              caseSensitive: false,
+              maxTags: null,
+              suggestions: []
+            },
+            'slider': {
+              component: 'range-slider',
+              showValue: true,
+              showTicks: false,
+              showLabels: true,
+              thumbShape: 'circle',
+              trackHeight: '4px'
             }
           }
         },
