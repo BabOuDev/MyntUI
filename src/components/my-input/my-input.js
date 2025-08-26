@@ -1230,19 +1230,53 @@ class MyInput extends MyntUIBaseComponent {
           ${options}
         </select>`;
         
+      case 'checkbox':
+        return `<input type="checkbox" ${commonAttributes} 
+          ${value === 'true' || value === true || value === 'on' ? 'checked' : ''}
+          role="checkbox"
+          aria-checked="${value === 'true' || value === true || value === 'on' ? 'true' : 'false'}"
+          aria-label="${ariaLabel || label || 'Checkbox input'}">`;
+        
+      case 'radio':
+        return `<input type="radio" ${commonAttributes} 
+          ${value === 'true' || value === true || value === this._schema.value ? 'checked' : ''}
+          role="radio"
+          aria-checked="${value === 'true' || value === true || value === this._schema.value ? 'true' : 'false'}"
+          aria-label="${ariaLabel || label || 'Radio input'}">`;
+        
+      case 'dynamic-select':
+        // For dynamic-select, render as a text input with autocomplete functionality
+        return `<input type="text" ${commonAttributes} 
+          value="${value}"
+          role="combobox"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-autocomplete="list"
+          aria-label="${ariaLabel || label || 'Dynamic select input'}"
+          autocomplete="off"
+          spellcheck="false">`;
+        
       default:
+        // Map custom types to appropriate HTML input types
+        let htmlType = type;
+        if (type === 'integer') htmlType = 'number';
+        if (type === 'pattern') htmlType = 'text';
+        if (type === 'date-of-birth') htmlType = 'date';
+        
         const inputAttributes = `
-          type="${type}"
+          type="${htmlType}"
           value="${value}"
           ${this._schema.min !== undefined ? `min="${this._schema.min}"` : ''}
           ${this._schema.max !== undefined ? `max="${this._schema.max}"` : ''}
           ${this._schema.minLength ? `minlength="${this._schema.minLength}"` : ''}
           ${this._schema.maxLength ? `maxlength="${this._schema.maxLength}"` : ''}
-          ${this._schema.pattern ? `pattern="${this._schema.pattern}"` : ''}
-          ${this._schema.step ? `step="${this._schema.step}"` : ''}
+          ${this._schema.pattern || (type === 'pattern') ? `pattern="${this._schema.pattern || '.*'}"` : ''}
+          ${this._schema.step || (type === 'integer' ? 'step="1"' : '') ? `step="${this._schema.step || (type === 'integer' ? '1' : '')}"` : ''}
           ${type === 'email' ? 'spellcheck="false"' : ''}
           ${type === 'password' ? 'spellcheck="false"' : ''}
           ${type === 'url' ? 'spellcheck="false"' : ''}
+          ${type === 'pattern' ? 'spellcheck="false"' : ''}
+          ${type === 'integer' ? 'inputmode="numeric"' : ''}
         `.trim();
         
         // Enhanced role assignment with ARIA properties
@@ -1269,6 +1303,38 @@ class MyInput extends MyntUIBaseComponent {
           case 'number':
             role = 'spinbutton';
             ariaProps = `inputmode="decimal" aria-valuemin="${this._schema.min || ''}" aria-valuemax="${this._schema.max || ''}" aria-valuenow="${value || ''}"`;
+            break;
+          case 'integer':
+            role = 'spinbutton';
+            ariaProps = `inputmode="numeric" aria-valuemin="${this._schema.min || ''}" aria-valuemax="${this._schema.max || ''}" aria-valuenow="${value || ''}"`;
+            break;
+          case 'pattern':
+            role = 'textbox';
+            ariaProps = `inputmode="text" aria-describedby="${ariaDescribedBy}" title="Input must match required pattern"`;
+            break;
+          case 'date':
+            role = 'textbox';
+            ariaProps = 'aria-label="Date input"';
+            break;
+          case 'datetime-local':
+            role = 'textbox';
+            ariaProps = 'aria-label="Date and time input"';
+            break;
+          case 'time':
+            role = 'textbox';
+            ariaProps = 'aria-label="Time input"';
+            break;
+          case 'date-of-birth':
+            role = 'textbox';
+            ariaProps = 'inputmode="numeric" aria-label="Date of birth input"';
+            break;
+          case 'checkbox':
+            role = 'checkbox';
+            ariaProps = `aria-checked="${value === 'true' || value === true ? 'true' : 'false'}"`;
+            break;
+          case 'radio':
+            role = 'radio';
+            ariaProps = `aria-checked="${value === 'true' || value === true ? 'true' : 'false'}"`;
             break;
           case 'password':
             ariaProps = 'autocomplete="current-password"';

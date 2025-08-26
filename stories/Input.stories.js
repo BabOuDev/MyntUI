@@ -13,7 +13,11 @@ export default {
   argTypes: {
     type: {
       control: { type: 'select' },
-      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search', 'textarea'],
+      options: [
+        'text', 'pattern', 'number', 'integer', 'date', 'datetime-local', 
+        'time', 'date-of-birth', 'select', 'dynamic-select', 'textarea', 
+        'checkbox', 'radio', 'email', 'password', 'url', 'tel', 'search'
+      ],
       description: 'Input type',
     },
     label: {
@@ -120,26 +124,57 @@ Default.args = {
   characterCount: false,
 };
 
-// Input types showcase
+// Comprehensive Input types showcase
 export const Types = () => {
   const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 24px; max-width: 400px;';
+  container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
   
   const types = [
     { type: 'text', label: 'Full Name', placeholder: 'Enter your full name' },
+    { type: 'pattern', label: 'Pattern Input', placeholder: 'ABC123', pattern: '[A-Z]{3}[0-9]{3}', helperText: 'Format: ABC123' },
+    { type: 'number', label: 'Age', placeholder: '25', min: '0', max: '120' },
+    { type: 'integer', label: 'Quantity', placeholder: '10', min: '1', helperText: 'Whole numbers only' },
+    { type: 'date', label: 'Birth Date', helperText: 'Select your birth date' },
+    { type: 'datetime-local', label: 'Appointment', helperText: 'Select date and time' },
+    { type: 'time', label: 'Preferred Time', helperText: 'Select time' },
+    { type: 'date-of-birth', label: 'Date of Birth', helperText: 'Special date picker for DOB' },
     { type: 'email', label: 'Email Address', placeholder: 'user@example.com' },
     { type: 'password', label: 'Password', placeholder: 'Enter password' },
-    { type: 'number', label: 'Age', placeholder: '25' },
-    { type: 'tel', label: 'Phone Number', placeholder: '+1 (555) 123-4567' },
     { type: 'url', label: 'Website', placeholder: 'https://example.com' },
+    { type: 'tel', label: 'Phone Number', placeholder: '+1 (555) 123-4567' },
     { type: 'search', label: 'Search', placeholder: 'Search...' },
+    { type: 'textarea', label: 'Description', placeholder: 'Enter detailed description...' },
+    { 
+      type: 'select', 
+      label: 'Country', 
+      helperText: 'Select your country',
+      options: [
+        { label: 'United States', value: 'US' },
+        { label: 'Canada', value: 'CA' },
+        { label: 'United Kingdom', value: 'UK' },
+        { label: 'Australia', value: 'AU' },
+      ]
+    },
+    { type: 'dynamic-select', label: 'City', placeholder: 'Start typing city name...', helperText: 'Dynamic searchable select' },
+    { type: 'checkbox', label: 'I agree to terms', value: 'false' },
+    { type: 'radio', label: 'Newsletter subscription', value: 'false' },
   ];
   
-  types.forEach(({ type, label, placeholder }) => {
+  types.forEach(({ type, label, placeholder, pattern, min, max, helperText, options, value }) => {
     const input = document.createElement('my-input');
     input.setAttribute('type', type);
     input.setAttribute('label', label);
-    input.setAttribute('placeholder', placeholder);
+    if (placeholder) input.setAttribute('placeholder', placeholder);
+    if (pattern) input.setAttribute('pattern', pattern);
+    if (min) input.setAttribute('min', min);
+    if (max) input.setAttribute('max', max);
+    if (helperText) input.setAttribute('helper-text', helperText);
+    if (value) input.setAttribute('value', value);
+    if (options) {
+      // For select type, we need to pass options as schema
+      const schema = { type, label, options, placeholder, helperText };
+      input.setAttribute('schema', JSON.stringify(schema));
+    }
     container.appendChild(input);
   });
   
@@ -148,7 +183,7 @@ export const Types = () => {
 Types.parameters = {
   docs: {
     description: {
-      story: 'Different HTML5 input types supported by the component.',
+      story: 'Comprehensive showcase of all supported input types including text, pattern, number, integer, date/time variants, select, dynamic-select, textarea, checkbox, and radio inputs. This covers all input types specified in the CONTRIBUTING.md requirements.',
     },
   },
 };
