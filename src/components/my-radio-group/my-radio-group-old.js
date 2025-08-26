@@ -3,6 +3,9 @@
  * Manages a set of my-radio components, ensuring only one can be selected at a time
  */
 
+// Import the my-radio component
+import '../my-radio/my-radio.js';
+
 class MyRadioGroup extends HTMLElement {
   constructor() {
     super();
@@ -24,7 +27,7 @@ class MyRadioGroup extends HTMLElement {
 
   // Define which attributes to observe for changes
   static get observedAttributes() {
-    return ['name', 'value', 'disabled', 'label', 'required', 'size', 'layout'];
+    return ['name', 'value', 'disabled', 'label', 'required', 'size', 'layout', 'error'];
   }
 
   // Handle attribute changes
@@ -106,6 +109,18 @@ class MyRadioGroup extends HTMLElement {
     this.setAttribute('layout', value);
   }
 
+  get error() {
+    return this.hasAttribute('error');
+  }
+
+  set error(value) {
+    if (value) {
+      this.setAttribute('error', '');
+    } else {
+      this.removeAttribute('error');
+    }
+  }
+
   // Get all radio elements
   getRadios() {
     return Array.from(this.querySelectorAll('my-radio'));
@@ -118,6 +133,9 @@ class MyRadioGroup extends HTMLElement {
       radio.checked = radio.value === this._value;
       if (this.disabled) {
         radio.disabled = true;
+      }
+      if (this.error) {
+        radio.error = true;
       }
     });
   }
@@ -148,7 +166,7 @@ class MyRadioGroup extends HTMLElement {
   handleKeyDown(event) {
     if (this.disabled) return;
 
-    const radios = this.getRadios();
+    const radios = this.getRadios().filter(radio => !radio.disabled);
     const currentIndex = radios.findIndex(radio => radio.value === this._value);
     
     let nextIndex = -1;
@@ -204,6 +222,9 @@ class MyRadioGroup extends HTMLElement {
         if (this.disabled) {
           radio.disabled = true;
         }
+        if (this.error) {
+          radio.error = true;
+        }
         if (this.size && this.size !== 'md') {
           radio.setAttribute('size', this.size);
         }
@@ -228,6 +249,7 @@ class MyRadioGroup extends HTMLElement {
           --_radio-group-gap-horizontal: var(--_global-spacing-md);
           
           display: block;
+          position: relative;
         }
 
         :host([disabled]) {
@@ -240,6 +262,7 @@ class MyRadioGroup extends HTMLElement {
           display: flex;
           flex-direction: column;
           gap: var(--_radio-group-gap);
+          position: relative;
         }
 
         .radio-group.horizontal {
@@ -252,13 +275,18 @@ class MyRadioGroup extends HTMLElement {
         .group-label {
           font-size: var(--_global-font-size-sm);
           font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-text-primary);
+          color: var(--_global-color-on-surface);
           line-height: var(--_global-line-height-tight);
           margin-bottom: var(--_global-spacing-sm);
+          font-family: var(--_global-font-family-sans);
         }
 
         .group-label.required::after {
           content: ' *';
+          color: var(--_global-color-error);
+        }
+
+        .group-label.error {
           color: var(--_global-color-error);
         }
 
@@ -277,16 +305,44 @@ class MyRadioGroup extends HTMLElement {
           --_radio-group-gap: var(--_global-spacing-md);
           --_radio-group-gap-horizontal: var(--_global-spacing-lg);
         }
+
+        /* Error state styling */
+        :host([error]) .group-label {
+          color: var(--_global-color-error);
+        }
+
+        /* Enhanced accessibility */
+        :host(:focus-within) .radio-group::before {
+          content: '';
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          right: -2px;
+          bottom: -2px;
+          border: 2px solid var(--_global-color-primary);
+          border-radius: var(--_global-border-radius-sm);
+          opacity: 0.3;
+          pointer-events: none;
+          z-index: -1;
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+          :host(:focus-within) .radio-group::before {
+            transition: none;
+          }
+        }
       </style>
 
-      ${this.label ? `<div class="group-label ${this.required ? 'required' : ''}">${this.label}</div>` : ''}
+      ${this.label ? `<div class="group-label ${this.required ? 'required' : ''} ${this.error ? 'error' : ''}">${this.label}</div>` : ''}
       
       <div 
         class="radio-group ${this.layout === 'horizontal' ? 'horizontal' : ''}"
         role="radiogroup"
-        ${this.label ? `aria-label="${this.label}"` : ''}
+        ${this.label ? `aria-labelledby="radio-group-label"` : ''}
         ${this.disabled ? 'aria-disabled="true"' : ''}
         ${this.required ? 'aria-required="true"' : ''}
+        ${this.error ? 'aria-invalid="true"' : ''}
       >
         <slot></slot>
       </div>
@@ -297,262 +353,4 @@ class MyRadioGroup extends HTMLElement {
 // Register the custom element only if it hasn't been registered already
 if (!customElements.get('my-radio-group')) {
   customElements.define('my-radio-group', MyRadioGroup);
-}
-
-/**
- * MyntUI my-radio Component  
- * Individual radio button component that works with my-radio-group
- */
-
-class MyRadio extends HTMLElement {
-  constructor() {
-    super();
-    
-    // Create Shadow DOM for encapsulation
-    this.attachShadow({ mode: 'open' });
-    
-    // Bind event handlers
-    this.handleClick = this.handleClick.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    
-    // Initialize component
-    this.render();
-    this.attachEventListeners();
-  }
-
-  // Define which attributes to observe for changes
-  static get observedAttributes() {
-    return ['checked', 'disabled', 'label', 'name', 'value', 'size'];
-  }
-
-  // Handle attribute changes
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.render();
-      this.attachEventListeners();
-    }
-  }
-
-  // Getters and setters
-  get checked() {
-    return this.hasAttribute('checked');
-  }
-
-  set checked(value) {
-    if (value) {
-      this.setAttribute('checked', '');
-    } else {
-      this.removeAttribute('checked');
-    }
-  }
-
-  get disabled() {
-    return this.hasAttribute('disabled');
-  }
-
-  set disabled(value) {
-    if (value) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
-    }
-  }
-
-  get label() {
-    return this.getAttribute('label') || '';
-  }
-
-  set label(value) {
-    this.setAttribute('label', value);
-  }
-
-  get name() {
-    return this.getAttribute('name') || '';
-  }
-
-  set name(value) {
-    this.setAttribute('name', value);
-  }
-
-  get value() {
-    return this.getAttribute('value') || '';
-  }
-
-  set value(value) {
-    this.setAttribute('value', value);
-  }
-
-  get size() {
-    return this.getAttribute('size') || 'md';
-  }
-
-  set size(value) {
-    this.setAttribute('size', value);
-  }
-
-  // Event handlers
-  handleClick(event) {
-    if (this.disabled) {
-      event.preventDefault();
-      return;
-    }
-
-    this.select();
-  }
-
-  handleKeyDown(event) {
-    if (this.disabled) return;
-
-    if (event.key === ' ') {
-      event.preventDefault();
-      this.select();
-    }
-  }
-
-  // Select this radio
-  select() {
-    if (!this.checked) {
-      this.checked = true;
-      
-      // Emit change event that the radio group will handle
-      this.dispatchEvent(new CustomEvent('change', {
-        detail: {
-          checked: true,
-          value: this.value,
-          name: this.name
-        },
-        bubbles: true
-      }));
-    }
-  }
-
-  // Focus method for keyboard navigation
-  focus() {
-    const radioContainer = this.shadowRoot.querySelector('.radio-container');
-    if (radioContainer) {
-      radioContainer.focus();
-    }
-  }
-
-  // Attach event listeners
-  attachEventListeners() {
-    const radioContainer = this.shadowRoot.querySelector('.radio-container');
-    if (radioContainer) {
-      // Remove existing listeners
-      radioContainer.removeEventListener('click', this.handleClick);
-      radioContainer.removeEventListener('keydown', this.handleKeyDown);
-      
-      // Add new listeners
-      radioContainer.addEventListener('click', this.handleClick);
-      radioContainer.addEventListener('keydown', this.handleKeyDown);
-    }
-  }
-
-  // Render the component
-  render() {
-    this.shadowRoot.innerHTML = `
-      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-      <style>
-        :host {
-          /* Component-specific variables using global variables */
-          --_radio-size: 20px;
-          --_radio-color: var(--_global-color-primary);
-          --_radio-color-disabled: var(--_global-color-gray-400);
-          
-          display: inline-flex;
-          align-items: flex-start;
-          gap: var(--_global-spacing-sm);
-          cursor: pointer;
-          user-select: none;
-          line-height: var(--_global-line-height-normal);
-        }
-
-        :host([disabled]) {
-          opacity: 0.5;
-          cursor: not-allowed;
-          pointer-events: none;
-        }
-
-        .radio-container {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--_global-spacing-sm);
-          cursor: pointer;
-          outline: none;
-        }
-
-        .radio-container:focus .radio-icon {
-          box-shadow: 0 0 0 2px var(--_global-color-border-focus);
-          border-radius: 50%;
-        }
-
-        .radio-icon {
-          width: var(--_radio-size);
-          height: var(--_radio-size);
-          color: var(--_radio-color);
-          transition: color var(--_global-transition-fast);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: var(--_radio-size);
-          line-height: 1;
-        }
-
-        .radio-icon.unchecked {
-          color: var(--_global-color-gray-600);
-        }
-
-        .radio-icon:hover {
-          color: var(--_radio-color);
-          opacity: 0.8;
-        }
-
-        .label {
-          color: var(--_global-color-text-primary);
-          font-size: var(--_global-font-size-md);
-          font-weight: var(--_global-font-weight-normal);
-          line-height: var(--_global-line-height-normal);
-          cursor: pointer;
-        }
-
-        /* Size variants */
-        :host([size="sm"]) {
-          --_radio-size: 16px;
-        }
-
-        :host([size="lg"]) {
-          --_radio-size: 24px;
-        }
-
-        /* Disabled state */
-        :host([disabled]) .radio-icon {
-          color: var(--_radio-color-disabled);
-        }
-
-        :host([disabled]) .label {
-          color: var(--_global-color-text-muted);
-        }
-      </style>
-
-      <div 
-        class="radio-container"
-        role="radio"
-        aria-checked="${this.checked}"
-        aria-label="${this.label || 'radio button'}"
-        ${this.disabled ? 'aria-disabled="true"' : ''}
-        tabindex="${this.getAttribute('tabindex') || '0'}"
-      >
-        <span class="material-icons radio-icon ${!this.checked ? 'unchecked' : ''}">
-          ${this.checked ? 'radio_button_checked' : 'radio_button_unchecked'}
-        </span>
-        
-        ${this.label ? `<span class="label">${this.label}</span>` : '<slot></slot>'}
-      </div>
-    `;
-  }
-}
-
-// Register the custom element only if it hasn't been registered already
-if (!customElements.get('my-radio')) {
-  customElements.define('my-radio', MyRadio);
 }
