@@ -287,6 +287,16 @@ class MyInput extends MyntUIBaseComponent {
         return this.generateCurrencyInputElement(commonAttributes);
       case 'phone':
         return this.generatePhoneInputElement(commonAttributes);
+      case 'password':
+        return this.generatePasswordInputElement(commonAttributes);
+      case 'file':
+        return this.generateFileInputElement(commonAttributes);
+      case 'image':
+        return this.generateImageInputElement(commonAttributes);
+      case 'range':
+        return this.generateRangeInputElement(commonAttributes);
+      case 'color':
+        return this.generateColorInputElement(commonAttributes);
       case 'date':
       case 'datetime-local':
       case 'time':
@@ -308,6 +318,22 @@ class MyInput extends MyntUIBaseComponent {
     if (minLength !== null) typeAttributes.push(`minlength="${minLength}"`);
     if (maxLength !== null) typeAttributes.push(`maxlength="${maxLength}"`);
     if (pattern) typeAttributes.push(`pattern="${pattern}"`);
+
+    // Add type-specific classes for better styling
+    const additionalClasses = [];
+    if (type === 'search') {
+      additionalClasses.push('mynt-search-input');
+    } else if (type === 'password') {
+      additionalClasses.push('mynt-password-input');
+    }
+
+    if (additionalClasses.length > 0) {
+      const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
+      const classIndex = commonAttributes.indexOf(currentClass);
+      if (currentClass && classIndex !== -1) {
+        commonAttributes[classIndex] = currentClass.replace('"', ` ${additionalClasses.join(' ')}"');
+      }
+    }
 
     return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
   }
@@ -335,6 +361,13 @@ class MyInput extends MyntUIBaseComponent {
     if (min !== null) typeAttributes.push(`min="${min}"`);
     if (max !== null) typeAttributes.push(`max="${max}"`);
     if (type === 'date-of-birth' && !max) typeAttributes.push(`max="${new Date().toISOString().split('T')[0]}"`);
+
+    // Add date-specific styling
+    const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
+    const classIndex = commonAttributes.indexOf(currentClass);
+    if (currentClass && classIndex !== -1) {
+      commonAttributes[classIndex] = currentClass.replace('"', ' mynt-date-input"');
+    }
 
     // Add enhanced picker attributes based on config
     if (typeConfig.enableNativeInput !== false) {
@@ -617,6 +650,170 @@ class MyInput extends MyntUIBaseComponent {
     ];
 
     return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+  }
+
+  // Generate password input with visibility toggle
+  generatePasswordInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.password', {});
+    const typeAttributes = ['type="password"'];
+    
+    // Add password-specific styling
+    const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
+    const classIndex = commonAttributes.indexOf(currentClass);
+    if (currentClass && classIndex !== -1) {
+      commonAttributes[classIndex] = currentClass.replace('"', ' mynt-password-input"');
+    }
+
+    const passwordId = `password-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="relative w-full">
+        <input ${[...typeAttributes, ...commonAttributes, `id="${passwordId}"`].join(' ')} />
+        ${typeConfig.toggleVisibility ? `
+          <button 
+            type="button" 
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-outline hover:text-primary transition-colors"
+            onclick="this.parentElement.querySelector('input').type = this.parentElement.querySelector('input').type === 'password' ? 'text' : 'password'; this.innerHTML = this.parentElement.querySelector('input').type === 'password' ? '👁️' : '🙈';"
+            aria-label="Toggle password visibility"
+            tabindex="-1"
+          >
+            👁️
+          </button>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // Generate file input with drag and drop
+  generateFileInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.file', {});
+    const typeAttributes = ['type="file"'];
+    
+    if (typeConfig.multiple) typeAttributes.push('multiple');
+    if (typeConfig.accept && typeConfig.accept !== '*') typeAttributes.push(`accept="${typeConfig.accept}"`);
+
+    // Add file-specific styling
+    const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
+    const classIndex = commonAttributes.indexOf(currentClass);
+    if (currentClass && classIndex !== -1) {
+      commonAttributes[classIndex] = currentClass.replace('"', ' mynt-file-input"');
+    }
+
+    const fileId = `file-${Math.random().toString(36).substr(2, 9)}`;
+    
+    if (typeConfig.dragAndDrop) {
+      return `
+        <div class="relative w-full">
+          <input ${[...typeAttributes, ...commonAttributes, `id="${fileId}"`, 'class="sr-only"'].join(' ')} />
+          <label 
+            for="${fileId}"
+            class="flex flex-col items-center justify-center w-full h-32 border-2 border-outline-variant border-dashed rounded-lg cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors"
+          >
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg class="w-8 h-8 mb-4 text-outline" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
+              </svg>
+              <p class="mb-2 text-sm text-outline">
+                <span class="font-semibold">Click to upload</span> or drag and drop
+              </p>
+              <p class="text-xs text-outline-variant">Max size: ${typeConfig.maxSize || '10MB'}</p>
+            </div>
+          </label>
+        </div>
+      `;
+    }
+
+    return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+  }
+
+  // Generate image input with preview
+  generateImageInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.image', {});
+    const typeAttributes = ['type="file"'];
+    
+    if (typeConfig.multiple) typeAttributes.push('multiple');
+    typeAttributes.push(`accept="${typeConfig.accept || 'image/*'}"`);
+
+    const imageId = `image-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="relative w-full">
+        <input ${[...typeAttributes, ...commonAttributes, `id="${imageId}"`, 'class="sr-only"'].join(' ')} />
+        <label 
+          for="${imageId}"
+          class="flex flex-col items-center justify-center w-full h-40 border-2 border-outline-variant border-dashed rounded-lg cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors"
+        >
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <svg class="w-8 h-8 mb-4 text-outline" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6 6h.01M6 20h36a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v4" />
+            </svg>
+            <p class="mb-2 text-sm text-outline">
+              <span class="font-semibold">Click to upload image</span>
+            </p>
+            <p class="text-xs text-outline-variant">PNG, JPG, GIF up to ${typeConfig.maxSize || '5MB'}</p>
+          </div>
+        </label>
+        ${typeConfig.showPreview ? `
+          <div class="mt-2 preview-container hidden">
+            <img class="w-full h-32 object-cover rounded-lg" alt="Preview" />
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // Generate range input with value display
+  generateRangeInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.range', {});
+    const { min, max, step } = this._schema;
+    const typeAttributes = ['type="range"'];
+    
+    if (min !== null) typeAttributes.push(`min="${min}"`);
+    if (max !== null) typeAttributes.push(`max="${max}"`);
+    if (step !== null) typeAttributes.push(`step="${step}"`);
+
+    const rangeId = `range-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="relative w-full">
+        <input ${[...typeAttributes, ...commonAttributes, `id="${rangeId}"`, 'class="w-full h-2 bg-surface-variant rounded-lg appearance-none cursor-pointer slider"'].join(' ')} />
+        ${typeConfig.showValue ? `
+          <output class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-surface-variant text-surface-on-surface text-sm px-2 py-1 rounded" for="${rangeId}">
+            ${this._value || min || 0}
+          </output>
+        ` : ''}
+        ${typeConfig.showLabels && min !== null && max !== null ? `
+          <div class="flex justify-between text-sm text-outline mt-1">
+            <span>${min}</span>
+            <span>${max}</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // Generate color input with picker
+  generateColorInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.color', {});
+    const typeAttributes = ['type="color"'];
+    
+    const colorId = `color-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+      <div class="flex items-center gap-3">
+        <input ${[...typeAttributes, ...commonAttributes, `id="${colorId}"`, 'class="w-12 h-8 rounded border-0 cursor-pointer"'].join(' ')} />
+        ${typeConfig.showInput ? `
+          <input 
+            type="text" 
+            class="flex-1 px-3 py-2 border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/60" 
+            placeholder="#000000"
+            pattern="^#[0-9A-Fa-f]{6}$"
+            maxlength="7"
+            value="${this._value || '#000000'}"
+          />
+        ` : ''}
+      </div>
+    `;
   }
 
   // Enhanced validation with better error messages
