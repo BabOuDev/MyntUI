@@ -26,6 +26,10 @@ import './components/my-gauge/my-gauge.js';
 import './components/my-progress/my-progress.js';
 import './components/my-sparkline/my-sparkline.js';
 
+// Layout components
+import './components/my-grid/my-grid.js';
+import './components/my-grid/my-grid-item.js';
+
 // Data display components
 import './components/my-data-list/my-data-list.js';
 import './components/my-data-table/my-data-table.js';
@@ -37,6 +41,6 @@ import './components/my-notification/my-notification.js';
 import './components/my-drawer/my-drawer.js';
 
 console.log('MyntUI: Available components loaded successfully');
-console.log('Components ready: my-icon, my-button, my-input, my-toggle, my-checkbox, my-radio, my-radio-group, my-tooltip, my-dropdown, my-gauge, my-progress, my-sparkline, my-data-list, my-data-table, my-data-chart, my-modal, my-notification, my-drawer');
+console.log('Components ready: my-icon, my-button, my-input, my-toggle, my-checkbox, my-radio, my-radio-group, my-tooltip, my-dropdown, my-gauge, my-progress, my-sparkline, my-grid, my-grid-item, my-data-list, my-data-table, my-data-chart, my-modal, my-notification, my-drawer');
 console.log('MyntUI: Global configuration system initialized');
 console.log('Features: All 18 input types • Icon slots • Light/Dark themes • Grid system • Global config');
