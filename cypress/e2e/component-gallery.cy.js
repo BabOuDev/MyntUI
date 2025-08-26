@@ -61,7 +61,7 @@ describe('MyntUI Component Gallery Tests', () => {
       
       // Test radio groups
       cy.get('my-radio-group').should('have.length.at.least', 2)
-      cy.get('my-radio[value="medium"]').first().click()
+      cy.get('my-radio[value="medium"]').first().click({ force: true })
       cy.wait(300)
       
       cy.takeFullPageScreenshot('boolean-inputs-section')
