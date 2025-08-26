@@ -676,6 +676,110 @@ ThemeCompatibilityShowcase.parameters = {
   },
 };
 
+// Enhanced showcase demonstrating all new features
+export const EnhancedFeatureShowcase = () => {
+  const container = document.createElement('div');
+  container.style.cssText = 'max-width: 1200px;';
+  
+  // Header with description
+  const header = document.createElement('div');
+  header.innerHTML = `
+    <h3 style="margin: 0 0 16px 0; font-size: 20px; color: var(--_global-color-primary);">
+      Enhanced Input Component Features
+    </h3>
+    <p style="margin: 0 0 32px 0; font-size: 14px; color: var(--_global-color-on-surface-variant); line-height: 1.5;">
+      This showcase demonstrates all the enhanced features: automatic icon assignment from global config, 
+      conditional icon visibility, theme switching support, and comprehensive input type coverage.
+    </p>
+  `;
+  container.appendChild(header);
+  
+  // Feature grid
+  const featuresGrid = document.createElement('div');
+  featuresGrid.className = 'u-display-grid u-grid-cols-2 u-gap-lg';
+  
+  const features = [
+    { 
+      title: 'Automatic Icons', 
+      description: 'Icons automatically assigned based on input type',
+      inputs: [
+        { type: 'email', label: 'Email (auto mail icon)' },
+        { type: 'password', label: 'Password (auto lock icon)' },
+        { type: 'search', label: 'Search (auto search icon)' },
+        { type: 'date', label: 'Date (auto event icon)' }
+      ]
+    },
+    { 
+      title: 'Theme Compatibility', 
+      description: 'All inputs work perfectly in light and dark themes',
+      inputs: [
+        { type: 'text', label: 'Text Input', variant: 'outlined' },
+        { type: 'email', label: 'Email Input', variant: 'filled' },
+        { type: 'number', label: 'Number Input', variant: 'outlined' },
+        { type: 'textarea', label: 'Textarea', variant: 'filled' }
+      ]
+    },
+    { 
+      title: 'All Input Types', 
+      description: 'Complete support for all required input types',
+      inputs: [
+        { type: 'tel', label: 'Phone Number' },
+        { type: 'url', label: 'Website URL' },
+        { type: 'datetime-local', label: 'Date & Time' },
+        { type: 'time', label: 'Time Only' }
+      ]
+    },
+    { 
+      title: 'Grid Integration', 
+      description: 'Seamless integration with utility grid system',
+      inputs: [
+        { type: 'text', label: 'First Name', placeholder: 'John' },
+        { type: 'text', label: 'Last Name', placeholder: 'Doe' },
+        { type: 'email', label: 'Email', placeholder: 'john@example.com' },
+        { type: 'tel', label: 'Phone', placeholder: '+1 234 567 8900' }
+      ]
+    }
+  ];
+  
+  features.forEach(({ title, description, inputs }) => {
+    const featureSection = document.createElement('div');
+    featureSection.style.cssText = 'padding: 24px; background: var(--_global-color-surface-container-low); border-radius: var(--_global-border-radius-md); border: 1px solid var(--_global-color-outline-variant);';
+    
+    const header = document.createElement('div');
+    header.innerHTML = `
+      <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: var(--_global-font-weight-medium); color: var(--_global-color-primary);">${title}</h4>
+      <p style="margin: 0 0 20px 0; font-size: 13px; color: var(--_global-color-on-surface-variant); line-height: 1.4;">${description}</p>
+    `;
+    featureSection.appendChild(header);
+    
+    const inputsContainer = document.createElement('div');
+    inputsContainer.style.cssText = 'display: flex; flex-direction: column; gap: 16px;';
+    
+    inputs.forEach(({ type, label, variant, placeholder }) => {
+      const input = document.createElement('my-input');
+      input.setAttribute('type', type);
+      input.setAttribute('label', label);
+      if (variant) input.setAttribute('variant', variant);
+      if (placeholder) input.setAttribute('placeholder', placeholder);
+      inputsContainer.appendChild(input);
+    });
+    
+    featureSection.appendChild(inputsContainer);
+    featuresGrid.appendChild(featureSection);
+  });
+  
+  container.appendChild(featuresGrid);
+  
+  return container;
+};
+EnhancedFeatureShowcase.parameters = {
+  docs: {
+    description: {
+      story: 'Comprehensive demonstration of all enhanced input features including automatic icon assignment, theme compatibility, complete input type support, and grid system integration.',
+    },
+  },
+};
+
 // Global configuration showcase
 export const GlobalConfigShowcase = () => {
   const container = document.createElement('div');
