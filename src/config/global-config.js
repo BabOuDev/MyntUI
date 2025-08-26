@@ -13,13 +13,45 @@ export class MyntUIConfig {
         
         // Component sizes used everywhere (buttons, inputs, icons, etc.)
         sizes: {
-          small: 'small',
-          medium: 'medium', // default
-          large: 'large'
+          small: 'sm',
+          medium: 'md', // default
+          large: 'lg'
         },
         
         // Color scheme preferences
         colorScheme: 'auto', // 'light' | 'dark' | 'auto'
+        
+        // TailwindCSS class mappings for consistent styling
+        tailwind: {
+          // Size mappings for components
+          sizes: {
+            sm: 'h-input-sm text-label-medium px-sm',
+            md: 'h-input-md text-body-medium px-md',
+            lg: 'h-input-lg text-body-large px-lg'
+          },
+          // Variant mappings
+          variants: {
+            filled: 'bg-surface-container border-outline-variant',
+            outlined: 'bg-surface border-outline',
+            text: 'bg-transparent border-transparent'
+          },
+          // State classes
+          states: {
+            hover: 'hover:bg-opacity-state-hover',
+            focus: 'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+            active: 'active:bg-opacity-state-pressed',
+            disabled: 'disabled:opacity-50 disabled:cursor-not-allowed',
+            error: 'border-error text-error'
+          },
+          // Common component classes
+          components: {
+            input: 'rounded-md border transition-all duration-medium1 focus-outline',
+            button: 'inline-flex items-center justify-center rounded-md transition-all duration-medium1 font-medium focus-ring state-layer min-w-button',
+            card: 'rounded-lg bg-surface shadow-elevation1 border border-outline-variant',
+            modal: 'rounded-xl bg-surface shadow-elevation4 border border-outline-variant',
+            tooltip: 'rounded px-sm py-xs text-label-small bg-neutral-800 text-white shadow-elevation2'
+          }
+        },
         
         // Spacing/padding system
         spacing: {
@@ -59,8 +91,8 @@ export class MyntUIConfig {
       components: {
         // Input component defaults
         input: {
-          variant: 'outlined', // 'outlined' | 'filled'
-          size: 'medium',
+          variant: 'outlined', // 'outlined' | 'filled' | 'text'
+          size: 'md',
           labelPosition: 'top',
           characterCountThreshold: 80, // Show count when approaching limit
           debounceDelay: 300, // ms for validation debouncing
@@ -77,15 +109,66 @@ export class MyntUIConfig {
             tel: 'phone',
             url: 'link',
             number: 'tag',
-            currency: 'attach_money'
+            currency: 'attach_money',
+            select: 'arrow_drop_down',
+            'dynamic-select': 'search',
+            textarea: 'notes',
+            checkbox: 'check_box_outline_blank',
+            radio: 'radio_button_unchecked'
+          },
+          // Enhanced input type configurations
+          typeConfigs: {
+            'date': {
+              component: 'date-picker',
+              locale: 'auto',
+              format: 'YYYY-MM-DD'
+            },
+            'datetime-local': {
+              component: 'datetime-picker',
+              locale: 'auto',
+              format: 'YYYY-MM-DD HH:mm'
+            },
+            'date-of-birth': {
+              component: 'date-picker',
+              maxDate: 'today',
+              yearRange: 120
+            },
+            'select': {
+              component: 'select-dropdown',
+              searchable: false,
+              clearable: true
+            },
+            'dynamic-select': {
+              component: 'select-dropdown',
+              searchable: true,
+              clearable: true,
+              remote: true
+            },
+            'country': {
+              component: 'country-selector',
+              locale: 'auto',
+              includePhoneCode: true
+            },
+            'currency': {
+              component: 'currency-input',
+              locale: 'auto',
+              symbol: 'auto'
+            },
+            'multiple': {
+              component: 'multi-select',
+              searchable: true,
+              chips: true
+            }
           }
         },
         
         // Button component defaults
         button: {
           variant: 'filled', // 'filled' | 'outlined' | 'text'
-          size: 'medium',
-          rippleEffect: true
+          size: 'md',
+          rippleEffect: true,
+          loadingSpinner: true,
+          iconPosition: 'left' // 'left' | 'right' | 'only'
         },
         
         // Modal component defaults

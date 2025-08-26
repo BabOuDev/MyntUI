@@ -4,10 +4,108 @@ import { globalConfig } from '../src/config/global-config.js';
 
 export default {
   title: 'Components/my-input',
+  component: 'my-input',
   parameters: {
     docs: {
       description: {
-        component: 'A comprehensive Material Design 3 input component with enhanced state layers, floating labels, validation, accessibility, and conditional icon visibility. Supports all required input types from CONTRIBUTING.md with full light/dark theme compatibility and grid system integration.',
+        component: `
+# my-input Component
+
+A comprehensive, accessible input component with clean, Tailwind-inspired design. Features flat borders, subtle focus states, and clean typography while supporting all required HTML5 input types with full accessibility, validation, and conditional icon visibility.
+
+## Key Features
+
+- **18+ Input Types**: Supports all standard HTML5 input types plus custom types
+- **Clean Design**: Tailwind-inspired flat borders and focus rings
+- **Full Accessibility**: WCAG 2.1 compliant with proper ARIA attributes
+- **Flexible Layouts**: Top, left, and floating label positions
+- **Icon Support**: Automatic icon assignment with conditional visibility
+- **Validation**: Built-in validation with custom error messages
+- **Theming**: Light/dark theme support with CSS custom properties
+- **Responsive**: Mobile-first responsive design
+
+## Usage
+
+\`\`\`html
+<!-- Basic usage -->
+<my-input 
+  type="text" 
+  label="Full Name" 
+  placeholder="Enter your name"
+  required>
+</my-input>
+
+<!-- With icon and helper text -->
+<my-input 
+  type="email" 
+  label="Email Address" 
+  placeholder="user@example.com"
+  leading-icon="mail"
+  helper-text="We'll never share your email"
+  required>
+</my-input>
+
+<!-- Floating label variant -->
+<my-input 
+  type="password" 
+  label="Password" 
+  label-position="over"
+  variant="filled"
+  trailing-icon="visibility">
+</my-input>
+\`\`\`
+
+## API Reference
+
+### Attributes
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| \`type\` | string | 'text' | Input type (text, email, password, etc.) |
+| \`label\` | string | '' | Label text |
+| \`placeholder\` | string | '' | Placeholder text |
+| \`value\` | string | '' | Input value |
+| \`name\` | string | '' | Input name attribute |
+| \`variant\` | 'outlined' \\| 'filled' | 'outlined' | Visual variant |
+| \`size\` | 'small' \\| 'medium' \\| 'large' | 'medium' | Input size |
+| \`label-position\` | 'top' \\| 'left' \\| 'over' | 'top' | Label position |
+| \`leading-icon\` | string | '' | Leading icon name |
+| \`trailing-icon\` | string | '' | Trailing icon name |
+| \`helper-text\` | string | '' | Helper text below input |
+| \`required\` | boolean | false | Mark as required |
+| \`disabled\` | boolean | false | Disable input |
+| \`readonly\` | boolean | false | Make read-only |
+| \`character-count\` | boolean | false | Show character count |
+| \`min\` | string | '' | Minimum value (for numbers/dates) |
+| \`max\` | string | '' | Maximum value (for numbers/dates) |
+| \`minlength\` | string | '' | Minimum length |
+| \`maxlength\` | string | '' | Maximum length |
+| \`pattern\` | string | '' | Validation pattern |
+| \`step\` | string | '' | Step increment (for numbers) |
+| \`autocomplete\` | string | '' | Autocomplete hint |
+
+### Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| \`input\` | \`{ value, valid, errors }\` | Fired on input change |
+| \`change\` | \`{ value, valid, errors }\` | Fired on value change |
+| \`focus\` | \`{ value }\` | Fired on focus |
+| \`blur\` | \`{ value, valid, errors }\` | Fired on blur |
+
+### CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| \`--input-border-color\` | rgb(209 213 219) | Border color |
+| \`--input-focus-color\` | rgb(59 130 246) | Focus border color |
+| \`--input-error-color\` | rgb(239 68 68) | Error color |
+| \`--input-background\` | rgb(255 255 255) | Background color |
+| \`--input-text-color\` | rgb(17 24 39) | Text color |
+| \`--input-placeholder-color\` | rgb(107 114 128) | Placeholder color |
+| \`--input-label-color\` | rgb(75 85 99) | Label color |
+| \`--input-helper-color\` | rgb(107 114 128) | Helper text color |
+        `,
       },
     },
   },
@@ -15,873 +113,1426 @@ export default {
     type: {
       control: { type: 'select' },
       options: [
-        'text', 'pattern', 'number', 'integer', 'date', 'datetime-local', 
-        'time', 'date-of-birth', 'select', 'dynamic-select', 'textarea', 
-        'checkbox', 'radio', 'email', 'password', 'url', 'tel', 'search'
+        'text', 'email', 'password', 'url', 'tel', 'search',
+        'number', 'integer', 'pattern',
+        'date', 'datetime-local', 'time', 'date-of-birth',
+        'textarea', 'select', 'dynamic-select',
+        'checkbox', 'radio'
       ],
-      description: 'Input type',
+      description: 'The type of input field',
+      table: {
+        category: 'Content',
+        type: { summary: 'string' },
+        defaultValue: { summary: 'text' },
+      },
     },
     label: {
       control: 'text',
-      description: 'Input label',
+      description: 'The label text for the input',
+      table: {
+        category: 'Content',
+        type: { summary: 'string' },
+      },
     },
     placeholder: {
       control: 'text',
-      description: 'Placeholder text',
+      description: 'Placeholder text shown when input is empty',
+      table: {
+        category: 'Content',
+        type: { summary: 'string' },
+      },
     },
     value: {
       control: 'text',
-      description: 'Input value',
+      description: 'The current value of the input',
+      table: {
+        category: 'Content',
+        type: { summary: 'string' },
+      },
     },
     variant: {
       control: { type: 'select' },
       options: ['outlined', 'filled'],
-      description: 'Input variant style',
+      description: 'Visual style variant',
+      table: {
+        category: 'Appearance',
+        type: { summary: "'outlined' | 'filled'" },
+        defaultValue: { summary: 'outlined' },
+      },
     },
     size: {
       control: { type: 'select' },
       options: ['small', 'medium', 'large'],
-      description: 'Input size',
+      description: 'Size of the input',
+      table: {
+        category: 'Appearance',
+        type: { summary: "'small' | 'medium' | 'large'" },
+        defaultValue: { summary: 'medium' },
+      },
     },
     labelPosition: {
       control: { type: 'select' },
       options: ['top', 'left', 'over'],
-      description: 'Label position',
-    },
-    required: {
-      control: 'boolean',
-      description: 'Mark as required field',
-    },
-    disabled: {
-      control: 'boolean',
-      description: 'Disable the input',
-    },
-    readonly: {
-      control: 'boolean',
-      description: 'Make input read-only',
-    },
-    helperText: {
-      control: 'text',
-      description: 'Helper text below input',
+      description: 'Position of the label',
+      table: {
+        category: 'Layout',
+        type: { summary: "'top' | 'left' | 'over'" },
+        defaultValue: { summary: 'top' },
+      },
     },
     leadingIcon: {
       control: 'text',
-      description: 'Leading icon name',
+      description: 'Icon name for leading icon',
+      table: {
+        category: 'Icons',
+        type: { summary: 'string' },
+      },
     },
     trailingIcon: {
       control: 'text',
-      description: 'Trailing icon name',
+      description: 'Icon name for trailing icon',
+      table: {
+        category: 'Icons',
+        type: { summary: 'string' },
+      },
+    },
+    helperText: {
+      control: 'text',
+      description: 'Helper text shown below the input',
+      table: {
+        category: 'Content',
+        type: { summary: 'string' },
+      },
+    },
+    required: {
+      control: 'boolean',
+      description: 'Whether the field is required',
+      table: {
+        category: 'Validation',
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether the input is disabled',
+      table: {
+        category: 'State',
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    readonly: {
+      control: 'boolean',
+      description: 'Whether the input is read-only',
+      table: {
+        category: 'State',
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
     },
     characterCount: {
       control: 'boolean',
       description: 'Show character count',
+      table: {
+        category: 'Features',
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
     },
   },
 };
 
-const Template = (args) => {
+// Helper function to create input element
+const createInput = (args) => {
   const input = document.createElement('my-input');
   
-  // Set properties
-  if (args.type && args.type !== 'text') input.setAttribute('type', args.type);
-  if (args.label) input.setAttribute('label', args.label);
-  if (args.placeholder) input.setAttribute('placeholder', args.placeholder);
-  if (args.value) input.setAttribute('value', args.value);
-  if (args.variant && args.variant !== 'outlined') input.setAttribute('variant', args.variant);
-  if (args.size && args.size !== 'medium') input.setAttribute('size', args.size);
-  if (args.labelPosition && args.labelPosition !== 'top') input.setAttribute('label-position', args.labelPosition);
-  if (args.helperText) input.setAttribute('helper-text', args.helperText);
-  if (args.leadingIcon) input.setAttribute('leading-icon', args.leadingIcon);
-  if (args.trailingIcon) input.setAttribute('trailing-icon', args.trailingIcon);
-  if (args.required) input.setAttribute('required', '');
-  if (args.disabled) input.setAttribute('disabled', '');
-  if (args.readonly) input.setAttribute('readonly', '');
-  if (args.characterCount) input.setAttribute('character-count', '');
+  // Map all properties
+  Object.entries(args).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      if (typeof value === 'boolean') {
+        if (value) {
+          input.setAttribute(key === 'labelPosition' ? 'label-position' : 
+                           key === 'leadingIcon' ? 'leading-icon' :
+                           key === 'trailingIcon' ? 'trailing-icon' :
+                           key === 'helperText' ? 'helper-text' :
+                           key === 'characterCount' ? 'character-count' : key, '');
+        }
+      } else {
+        input.setAttribute(key === 'labelPosition' ? 'label-position' : 
+                         key === 'leadingIcon' ? 'leading-icon' :
+                         key === 'trailingIcon' ? 'trailing-icon' :
+                         key === 'helperText' ? 'helper-text' : key, value);
+      }
+    }
+  });
 
-  // Add event listeners for demonstration
+  // Add event listeners for demo purposes
   input.addEventListener('input', (e) => {
-    console.log('Input event:', e.detail);
+    console.log('Input changed:', e.detail);
   });
   
   input.addEventListener('change', (e) => {
-    console.log('Change event:', e.detail);
+    console.log('Value changed:', e.detail);
   });
 
   return input;
 };
 
-// Default story
-export const Default = Template.bind({});
-Default.args = {
-  label: 'Email',
-  type: 'email',
-  placeholder: 'Enter your email',
-  variant: 'outlined',
-  size: 'medium',
-  labelPosition: 'top',
-  required: false,
-  disabled: false,
-  readonly: false,
-  characterCount: false,
-};
-
-// Comprehensive Input types showcase
-export const Types = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
-  
-  const types = [
-    { type: 'text', label: 'Full Name', placeholder: 'Enter your full name' },
-    { type: 'pattern', label: 'Pattern Input', placeholder: 'ABC123', pattern: '[A-Z]{3}[0-9]{3}', helperText: 'Format: ABC123' },
-    { type: 'number', label: 'Age', placeholder: '25', min: '0', max: '120' },
-    { type: 'integer', label: 'Quantity', placeholder: '10', min: '1', helperText: 'Whole numbers only' },
-    { type: 'date', label: 'Birth Date', helperText: 'Select your birth date' },
-    { type: 'datetime-local', label: 'Appointment', helperText: 'Select date and time' },
-    { type: 'time', label: 'Preferred Time', helperText: 'Select time' },
-    { type: 'date-of-birth', label: 'Date of Birth', helperText: 'Special date picker for DOB' },
-    { type: 'email', label: 'Email Address', placeholder: 'user@example.com' },
-    { type: 'password', label: 'Password', placeholder: 'Enter password' },
-    { type: 'url', label: 'Website', placeholder: 'https://example.com' },
-    { type: 'tel', label: 'Phone Number', placeholder: '+1 (555) 123-4567' },
-    { type: 'search', label: 'Search', placeholder: 'Search...' },
-    { type: 'textarea', label: 'Description', placeholder: 'Enter detailed description...' },
-    { 
-      type: 'select', 
-      label: 'Country', 
-      helperText: 'Select your country',
-      options: [
-        { label: 'United States', value: 'US' },
-        { label: 'Canada', value: 'CA' },
-        { label: 'United Kingdom', value: 'UK' },
-        { label: 'Australia', value: 'AU' },
-      ]
-    },
-    { type: 'dynamic-select', label: 'City', placeholder: 'Start typing city name...', helperText: 'Dynamic searchable select' },
-    { type: 'checkbox', label: 'I agree to terms', value: 'false' },
-    { type: 'radio', label: 'Newsletter subscription', value: 'false' },
-  ];
-  
-  types.forEach(({ type, label, placeholder, pattern, min, max, helperText, options, value }) => {
-    const input = document.createElement('my-input');
-    input.setAttribute('type', type);
-    input.setAttribute('label', label);
-    if (placeholder) input.setAttribute('placeholder', placeholder);
-    if (pattern) input.setAttribute('pattern', pattern);
-    if (min) input.setAttribute('min', min);
-    if (max) input.setAttribute('max', max);
-    if (helperText) input.setAttribute('helper-text', helperText);
-    if (value) input.setAttribute('value', value);
-    if (options) {
-      // For select type, we need to pass options as schema
-      const schema = { type, label, options, placeholder, helperText };
-      input.setAttribute('schema', JSON.stringify(schema));
-    }
-    container.appendChild(input);
-  });
-  
-  return container;
-};
-Types.parameters = {
-  docs: {
-    description: {
-      story: 'Comprehensive showcase of all supported input types including text, pattern, number, integer, date/time variants, select, dynamic-select, textarea, checkbox, and radio inputs. This covers all input types specified in the CONTRIBUTING.md requirements.',
-    },
+// Default interactive example
+export const Default = {
+  args: {
+    type: 'text',
+    label: 'Full Name',
+    placeholder: 'Enter your full name',
+    helperText: 'This field is required for account setup',
+    required: true,
   },
+  render: (args) => createInput(args),
 };
 
-// Variants showcase
-export const Variants = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 32px; max-width: 400px;';
-  
-  const variants = ['outlined', 'filled'];
-  
-  variants.forEach(variant => {
-    const section = document.createElement('div');
-    section.style.cssText = 'display: flex; flex-direction: column; gap: 16px;';
-    
-    const title = document.createElement('h3');
-    title.textContent = `${variant.charAt(0).toUpperCase()}${variant.slice(1)} Variant`;
-    title.style.cssText = 'margin: 0; font-size: 16px; font-weight: var(--_global-font-weight-medium);';
-    
-    const inputsContainer = document.createElement('div');
-    inputsContainer.style.cssText = 'display: flex; flex-direction: column; gap: 16px;';
-    
-    // Normal
-    const normal = document.createElement('my-input');
-    normal.setAttribute('variant', variant);
-    normal.setAttribute('label', 'Normal');
-    normal.setAttribute('placeholder', 'Enter text');
-    
-    // With value
-    const withValue = document.createElement('my-input');
-    withValue.setAttribute('variant', variant);
-    withValue.setAttribute('label', 'With Value');
-    withValue.setAttribute('value', 'Sample value');
-    
-    // Disabled
-    const disabled = document.createElement('my-input');
-    disabled.setAttribute('variant', variant);
-    disabled.setAttribute('label', 'Disabled');
-    disabled.setAttribute('placeholder', 'Disabled input');
-    disabled.setAttribute('disabled', '');
-    
-    inputsContainer.appendChild(normal);
-    inputsContainer.appendChild(withValue);
-    inputsContainer.appendChild(disabled);
-    
-    section.appendChild(title);
-    section.appendChild(inputsContainer);
-    container.appendChild(section);
-  });
-  
-  return container;
-};
-Variants.parameters = {
-  docs: {
-    description: {
-      story: 'Outlined and filled variants with different states.',
-    },
-  },
-};
-
-// Sizes showcase
-export const Sizes = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 24px; max-width: 400px;';
-  
-  const sizes = ['small', 'medium', 'large'];
-  
-  sizes.forEach(size => {
-    const input = document.createElement('my-input');
-    input.setAttribute('size', size);
-    input.setAttribute('label', `Size ${size}`);
-    input.setAttribute('placeholder', `${size} input`);
-    container.appendChild(input);
-  });
-  
-  return container;
-};
-Sizes.parameters = {
-  docs: {
-    description: {
-      story: 'Different input sizes: small, medium, and large.',
-    },
-  },
-};
-
-// Label positions
-export const LabelPositions = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 32px; max-width: 500px;';
-  
-  const positions = [
-    { position: 'top', label: 'Top Label' },
-    { position: 'left', label: 'Left Label' },
-    { position: 'over', label: 'Over Label (Floating)' }
-  ];
-  
-  positions.forEach(({ position, label }) => {
-    const input = document.createElement('my-input');
-    input.setAttribute('label-position', position);
-    input.setAttribute('label', label);
-    input.setAttribute('placeholder', `Label position: ${position}`);
-    container.appendChild(input);
-  });
-  
-  return container;
-};
-LabelPositions.parameters = {
-  docs: {
-    description: {
-      story: 'Different label positioning options.',
-    },
-  },
-};
-
-// With icons
-export const WithIcons = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 24px; max-width: 400px;';
-  
-  const iconInputs = [
-    { label: 'Search', type: 'search', leadingIcon: 'search', placeholder: 'Search...' },
-    { label: 'Email', type: 'email', leadingIcon: 'mail', placeholder: 'user@example.com' },
-    { label: 'Password', type: 'password', trailingIcon: 'visibility', placeholder: 'Enter password' },
-    { label: 'Phone', type: 'tel', leadingIcon: 'phone', trailingIcon: 'contact_phone', placeholder: '+1 (555) 123-4567' },
-  ];
-  
-  iconInputs.forEach(({ label, type, leadingIcon, trailingIcon, placeholder }) => {
-    const input = document.createElement('my-input');
-    input.setAttribute('type', type);
-    input.setAttribute('label', label);
-    input.setAttribute('placeholder', placeholder);
-    if (leadingIcon) input.setAttribute('leading-icon', leadingIcon);
-    if (trailingIcon) input.setAttribute('trailing-icon', trailingIcon);
-    container.appendChild(input);
-  });
-  
-  return container;
-};
-WithIcons.parameters = {
-  docs: {
-    description: {
-      story: 'Inputs with leading and trailing icons to enhance UX.',
-    },
-  },
-};
-
-// Validation states
-export const ValidationStates = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 24px; max-width: 400px;';
-  
-  // Required field
-  const required = document.createElement('my-input');
-  required.setAttribute('label', 'Required Field');
-  required.setAttribute('placeholder', 'This field is required');
-  required.setAttribute('required', '');
-  required.setAttribute('helper-text', 'This field is required');
-  
-  // With validation
-  const email = document.createElement('my-input');
-  email.setAttribute('type', 'email');
-  email.setAttribute('label', 'Email Validation');
-  email.setAttribute('placeholder', 'Enter valid email');
-  email.setAttribute('value', 'invalid-email');
-  email.setAttribute('helper-text', 'Please enter a valid email address');
-  
-  // Character count
-  const withCount = document.createElement('my-input');
-  withCount.setAttribute('label', 'Description');
-  withCount.setAttribute('placeholder', 'Enter description...');
-  withCount.setAttribute('maxlength', '100');
-  withCount.setAttribute('character-count', '');
-  withCount.setAttribute('helper-text', 'Maximum 100 characters');
-  
-  container.appendChild(required);
-  container.appendChild(email);
-  container.appendChild(withCount);
-  
-  return container;
-};
-ValidationStates.parameters = {
-  docs: {
-    description: {
-      story: 'Input validation states including required fields, validation messages, and character counting.',
-    },
-  },
-};
-
-// States showcase
-export const States = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 24px; max-width: 400px;';
-  
-  const states = [
-    { name: 'Normal', props: { label: 'Normal State', placeholder: 'Enter text' } },
-    { name: 'Focused', props: { label: 'Focused State', placeholder: 'Click to focus', value: 'Sample text' } },
-    { name: 'Disabled', props: { label: 'Disabled State', placeholder: 'Cannot edit', disabled: true } },
-    { name: 'Read Only', props: { label: 'Read Only', value: 'Read only value', readonly: true } },
-    { name: 'Error', props: { label: 'Error State', placeholder: 'Invalid input', 'helper-text': 'This field has an error' } },
-  ];
-  
-  states.forEach(({ name, props }) => {
-    const input = document.createElement('my-input');
-    Object.entries(props).forEach(([key, value]) => {
-      if (typeof value === 'boolean' && value) {
-        input.setAttribute(key, '');
-      } else if (typeof value === 'string') {
-        input.setAttribute(key, value);
-      }
-    });
-    container.appendChild(input);
-  });
-  
-  return container;
-};
-States.parameters = {
-  docs: {
-    description: {
-      story: 'Different input states including normal, focused, disabled, read-only, and error states.',
-    },
-  },
-};
-
-// Textarea
-export const Textarea = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: flex; flex-direction: column; gap: 24px; max-width: 400px;';
-  
-  const textarea = document.createElement('my-input');
-  textarea.setAttribute('type', 'textarea');
-  textarea.setAttribute('label', 'Description');
-  textarea.setAttribute('placeholder', 'Enter a detailed description...');
-  textarea.setAttribute('helper-text', 'Provide as much detail as possible');
-  textarea.setAttribute('character-count', '');
-  textarea.setAttribute('maxlength', '500');
-  
-  container.appendChild(textarea);
-  
-  return container;
-};
-Textarea.parameters = {
-  docs: {
-    description: {
-      story: 'Textarea input for multi-line text input.',
-    },
-  },
-};
-
-// Comprehensive showcase with automatic icon assignment and conditional visibility
-export const ConditionalIconShowcase = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
-  
-  // Header
-  const header = document.createElement('div');
-  header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
-  header.innerHTML = `
-    <h3 style="margin: 0 0 8px 0; font-size: 18px; color: var(--_global-color-primary);">
-      Conditional Icon Visibility & Auto-Assignment
-    </h3>
-    <p style="margin: 0; font-size: 14px; color: var(--_global-color-on-surface-variant);">
-      Icons are automatically assigned based on input type and only shown when relevant. This follows the Material Design guidelines and global config settings.
-    </p>
-  `;
-  container.appendChild(header);
-  
-  const inputTypesWithIcons = [
-    { type: 'email', label: 'Email Address', placeholder: 'user@example.com', expectedIcon: 'mail' },
-    { type: 'password', label: 'Password', placeholder: 'Enter password', expectedIcon: 'lock' },
-    { type: 'search', label: 'Search', placeholder: 'Search...', expectedIcon: 'search' },
-    { type: 'date', label: 'Date', expectedIcon: 'event' },
-    { type: 'datetime-local', label: 'Date & Time', expectedIcon: 'schedule' },
-    { type: 'time', label: 'Time', expectedIcon: 'access_time' },
-    { type: 'date-of-birth', label: 'Date of Birth', expectedIcon: 'cake' },
-    { type: 'tel', label: 'Phone Number', placeholder: '+1 (555) 123-4567', expectedIcon: 'phone' },
-    { type: 'url', label: 'Website', placeholder: 'https://example.com', expectedIcon: 'link' },
-    { type: 'number', label: 'Amount', placeholder: '100', expectedIcon: 'tag' },
-    { type: 'text', label: 'Plain Text', placeholder: 'No automatic icon', expectedIcon: null },
-    { type: 'textarea', label: 'Description', placeholder: 'No automatic icon', expectedIcon: null },
-  ];
-  
-  inputTypesWithIcons.forEach(({ type, label, placeholder, expectedIcon }) => {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
-    
-    const input = document.createElement('my-input');
-    input.setAttribute('type', type);
-    input.setAttribute('label', label);
-    if (placeholder) input.setAttribute('placeholder', placeholder);
-    
-    // Add helper text explaining the expected behavior
-    const helperText = expectedIcon 
-      ? `Auto-assigned icon: ${expectedIcon}` 
-      : 'No automatic icon assigned';
-    input.setAttribute('helper-text', helperText);
-    
-    wrapper.appendChild(input);
-    container.appendChild(wrapper);
-  });
-  
-  return container;
-};
-ConditionalIconShowcase.parameters = {
-  docs: {
-    description: {
-      story: 'Demonstrates automatic icon assignment based on input type with conditional visibility. Icons are only shown when they provide meaningful context to the user, following Material Design principles and the global configuration settings.',
-    },
-  },
-};
-
-// Grid system integration showcase
-export const GridSystemShowcase = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'max-width: 1200px; display: flex; flex-direction: column; gap: 32px;';
-  
-  // Header
-  const header = document.createElement('div');
-  header.innerHTML = `
-    <h3 style="margin: 0 0 16px 0; font-size: 18px; color: var(--_global-color-primary);">
-      Grid System Integration
-    </h3>
-    <p style="margin: 0 0 24px 0; font-size: 14px; color: var(--_global-color-on-surface-variant);">
-      MyntUI inputs work seamlessly with the built-in grid system utilities for responsive layouts.
-    </p>
-  `;
-  container.appendChild(header);
-  
-  // Simple 2-column grid
-  const grid2Col = document.createElement('div');
-  grid2Col.className = 'u-display-grid u-grid-cols-2 u-gap-md';
-  grid2Col.style.cssText = 'margin-bottom: 32px;';
-  
-  const grid2Title = document.createElement('h4');
-  grid2Title.textContent = '2-Column Grid Layout';
-  grid2Title.style.cssText = 'grid-column: 1 / -1; margin: 0 0 16px 0; font-size: 16px;';
-  grid2Col.appendChild(grid2Title);
-  
-  ['First Name', 'Last Name'].forEach((label, index) => {
-    const input = document.createElement('my-input');
-    input.setAttribute('label', label);
-    input.setAttribute('placeholder', `Enter your ${label.toLowerCase()}`);
-    input.setAttribute('required', '');
-    grid2Col.appendChild(input);
-  });
-  
-  container.appendChild(grid2Col);
-  
-  // Responsive 3-column grid
-  const grid3Col = document.createElement('div');
-  grid3Col.className = 'u-display-grid u-grid-cols-1 u-md-grid-cols-3 u-gap-md';
-  grid3Col.style.cssText = 'margin-bottom: 32px;';
-  
-  const grid3Title = document.createElement('h4');
-  grid3Title.textContent = 'Responsive 3-Column Grid (1 col on mobile, 3 cols on tablet+)';
-  grid3Title.style.cssText = 'grid-column: 1 / -1; margin: 0 0 16px 0; font-size: 16px;';
-  grid3Col.appendChild(grid3Title);
-  
-  [
-    { type: 'email', label: 'Email', placeholder: 'user@example.com' },
-    { type: 'tel', label: 'Phone', placeholder: '+1 (555) 123-4567' },
-    { type: 'date', label: 'Birth Date' }
-  ].forEach(({ type, label, placeholder }) => {
-    const input = document.createElement('my-input');
-    input.setAttribute('type', type);
-    input.setAttribute('label', label);
-    if (placeholder) input.setAttribute('placeholder', placeholder);
-    grid3Col.appendChild(input);
-  });
-  
-  container.appendChild(grid3Col);
-  
-  // Mixed span grid
-  const gridMixed = document.createElement('div');
-  gridMixed.className = 'u-display-grid u-grid-cols-4 u-gap-md';
-  gridMixed.style.cssText = 'margin-bottom: 32px;';
-  
-  const gridMixedTitle = document.createElement('h4');
-  gridMixedTitle.textContent = 'Mixed Column Spans';
-  gridMixedTitle.style.cssText = 'grid-column: 1 / -1; margin: 0 0 16px 0; font-size: 16px;';
-  gridMixed.appendChild(gridMixedTitle);
-  
-  // Full width input
-  const fullInput = document.createElement('my-input');
-  fullInput.className = 'u-col-span-full';
-  fullInput.setAttribute('type', 'textarea');
-  fullInput.setAttribute('label', 'Full Width Description');
-  fullInput.setAttribute('placeholder', 'This textarea spans all 4 columns...');
-  gridMixed.appendChild(fullInput);
-  
-  // Two half-width inputs
-  const halfInput1 = document.createElement('my-input');
-  halfInput1.className = 'u-col-span-2';
-  halfInput1.setAttribute('label', 'Half Width 1');
-  halfInput1.setAttribute('placeholder', 'Spans 2 columns');
-  gridMixed.appendChild(halfInput1);
-  
-  const halfInput2 = document.createElement('my-input');
-  halfInput2.className = 'u-col-span-2';
-  halfInput2.setAttribute('label', 'Half Width 2');
-  halfInput2.setAttribute('placeholder', 'Spans 2 columns');
-  gridMixed.appendChild(halfInput2);
-  
-  container.appendChild(gridMixed);
-  
-  return container;
-};
-GridSystemShowcase.parameters = {
-  docs: {
-    description: {
-      story: 'Demonstrates how MyntUI inputs integrate with the grid system utilities for responsive layouts. Uses utility classes like u-grid-cols-2, u-md-grid-cols-3, u-col-span-full, etc.',
-    },
-  },
-};
-
-// Theme compatibility showcase
-export const ThemeCompatibilityShowcase = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'max-width: 800px;';
-  
-  // Theme controls
-  const controls = document.createElement('div');
-  controls.style.cssText = 'margin-bottom: 32px; padding: 16px; background: var(--_global-color-surface-container); border-radius: var(--_global-border-radius-md);';
-  controls.innerHTML = `
-    <h4 style="margin: 0 0 16px 0; font-size: 16px;">Theme Controls</h4>
-    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-      <button id="light-theme" style="padding: 8px 16px; border: 1px solid var(--_global-color-outline); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface); cursor: pointer;">
-        Light Theme
-      </button>
-      <button id="dark-theme" style="padding: 8px 16px; border: 1px solid var(--_global-color-outline); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface); cursor: pointer;">
-        Dark Theme
-      </button>
-      <button id="auto-theme" style="padding: 8px 16px; border: 1px solid var(--_global-color-outline); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface); cursor: pointer;">
-        Auto (System)
-      </button>
-    </div>
-  `;
-  container.appendChild(controls);
-  
-  // Theme demonstration grid
-  const themeDemo = document.createElement('div');
-  themeDemo.className = 'u-display-grid u-grid-cols-2 u-gap-md';
-  themeDemo.style.cssText = 'padding: 24px; background: var(--_global-color-surface); border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-md);';
-  
-  [
-    { type: 'email', label: 'Email Address', variant: 'outlined' },
-    { type: 'password', label: 'Password', variant: 'filled' },
-    { type: 'search', label: 'Search', variant: 'outlined' },
-    { type: 'date', label: 'Date', variant: 'filled' }
-  ].forEach(({ type, label, variant }) => {
-    const input = document.createElement('my-input');
-    input.setAttribute('type', type);
-    input.setAttribute('label', label);
-    input.setAttribute('variant', variant);
-    input.setAttribute('helper-text', `${variant} variant in current theme`);
-    themeDemo.appendChild(input);
-  });
-  
-  container.appendChild(themeDemo);
-  
-  // Add theme switching functionality
-  setTimeout(() => {
-    const lightBtn = container.querySelector('#light-theme');
-    const darkBtn = container.querySelector('#dark-theme');
-    const autoBtn = container.querySelector('#auto-theme');
-    
-    lightBtn?.addEventListener('click', () => {
-      document.documentElement.setAttribute('data-color-scheme', 'light');
-      globalConfig.set('theme.colorScheme', 'light');
-    });
-    
-    darkBtn?.addEventListener('click', () => {
-      document.documentElement.setAttribute('data-color-scheme', 'dark');
-      globalConfig.set('theme.colorScheme', 'dark');
-    });
-    
-    autoBtn?.addEventListener('click', () => {
-      document.documentElement.removeAttribute('data-color-scheme');
-      globalConfig.set('theme.colorScheme', 'auto');
-    });
-  }, 100);
-  
-  return container;
-};
-ThemeCompatibilityShowcase.parameters = {
-  docs: {
-    description: {
-      story: 'Demonstrates light/dark theme compatibility. Use the theme controls to switch between light, dark, and auto (system preference) themes. All input variants and states work correctly across themes.',
-    },
-  },
-};
-
-// Enhanced showcase demonstrating all new features
-export const EnhancedFeatureShowcase = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'max-width: 1200px;';
-  
-  // Header with description
-  const header = document.createElement('div');
-  header.innerHTML = `
-    <h3 style="margin: 0 0 16px 0; font-size: 20px; color: var(--_global-color-primary);">
-      Enhanced Input Component Features
-    </h3>
-    <p style="margin: 0 0 32px 0; font-size: 14px; color: var(--_global-color-on-surface-variant); line-height: 1.5;">
-      This showcase demonstrates all the enhanced features: automatic icon assignment from global config, 
-      conditional icon visibility, theme switching support, and comprehensive input type coverage.
-    </p>
-  `;
-  container.appendChild(header);
-  
-  // Feature grid
-  const featuresGrid = document.createElement('div');
-  featuresGrid.className = 'u-display-grid u-grid-cols-2 u-gap-lg';
-  
-  const features = [
-    { 
-      title: 'Automatic Icons', 
-      description: 'Icons automatically assigned based on input type',
-      inputs: [
-        { type: 'email', label: 'Email (auto mail icon)' },
-        { type: 'password', label: 'Password (auto lock icon)' },
-        { type: 'search', label: 'Search (auto search icon)' },
-        { type: 'date', label: 'Date (auto event icon)' }
-      ]
-    },
-    { 
-      title: 'Theme Compatibility', 
-      description: 'All inputs work perfectly in light and dark themes',
-      inputs: [
-        { type: 'text', label: 'Text Input', variant: 'outlined' },
-        { type: 'email', label: 'Email Input', variant: 'filled' },
-        { type: 'number', label: 'Number Input', variant: 'outlined' },
-        { type: 'textarea', label: 'Textarea', variant: 'filled' }
-      ]
-    },
-    { 
-      title: 'All Input Types', 
-      description: 'Complete support for all required input types',
-      inputs: [
-        { type: 'tel', label: 'Phone Number' },
-        { type: 'url', label: 'Website URL' },
-        { type: 'datetime-local', label: 'Date & Time' },
-        { type: 'time', label: 'Time Only' }
-      ]
-    },
-    { 
-      title: 'Grid Integration', 
-      description: 'Seamless integration with utility grid system',
-      inputs: [
-        { type: 'text', label: 'First Name', placeholder: 'John' },
-        { type: 'text', label: 'Last Name', placeholder: 'Doe' },
-        { type: 'email', label: 'Email', placeholder: 'john@example.com' },
-        { type: 'tel', label: 'Phone', placeholder: '+1 234 567 8900' }
-      ]
-    }
-  ];
-  
-  features.forEach(({ title, description, inputs }) => {
-    const featureSection = document.createElement('div');
-    featureSection.style.cssText = 'padding: 24px; background: var(--_global-color-surface-container-low); border-radius: var(--_global-border-radius-md); border: 1px solid var(--_global-color-outline-variant);';
-    
-    const header = document.createElement('div');
-    header.innerHTML = `
-      <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: var(--_global-font-weight-medium); color: var(--_global-color-primary);">${title}</h4>
-      <p style="margin: 0 0 20px 0; font-size: 13px; color: var(--_global-color-on-surface-variant); line-height: 1.4;">${description}</p>
+// Documentation showcase - comprehensive overview
+export const Documentation = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = `
+      max-width: 1200px;
+      padding: 24px;
+      background: rgb(249 250 251);
+      border-radius: 12px;
+      border: 1px solid rgb(229 231 235);
     `;
-    featureSection.appendChild(header);
     
-    const inputsContainer = document.createElement('div');
-    inputsContainer.style.cssText = 'display: flex; flex-direction: column; gap: 16px;';
+    container.innerHTML = `
+      <div style="margin-bottom: 32px;">
+        <h2 style="margin: 0 0 16px 0; font-size: 24px; font-weight: 700; color: rgb(17 24 39);">
+          📝 my-input Documentation
+        </h2>
+        <p style="margin: 0 0 24px 0; font-size: 16px; color: rgb(107 114 128); line-height: 1.6;">
+          A comprehensive input component featuring clean, Tailwind-inspired design with extensive functionality and accessibility features.
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div style="padding: 16px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;">
+            <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(59 130 246);">✨ Features</h4>
+            <ul style="margin: 0; padding-left: 16px; font-size: 14px; color: rgb(75 85 99); line-height: 1.5;">
+              <li>18+ input types supported</li>
+              <li>Clean, flat design</li>
+              <li>Full accessibility (WCAG 2.1)</li>
+              <li>Icon support with auto-assignment</li>
+              <li>Built-in validation</li>
+            </ul>
+          </div>
+          
+          <div style="padding: 16px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;">
+            <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(16 185 129);">🎨 Design</h4>
+            <ul style="margin: 0; padding-left: 16px; font-size: 14px; color: rgb(75 85 99); line-height: 1.5;">
+              <li>Tailwind-inspired aesthetics</li>
+              <li>Consistent spacing & typography</li>
+              <li>Subtle focus rings</li>
+              <li>Light/dark theme support</li>
+              <li>Responsive design</li>
+            </ul>
+          </div>
+          
+          <div style="padding: 16px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;">
+            <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(245 158 11);">⚙️ Flexibility</h4>
+            <ul style="margin: 0; padding-left: 16px; font-size: 14px; color: rgb(75 85 99); line-height: 1.5;">
+              <li>Multiple layout options</li>
+              <li>Customizable via CSS props</li>
+              <li>Framework agnostic</li>
+              <li>Global configuration</li>
+              <li>Event-driven architecture</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div style="padding: 16px; background: rgb(254 249 195); border: 1px solid rgb(251 191 36); border-radius: 8px; border-left: 4px solid rgb(245 158 11);">
+          <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(146 64 14);">💡 Quick Start</h4>
+          <p style="margin: 0; font-size: 14px; color: rgb(146 64 14); line-height: 1.5;">
+            Explore the stories below to see all input types, states, and configuration options in action. 
+            Each story demonstrates specific features with interactive examples and code snippets.
+          </p>
+        </div>
+      </div>
+    `;
     
-    inputs.forEach(({ type, label, variant, placeholder }) => {
-      const input = document.createElement('my-input');
-      input.setAttribute('type', type);
-      input.setAttribute('label', label);
-      if (variant) input.setAttribute('variant', variant);
-      if (placeholder) input.setAttribute('placeholder', placeholder);
-      inputsContainer.appendChild(input);
-    });
-    
-    featureSection.appendChild(inputsContainer);
-    featuresGrid.appendChild(featureSection);
-  });
-  
-  container.appendChild(featuresGrid);
-  
-  return container;
-};
-EnhancedFeatureShowcase.parameters = {
-  docs: {
-    description: {
-      story: 'Comprehensive demonstration of all enhanced input features including automatic icon assignment, theme compatibility, complete input type support, and grid system integration.',
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Complete documentation overview with features, design principles, and quick start guide.',
+      },
     },
   },
 };
 
-// Global configuration showcase
-export const GlobalConfigShowcase = () => {
-  const container = document.createElement('div');
-  container.style.cssText = 'max-width: 1000px;';
-  
-  // Configuration controls
-  const configControls = document.createElement('div');
-  configControls.style.cssText = 'margin-bottom: 32px; padding: 20px; background: var(--_global-color-surface-container); border-radius: var(--_global-border-radius-md);';
-  configControls.innerHTML = `
-    <h4 style="margin: 0 0 20px 0; font-size: 16px; color: var(--_global-color-primary);">Global Configuration Controls</h4>
+// ========================================
+// INPUT TYPES SHOWCASE
+// ========================================
+
+// Text Input Types
+export const TextInputTypes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
-      <div>
-        <label style="display: block; margin-bottom: 8px; font-weight: var(--_global-font-weight-medium);">Default Label Position:</label>
-        <select id="label-position" style="width: 100%; padding: 8px; border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface);">
-          <option value="top">Top</option>
-          <option value="left">Left</option>
-          <option value="over">Over (Floating)</option>
-        </select>
-      </div>
+    const textTypes = [
+      {
+        type: 'text',
+        label: 'Text Input',
+        placeholder: 'Enter any text...',
+        helperText: 'Basic text input for general text data',
+        icon: 'text_fields'
+      },
+      {
+        type: 'search',
+        label: 'Search Input',
+        placeholder: 'Search for anything...',
+        helperText: 'Optimized for search queries with auto-assigned search icon',
+        leadingIcon: 'search'
+      },
+      {
+        type: 'pattern',
+        label: 'Pattern Input',
+        placeholder: 'ABC123',
+        pattern: '[A-Z]{3}[0-9]{3}',
+        helperText: 'Text input with pattern validation (format: ABC123)',
+        maxlength: '6'
+      },
+    ];
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">📝 Text Input Types</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Basic text inputs for general text data entry and search functionality.</p>
+    `;
+    container.appendChild(header);
+    
+    textTypes.forEach(({ type, label, placeholder, helperText, pattern, maxlength, leadingIcon }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
       
-      <div>
-        <label style="display: block; margin-bottom: 8px; font-weight: var(--_global-font-weight-medium);">Default Size:</label>
-        <select id="default-size" style="width: 100%; padding: 8px; border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface);">
-          <option value="small">Small</option>
-          <option value="medium" selected>Medium</option>
-          <option value="large">Large</option>
-        </select>
-      </div>
+      const input = createInput({ 
+        type, 
+        label, 
+        placeholder, 
+        helperText, 
+        pattern, 
+        maxlength,
+        leadingIcon 
+      });
       
-      <div>
-        <label style="display: block; margin-bottom: 8px; font-weight: var(--_global-font-weight-medium);">Default Variant:</label>
-        <select id="default-variant" style="width: 100%; padding: 8px; border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-sm); background: var(--_global-color-surface); color: var(--_global-color-on-surface);">
-          <option value="outlined" selected>Outlined</option>
-          <option value="filled">Filled</option>
-        </select>
-      </div>
-    </div>
-    
-    <button id="apply-config" style="padding: 12px 24px; background: var(--_global-color-primary); color: var(--_global-color-on-primary); border: none; border-radius: var(--_global-border-radius-sm); cursor: pointer; font-weight: var(--_global-font-weight-medium);">
-      Apply Configuration
-    </button>
-  `;
-  container.appendChild(configControls);
-  
-  // Sample inputs that will reflect the configuration
-  const sampleInputs = document.createElement('div');
-  sampleInputs.id = 'sample-inputs';
-  sampleInputs.className = 'u-display-grid u-grid-cols-2 u-gap-lg';
-  sampleInputs.style.cssText = 'padding: 24px; background: var(--_global-color-surface); border: 1px solid var(--_global-color-outline-variant); border-radius: var(--_global-border-radius-md);';
-  
-  const renderSampleInputs = () => {
-    sampleInputs.innerHTML = '';
-    
-    const inputConfig = globalConfig.get('components.input') || {};
-    const themeConfig = globalConfig.get('theme') || {};
-    
-    [
-      { type: 'text', label: 'Sample Text Input', placeholder: 'Using global config...' },
-      { type: 'email', label: 'Sample Email', placeholder: 'user@example.com' },
-      { type: 'password', label: 'Sample Password', placeholder: 'Password...' },
-      { type: 'textarea', label: 'Sample Textarea', placeholder: 'Multi-line text...' }
-    ].forEach(({ type, label, placeholder }) => {
-      const input = document.createElement('my-input');
-      input.setAttribute('type', type);
-      input.setAttribute('label', label);
-      input.setAttribute('placeholder', placeholder);
-      input.setAttribute('label-position', themeConfig.labelPosition || inputConfig.labelPosition || 'top');
-      input.setAttribute('size', inputConfig.size || 'medium');
-      input.setAttribute('variant', inputConfig.variant || 'outlined');
-      input.setAttribute('helper-text', `Using: ${input.getAttribute('label-position')} label, ${input.getAttribute('size')} size, ${input.getAttribute('variant')} variant`);
-      sampleInputs.appendChild(input);
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="${type}"
+  label="${label}"
+  placeholder="${placeholder}"${pattern ? `\n  pattern="${pattern}"` : ''}${maxlength ? `\n  maxlength="${maxlength}"` : ''}${leadingIcon ? `\n  leading-icon="${leadingIcon}"` : ''}
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
     });
-  };
-  
-  renderSampleInputs();
-  container.appendChild(sampleInputs);
-  
-  // Add configuration change functionality
-  setTimeout(() => {
-    const applyBtn = container.querySelector('#apply-config');
-    const labelPosSelect = container.querySelector('#label-position');
-    const sizeSelect = container.querySelector('#default-size');
-    const variantSelect = container.querySelector('#default-variant');
     
-    applyBtn?.addEventListener('click', () => {
-      // Update global configuration
-      globalConfig.set('theme.labelPosition', labelPosSelect.value);
-      globalConfig.set('components.input.size', sizeSelect.value);
-      globalConfig.set('components.input.variant', variantSelect.value);
-      
-      // Re-render sample inputs
-      renderSampleInputs();
-    });
-  }, 100);
-  
-  return container;
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Text-based input types including basic text, search, and pattern validation inputs.',
+      },
+    },
+  },
 };
-GlobalConfigShowcase.parameters = {
-  docs: {
-    description: {
-      story: 'Demonstrates the global configuration system. Change the default settings and see how new inputs automatically use the updated configuration. This showcases centralized control over themes, component behavior, and API contracts.',
+
+// Contact Input Types
+export const ContactInputTypes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    const contactTypes = [
+      {
+        type: 'email',
+        label: 'Email Address',
+        placeholder: 'user@example.com',
+        helperText: 'Enter a valid email address',
+        leadingIcon: 'mail',
+        required: true
+      },
+      {
+        type: 'tel',
+        label: 'Phone Number',
+        placeholder: '+1 (555) 123-4567',
+        helperText: 'Enter phone number with country code',
+        leadingIcon: 'phone'
+      },
+      {
+        type: 'url',
+        label: 'Website URL',
+        placeholder: 'https://example.com',
+        helperText: 'Enter a valid URL starting with http:// or https://',
+        leadingIcon: 'link'
+      },
+    ];
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">📞 Contact Input Types</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Specialized inputs for contact information with built-in validation and automatic icon assignment.</p>
+    `;
+    container.appendChild(header);
+    
+    contactTypes.forEach(({ type, label, placeholder, helperText, leadingIcon, required }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      const input = createInput({ 
+        type, 
+        label, 
+        placeholder, 
+        helperText, 
+        leadingIcon,
+        required 
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="${type}"
+  label="${label}"
+  placeholder="${placeholder}"
+  leading-icon="${leadingIcon}"${required ? `\n  required` : ''}
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Contact-related input types with automatic validation and icon assignment for email, phone, and URL inputs.',
+      },
+    },
+  },
+};
+
+// Password and Security Input Types
+export const PasswordInputTypes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    const passwordTypes = [
+      {
+        type: 'password',
+        label: 'Password',
+        placeholder: 'Enter your password',
+        helperText: 'Password will be hidden for security',
+        trailingIcon: 'visibility',
+        required: true
+      },
+      {
+        type: 'password',
+        label: 'Confirm Password',
+        placeholder: 'Confirm your password',
+        helperText: 'Re-enter your password to confirm',
+        trailingIcon: 'visibility_off',
+        required: true
+      },
+    ];
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">🔒 Password Input Types</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Secure password inputs with visibility toggle icons and proper security attributes.</p>
+    `;
+    container.appendChild(header);
+    
+    passwordTypes.forEach(({ type, label, placeholder, helperText, trailingIcon, required }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      const input = createInput({ 
+        type, 
+        label, 
+        placeholder, 
+        helperText, 
+        trailingIcon,
+        required 
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="${type}"
+  label="${label}"
+  placeholder="${placeholder}"
+  trailing-icon="${trailingIcon}"${required ? `\n  required` : ''}
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Password input types with proper security attributes and visibility toggle functionality.',
+      },
+    },
+  },
+};
+
+// Numeric Input Types
+export const NumericInputTypes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    const numericTypes = [
+      {
+        type: 'number',
+        label: 'Decimal Number',
+        placeholder: '25.99',
+        min: '0',
+        max: '999.99',
+        step: '0.01',
+        helperText: 'Enter a decimal number (0-999.99)'
+      },
+      {
+        type: 'integer',
+        label: 'Whole Number',
+        placeholder: '42',
+        min: '1',
+        max: '1000',
+        step: '1',
+        helperText: 'Enter a whole number (1-1000)'
+      },
+    ];
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">🔢 Numeric Input Types</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Numeric inputs with range validation and step control for decimal and integer values.</p>
+    `;
+    container.appendChild(header);
+    
+    numericTypes.forEach(({ type, label, placeholder, min, max, step, helperText }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      const input = createInput({ 
+        type, 
+        label, 
+        placeholder, 
+        min, 
+        max, 
+        step,
+        helperText 
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="${type}"
+  label="${label}"
+  placeholder="${placeholder}"
+  min="${min}"
+  max="${max}"
+  step="${step}"
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Numeric input types with range validation and step control for precise number entry.',
+      },
+    },
+  },
+};
+
+// Date and Time Input Types
+export const DateTimeInputTypes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    const dateTimeTypes = [
+      {
+        type: 'date',
+        label: 'Date Picker',
+        helperText: 'Select a date using the date picker',
+        leadingIcon: 'event'
+      },
+      {
+        type: 'datetime-local',
+        label: 'Date & Time',
+        helperText: 'Select both date and time',
+        leadingIcon: 'schedule'
+      },
+      {
+        type: 'time',
+        label: 'Time Picker',
+        helperText: 'Select a time value',
+        leadingIcon: 'access_time'
+      },
+      {
+        type: 'date-of-birth',
+        label: 'Date of Birth',
+        helperText: 'Special date picker optimized for birth dates',
+        leadingIcon: 'cake',
+        max: '2006-01-01'
+      },
+    ];
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">📅 Date & Time Input Types</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Specialized inputs for date and time selection with automatic icon assignment.</p>
+    `;
+    container.appendChild(header);
+    
+    dateTimeTypes.forEach(({ type, label, helperText, leadingIcon, max }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      const input = createInput({ 
+        type, 
+        label, 
+        helperText, 
+        leadingIcon,
+        max 
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="${type}"
+  label="${label}"
+  leading-icon="${leadingIcon}"${max ? `\n  max="${max}"` : ''}
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Date and time input types with specialized pickers and validation for different temporal data needs.',
+      },
+    },
+  },
+};
+
+// Multi-line and Complex Input Types
+export const ComplexInputTypes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">📄 Complex Input Types</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Multi-line text areas and selection inputs for complex data entry.</p>
+    `;
+    container.appendChild(header);
+    
+    // Textarea
+    const textareaWrapper = document.createElement('div');
+    textareaWrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+    
+    const textarea = createInput({
+      type: 'textarea',
+      label: 'Multi-line Text',
+      placeholder: 'Enter your message here...',
+      helperText: 'This is a textarea for longer text input',
+      characterCount: true,
+      maxlength: '500'
+    });
+    
+    const textareaCode = document.createElement('pre');
+    textareaCode.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+    textareaCode.textContent = `<my-input
+  type="textarea"
+  label="Multi-line Text"
+  placeholder="Enter your message here..."
+  maxlength="500"
+  character-count
+  helper-text="This is a textarea for longer text input">
+</my-input>`;
+    
+    textareaWrapper.appendChild(textarea);
+    textareaWrapper.appendChild(textareaCode);
+    container.appendChild(textareaWrapper);
+    
+    // Select dropdown
+    const selectWrapper = document.createElement('div');
+    selectWrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+    
+    const select = document.createElement('my-input');
+    select.setAttribute('type', 'select');
+    select.setAttribute('label', 'Select Options');
+    select.setAttribute('helper-text', 'Choose from predefined options');
+    select.setAttribute('schema', JSON.stringify({
+      type: 'select',
+      label: 'Select Options',
+      options: [
+        { label: 'Option 1', value: '1' },
+        { label: 'Option 2', value: '2' },
+        { label: 'Option 3', value: '3' },
+      ]
+    }));
+    
+    const selectCode = document.createElement('pre');
+    selectCode.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+    selectCode.textContent = `<my-input
+  type="select"
+  label="Select Options"
+  schema='{"options":[
+    {"label":"Option 1","value":"1"},
+    {"label":"Option 2","value":"2"},
+    {"label":"Option 3","value":"3"}
+  ]}'
+  helper-text="Choose from predefined options">
+</my-input>`;
+    
+    selectWrapper.appendChild(select);
+    selectWrapper.appendChild(selectCode);
+    container.appendChild(selectWrapper);
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Complex input types including multi-line textarea with character counting and select dropdown with options.',
+      },
+    },
+  },
+};
+
+// Boolean Input Types
+export const BooleanInputTypes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    const booleanTypes = [
+      {
+        type: 'checkbox',
+        label: 'Accept Terms',
+        value: 'false',
+        helperText: 'Check to accept the terms and conditions'
+      },
+      {
+        type: 'radio',
+        label: 'Newsletter Subscription',
+        value: 'false',
+        helperText: 'Select to subscribe to our newsletter'
+      },
+    ];
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">☑️ Boolean Input Types</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Checkbox and radio inputs for boolean selections and single-choice options.</p>
+    `;
+    container.appendChild(header);
+    
+    booleanTypes.forEach(({ type, label, value, helperText }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      const input = createInput({ 
+        type, 
+        label, 
+        value,
+        helperText 
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="${type}"
+  label="${label}"
+  value="${value}"
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Boolean input types for checkbox and radio button selections.',
+      },
+    },
+  },
+};
+
+// ========================================
+// INPUT STATES SHOWCASE
+// ========================================
+
+// All Input States
+export const InputStates = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    const states = [
+      {
+        label: 'Normal State',
+        props: {
+          type: 'text',
+          label: 'Normal Input',
+          placeholder: 'This is a normal input',
+          helperText: 'Default state with normal styling'
+        },
+        description: 'Default input state with standard border and colors'
+      },
+      {
+        label: 'Focused State',
+        props: {
+          type: 'text',
+          label: 'Focused Input',
+          placeholder: 'Click to see focus state',
+          helperText: 'Focus state shows blue border and ring'
+        },
+        description: 'Interactive focus state with blue border and focus ring'
+      },
+      {
+        label: 'Disabled State',
+        props: {
+          type: 'text',
+          label: 'Disabled Input',
+          placeholder: 'This input is disabled',
+          helperText: 'Disabled inputs cannot be interacted with',
+          disabled: true
+        },
+        description: 'Non-interactive state with reduced opacity'
+      },
+      {
+        label: 'Read-only State',
+        props: {
+          type: 'text',
+          label: 'Read-only Input',
+          value: 'This value cannot be changed',
+          helperText: 'Read-only inputs display data but prevent editing',
+          readonly: true
+        },
+        description: 'Display-only state that shows data but prevents editing'
+      },
+      {
+        label: 'Error State',
+        props: {
+          type: 'email',
+          label: 'Email with Error',
+          value: 'invalid-email',
+          helperText: 'This email address is invalid',
+          required: true
+        },
+        description: 'Error state with red border and error messaging',
+        customSetup: (input) => {
+          // Manually trigger validation to show error state
+          setTimeout(() => {
+            input.dispatchEvent(new Event('blur', { bubbles: true }));
+          }, 100);
+        }
+      },
+      {
+        label: 'Required State',
+        props: {
+          type: 'text',
+          label: 'Required Field',
+          placeholder: 'This field is required',
+          helperText: 'Required fields show an asterisk (*) indicator',
+          required: true
+        },
+        description: 'Required fields display with asterisk indicator'
+      }
+    ];
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">🎭 Input States</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">All available input states showing different interaction and validation modes.</p>
+    `;
+    container.appendChild(header);
+    
+    states.forEach(({ label, props, description, customSetup }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      // State title
+      const title = document.createElement('h4');
+      title.style.cssText = 'margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(17 24 39);';
+      title.textContent = label;
+      wrapper.appendChild(title);
+      
+      // Description
+      const desc = document.createElement('p');
+      desc.style.cssText = 'margin: 0 0 16px 0; font-size: 12px; color: rgb(107 114 128);';
+      desc.textContent = description;
+      wrapper.appendChild(desc);
+      
+      const input = createInput(props);
+      
+      // Apply custom setup if provided
+      if (customSetup) {
+        customSetup(input);
+      }
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      
+      const codeAttributes = Object.entries(props)
+        .filter(([key, value]) => value !== undefined && value !== '' && value !== false)
+        .map(([key, value]) => {
+          if (typeof value === 'boolean') {
+            return key === 'labelPosition' ? `  label-position` : 
+                   key === 'leadingIcon' ? `  leading-icon` :
+                   key === 'trailingIcon' ? `  trailing-icon` :
+                   key === 'helperText' ? `  helper-text` :
+                   key === 'characterCount' ? `  character-count` : `  ${key}`;
+          }
+          return key === 'labelPosition' ? `  label-position="${value}"` : 
+                 key === 'leadingIcon' ? `  leading-icon="${value}"` :
+                 key === 'trailingIcon' ? `  trailing-icon="${value}"` :
+                 key === 'helperText' ? `  helper-text="${value}"` : `  ${key}="${value}"`;
+        })
+        .join('\n');
+        
+      code.textContent = `<my-input\n${codeAttributes}>
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Comprehensive showcase of all input states including normal, focused, disabled, read-only, error, and required states.',
+      },
+    },
+  },
+};
+
+// Variants Showcase
+export const Variants = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">🎨 Input Variants</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Visual style variants with clean, Tailwind-inspired design.</p>
+    `;
+    container.appendChild(header);
+    
+    const variants = [
+      {
+        variant: 'outlined',
+        label: 'Outlined Variant (Default)',
+        description: 'Clean flat border design with focus rings',
+        helperText: 'Default variant with clean borders and subtle styling'
+      },
+      {
+        variant: 'filled',
+        label: 'Filled Variant',
+        description: 'Subtle background fill with bottom indicator',
+        helperText: 'Filled variant with background color and bottom line'
+      }
+    ];
+    
+    variants.forEach(({ variant, label, description, helperText }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      // Variant title
+      const title = document.createElement('h4');
+      title.style.cssText = 'margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(17 24 39);';
+      title.textContent = label;
+      wrapper.appendChild(title);
+      
+      // Description
+      const desc = document.createElement('p');
+      desc.style.cssText = 'margin: 0 0 16px 0; font-size: 12px; color: rgb(107 114 128);';
+      desc.textContent = description;
+      wrapper.appendChild(desc);
+      
+      const input = createInput({
+        type: 'text',
+        label: `${variant.charAt(0).toUpperCase() + variant.slice(1)} Input`,
+        placeholder: `This is a ${variant} input`,
+        variant,
+        helperText
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="text"
+  label="${variant.charAt(0).toUpperCase() + variant.slice(1)} Input"
+  placeholder="This is a ${variant} input"
+  variant="${variant}"
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Visual variants showing outlined (default) and filled styles with clean, flat design.',
+      },
+    },
+  },
+};
+
+// Sizes Showcase
+export const Sizes = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">📏 Input Sizes</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Different size options with consistent spacing and typography.</p>
+    `;
+    container.appendChild(header);
+    
+    const sizes = [
+      {
+        size: 'small',
+        height: '36px',
+        fontSize: '14px',
+        description: 'Compact size for dense layouts'
+      },
+      {
+        size: 'medium',
+        height: '40px',
+        fontSize: '16px',
+        description: 'Default size for most use cases'
+      },
+      {
+        size: 'large',
+        height: '44px',
+        fontSize: '18px',
+        description: 'Larger size for emphasis or accessibility'
+      }
+    ];
+    
+    sizes.forEach(({ size, height, fontSize, description }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      // Size title
+      const title = document.createElement('h4');
+      title.style.cssText = 'margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(17 24 39);';
+      title.textContent = `${size.charAt(0).toUpperCase() + size.slice(1)} Size`;
+      wrapper.appendChild(title);
+      
+      // Description with specs
+      const desc = document.createElement('p');
+      desc.style.cssText = 'margin: 0 0 16px 0; font-size: 12px; color: rgb(107 114 128);';
+      desc.textContent = `${description} (Height: ${height}, Font: ${fontSize})`;
+      wrapper.appendChild(desc);
+      
+      const input = createInput({
+        type: 'text',
+        label: `${size.charAt(0).toUpperCase() + size.slice(1)} Input`,
+        placeholder: `This is a ${size} sized input`,
+        size,
+        helperText: `${size.charAt(0).toUpperCase() + size.slice(1)} size with appropriate spacing and typography`
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="text"
+  label="${size.charAt(0).toUpperCase() + size.slice(1)} Input"
+  placeholder="This is a ${size} sized input"
+  size="${size}"
+  helper-text="${size.charAt(0).toUpperCase() + size.slice(1)} size with appropriate spacing">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Size variations showing small, medium (default), and large inputs with proportional spacing.',
+      },
+    },
+  },
+};
+
+// Label Positions Showcase
+export const LabelPositions = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">🏷️ Label Positions</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Different label positioning options for flexible layout design.</p>
+    `;
+    container.appendChild(header);
+    
+    const positions = [
+      {
+        position: 'top',
+        label: 'Top Position (Default)',
+        description: 'Label positioned above the input field',
+        helperText: 'Standard layout with label above input'
+      },
+      {
+        position: 'left',
+        label: 'Left Position',
+        description: 'Label positioned to the left of the input field',
+        helperText: 'Horizontal layout for compact forms'
+      },
+      {
+        position: 'over',
+        label: 'Floating Position',
+        description: 'Label floats over the input and moves on focus',
+        helperText: 'Material Design floating label style'
+      }
+    ];
+    
+    positions.forEach(({ position, label, description, helperText }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      // Position title
+      const title = document.createElement('h4');
+      title.style.cssText = 'margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(17 24 39);';
+      title.textContent = label;
+      wrapper.appendChild(title);
+      
+      // Description
+      const desc = document.createElement('p');
+      desc.style.cssText = 'margin: 0 0 16px 0; font-size: 12px; color: rgb(107 114 128);';
+      desc.textContent = description;
+      wrapper.appendChild(desc);
+      
+      const input = createInput({
+        type: 'text',
+        label: `${position.charAt(0).toUpperCase() + position.slice(1)} Label`,
+        placeholder: `Label positioned ${position}`,
+        labelPosition: position,
+        helperText
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="text"
+  label="${position.charAt(0).toUpperCase() + position.slice(1)} Label"
+  placeholder="Label positioned ${position}"
+  label-position="${position}"
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Label positioning options including top (default), left, and floating over positions.',
+      },
+    },
+  },
+};
+
+// Icons Showcase
+export const Icons = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">🎯 Icon Support</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Leading and trailing icons with automatic assignment based on input type.</p>
+    `;
+    container.appendChild(header);
+    
+    const iconExamples = [
+      {
+        type: 'email',
+        label: 'Leading Icon',
+        placeholder: 'user@example.com',
+        leadingIcon: 'mail',
+        helperText: 'Icons appear on the left side of the input'
+      },
+      {
+        type: 'password',
+        label: 'Trailing Icon',
+        placeholder: 'Enter password',
+        trailingIcon: 'visibility',
+        helperText: 'Icons appear on the right side of the input'
+      },
+      {
+        type: 'search',
+        label: 'Both Icons',
+        placeholder: 'Search something...',
+        leadingIcon: 'search',
+        trailingIcon: 'clear',
+        helperText: 'Inputs can have both leading and trailing icons'
+      },
+      {
+        type: 'text',
+        label: 'Auto-assigned Icons',
+        placeholder: 'Icons assigned automatically',
+        helperText: 'Some input types get icons automatically (email, search, etc.)'
+      }
+    ];
+    
+    iconExamples.forEach(({ type, label, placeholder, leadingIcon, trailingIcon, helperText }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      // Icon title
+      const title = document.createElement('h4');
+      title.style.cssText = 'margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(17 24 39);';
+      title.textContent = label;
+      wrapper.appendChild(title);
+      
+      // Description
+      const desc = document.createElement('p');
+      desc.style.cssText = 'margin: 0 0 16px 0; font-size: 12px; color: rgb(107 114 128);';
+      desc.textContent = helperText;
+      wrapper.appendChild(desc);
+      
+      const input = createInput({
+        type,
+        label,
+        placeholder,
+        leadingIcon,
+        trailingIcon,
+        helperText: `${type} input with ${leadingIcon ? 'leading' : ''}${leadingIcon && trailingIcon ? ' and ' : ''}${trailingIcon ? 'trailing' : ''} icon${leadingIcon || trailingIcon ? 's' : ' (auto-assigned)'}`
+      });
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      code.textContent = `<my-input
+  type="${type}"
+  label="${label}"
+  placeholder="${placeholder}"${leadingIcon ? `\n  leading-icon="${leadingIcon}"` : ''}${trailingIcon ? `\n  trailing-icon="${trailingIcon}"` : ''}
+  helper-text="${helperText}">
+</my-input>`;
+      
+      wrapper.appendChild(input);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Icon support including leading icons, trailing icons, and automatic icon assignment for specific input types.',
+      },
+    },
+  },
+};
+
+// Validation and Features Showcase
+export const ValidationFeatures = {
+  render: () => {
+    const container = document.createElement('div');
+    container.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; max-width: 1200px;';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.cssText = 'grid-column: 1 / -1; margin-bottom: 16px;';
+    header.innerHTML = `
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: rgb(17 24 39);">✅ Validation & Features</h3>
+      <p style="margin: 0; font-size: 14px; color: rgb(107 114 128);">Advanced features including validation, character counting, and input constraints.</p>
+    `;
+    container.appendChild(header);
+    
+    const features = [
+      {
+        title: 'Character Counting',
+        input: {
+          type: 'textarea',
+          label: 'Message with Character Count',
+          placeholder: 'Type your message...',
+          maxlength: '150',
+          characterCount: true,
+          helperText: 'Character counter shows current/max length'
+        },
+        description: 'Real-time character counting with max length validation'
+      },
+      {
+        title: 'Pattern Validation',
+        input: {
+          type: 'text',
+          label: 'Product Code',
+          placeholder: 'ABC123',
+          pattern: '[A-Z]{3}[0-9]{3}',
+          maxlength: '6',
+          helperText: 'Must match pattern: 3 letters + 3 numbers'
+        },
+        description: 'Custom pattern validation with real-time feedback'
+      },
+      {
+        title: 'Min/Max Length',
+        input: {
+          type: 'password',
+          label: 'Secure Password',
+          placeholder: 'Enter secure password',
+          minlength: '8',
+          maxlength: '50',
+          trailingIcon: 'visibility',
+          helperText: 'Password must be between 8-50 characters'
+        },
+        description: 'Length constraints with validation feedback'
+      },
+      {
+        title: 'Numeric Range',
+        input: {
+          type: 'number',
+          label: 'Age',
+          placeholder: '25',
+          min: '18',
+          max: '120',
+          step: '1',
+          helperText: 'Age must be between 18 and 120'
+        },
+        description: 'Numeric inputs with min/max range validation'
+      }
+    ];
+    
+    features.forEach(({ title, input, description }) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding: 20px; background: rgb(255 255 255); border: 1px solid rgb(229 231 235); border-radius: 8px;';
+      
+      // Feature title
+      const titleEl = document.createElement('h4');
+      titleEl.style.cssText = 'margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: rgb(17 24 39);';
+      titleEl.textContent = title;
+      wrapper.appendChild(titleEl);
+      
+      // Description
+      const desc = document.createElement('p');
+      desc.style.cssText = 'margin: 0 0 16px 0; font-size: 12px; color: rgb(107 114 128);';
+      desc.textContent = description;
+      wrapper.appendChild(desc);
+      
+      const inputEl = createInput(input);
+      
+      const code = document.createElement('pre');
+      code.style.cssText = 'margin: 16px 0 0 0; padding: 12px; background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 6px; font-size: 12px; color: rgb(75 85 99); overflow-x: auto;';
+      
+      const codeAttributes = Object.entries(input)
+        .filter(([key, value]) => value !== undefined && value !== '' && value !== false)
+        .map(([key, value]) => {
+          if (typeof value === 'boolean') {
+            return key === 'characterCount' ? `  character-count` : `  ${key}`;
+          }
+          return key === 'trailingIcon' ? `  trailing-icon="${value}"` :
+                 key === 'helperText' ? `  helper-text="${value}"` : `  ${key}="${value}"`;
+        })
+        .join('\n');
+        
+      code.textContent = `<my-input\n${codeAttributes}>
+</my-input>`;
+      
+      wrapper.appendChild(inputEl);
+      wrapper.appendChild(code);
+      container.appendChild(wrapper);
+    });
+    
+    return container;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Advanced validation and feature examples including character counting, pattern validation, and input constraints.',
+      },
     },
   },
 };

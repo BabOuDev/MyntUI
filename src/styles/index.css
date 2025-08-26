@@ -1,9 +1,10 @@
 /**
- * MyntUI Styles - Complete Import
- * Import this single file to get all MyntUI styles
+ * MyntUI Styles - TailwindCSS Enhanced
+ * Import this single file to get all MyntUI styles with TailwindCSS integration
  */
 
+/* Import TailwindCSS with custom components and utilities */
+@import './tailwind.css';
+
+/* Legacy support - Import existing global variables for components that haven't migrated yet */
 @import './global-variables.css';
-@import './base.css';
-@import './utilities.css';
-@import './component-commons.css';

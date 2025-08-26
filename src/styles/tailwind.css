@@ -1,0 +1,469 @@
+@import 'tailwindcss';
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
+
+/* Import Material Icons */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Root custom properties for dynamic values */
+:root {
+  /* Color scheme variables that update based on theme */
+  --color-primary: theme(colors.primary.DEFAULT);
+  --color-primary-hover: theme(colors.primary.hover);
+  --color-primary-active: theme(colors.primary.active);
+  --color-on-primary: theme(colors.primary.on-primary);
+  
+  --color-secondary: theme(colors.secondary.DEFAULT);
+  --color-secondary-hover: theme(colors.secondary.hover);
+  --color-secondary-active: theme(colors.secondary.active);
+  
+  --color-surface: theme(colors.surface.DEFAULT);
+  --color-on-surface: theme(colors.surface.on-surface);
+  --color-outline: theme(colors.outline.DEFAULT);
+  --color-outline-variant: theme(colors.outline.variant);
+  
+  /* Component sizing */
+  --input-height-sm: theme(height.input-sm);
+  --input-height-md: theme(height.input-md);
+  --input-height-lg: theme(height.input-lg);
+  
+  /* Transitions */
+  --transition-standard: theme(transitionDuration.medium1) theme(transitionTimingFunction.standard);
+  --transition-emphasized: theme(transitionDuration.medium2) theme(transitionTimingFunction.emphasized);
+}
+
+/* Dark theme color scheme */
+[data-color-scheme="dark"] {
+  --color-primary: #D0BCFF;
+  --color-on-primary: #371E73;
+  --color-surface: #10080E;
+  --color-on-surface: #E6E0E9;
+  --color-outline: #938F99;
+  --color-outline-variant: #49454F;
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: theme(fontFamily.sans);
+  line-height: theme(lineHeight.normal);
+  color: theme(colors.surface.on-surface);
+  background-color: theme(colors.surface.DEFAULT);
+}
+
+/* Material Design state layer base class */
+.state-layer {
+  @apply relative overflow-hidden;
+}
+
+.state-layer::before {
+  @apply content-[''] absolute inset-0 bg-current opacity-0 transition-opacity duration-200 pointer-events-none;
+}
+
+.state-layer:hover::before {
+  @apply opacity-state-hover;
+}
+
+.state-layer:focus-visible::before {
+  @apply opacity-state-focus;
+}
+
+.state-layer:active::before {
+  @apply opacity-state-pressed;
+}
+
+/* Focus outline utilities */
+.focus-outline:focus-visible {
+  @apply outline-2 outline-primary outline-offset-2;
+}
+
+.focus-ring:focus-visible {
+  @apply ring-2 ring-primary ring-offset-2;
+}
+
+/* Component base classes */
+.input-base {
+  @apply rounded-md border border-outline-variant bg-surface text-surface-on-surface;
+  @apply transition-all duration-medium1;
+  @apply focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.input-outlined {
+  @apply input-base border-outline;
+}
+
+.input-filled {
+  @apply input-base bg-surface-container border-transparent border-b-2 border-b-outline-variant;
+  @apply rounded-b-none focus:border-b-primary;
+}
+
+.button-base {
+  @apply inline-flex items-center justify-center rounded-md font-medium min-w-button;
+  @apply transition-all duration-medium1 state-layer focus-ring;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.button-filled {
+  @apply button-base bg-primary text-primary-on-primary;
+  @apply hover:shadow-elevation2;
+}
+
+.button-outlined {
+  @apply button-base border border-outline bg-transparent text-primary;
+  @apply hover:bg-primary hover:bg-opacity-state-hover;
+}
+
+.button-text {
+  @apply button-base bg-transparent text-primary;
+  @apply hover:bg-primary hover:bg-opacity-state-hover;
+}
+
+/* Size variants */
+.size-sm {
+  @apply h-component-sm px-sm text-label-medium;
+}
+
+.size-md {
+  @apply h-component-md px-md text-body-medium;
+}
+
+.size-lg {
+  @apply h-component-lg px-lg text-body-large;
+}
+
+/* Card components */
+.card {
+  @apply rounded-lg bg-surface shadow-elevation1 border border-outline-variant;
+  @apply transition-shadow duration-medium1;
+}
+
+.card:hover {
+  @apply shadow-elevation2;
+}
+
+/* Modal and overlay components */
+.modal-backdrop {
+  @apply fixed inset-0 bg-background-overlay z-modal;
+  @apply transition-opacity duration-medium1;
+}
+
+.modal-content {
+  @apply rounded-xl bg-surface shadow-elevation4 border border-outline-variant;
+  @apply transform transition-all duration-medium1;
+}
+
+/* Tooltip styles */
+.tooltip {
+  @apply rounded px-sm py-xs text-label-small bg-neutral-800 text-white shadow-elevation2;
+  @apply z-tooltip pointer-events-none;
+}
+
+/* Loading states */
+.loading-shimmer {
+  @apply relative overflow-hidden;
+}
+
+.loading-shimmer::after {
+  @apply content-[''] absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01s !important;
+    transition-duration: 0.01s !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .input-base,
+  .button-base,
+  .card {
+    @apply border-2;
+  }
+}
+
+/* Print styles */
+@media print {
+  .state-layer::before,
+  .modal-backdrop,
+  .tooltip {
+    @apply hidden;
+  }
+}
+
+/* Custom scrollbar for WebKit browsers */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface-container;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-outline-variant rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-outline;
+}
+
+/* Selection styles */
+::selection {
+  @apply bg-primary bg-opacity-20 text-surface-on-surface;
+}
+
+/* Focus visible polyfill support */
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}
+
+/* Ripple effect animation */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.ripple {
+  @apply absolute inset-0 overflow-hidden rounded-inherit pointer-events-none;
+}
+
+.ripple-wave {
+  @apply absolute bg-current rounded-full;
+  animation: ripple 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.3;
+}
+
+/* Material Icons support */
+.material-icons {
+  @apply font-normal leading-none text-inherit select-none;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  direction: ltr;
+  display: inline-block;
+  font-family: 'Material Icons';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+/* Icon sizing utilities */
+.material-icons.size-xs { font-size: 16px; }
+.material-icons.size-sm { font-size: 20px; }
+.material-icons.size-md { font-size: 24px; }
+.material-icons.size-lg { font-size: 28px; }
+.material-icons.size-xl { font-size: 32px; }
+
+/* Form validation styles */
+.validation-error {
+  @apply border-error text-error;
+}
+
+.validation-success {
+  @apply border-success text-success;
+}
+
+.validation-warning {
+  @apply border-warning text-warning;
+}
+
+/* Component-specific enhancements */
+.floating-label {
+  @apply absolute left-md top-1/2 transform -translate-y-1/2 text-outline pointer-events-none;
+  @apply transition-all duration-medium1 origin-left;
+}
+
+.floating-label.active,
+.floating-label.filled {
+  @apply -top-2 left-2 text-xs bg-surface px-1 text-primary;
+  transform: translateY(0) scale(0.85);
+}
+
+.input-with-icon {
+  @apply pl-10;
+}
+
+.input-icon {
+  @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-outline pointer-events-none;
+}
+
+/* Data table styles */
+.data-table {
+  @apply w-full border-collapse;
+}
+
+.data-table th {
+  @apply bg-surface-container text-left p-md font-medium text-surface-on-surface border-b border-outline-variant;
+}
+
+.data-table td {
+  @apply p-md border-b border-outline-variant last:border-b-0;
+}
+
+.data-table tbody tr:hover {
+  @apply bg-surface-container bg-opacity-50;
+}
+
+/* Notification styles */
+.notification {
+  @apply rounded-lg p-md shadow-elevation3 border-l-4 flex items-start gap-md;
+}
+
+.notification.success {
+  @apply border-l-success bg-success-light text-success;
+}
+
+.notification.error {
+  @apply border-l-error bg-error-light text-error;
+}
+
+.notification.warning {
+  @apply border-l-warning bg-warning-light text-warning;
+}
+
+.notification.info {
+  @apply border-l-info bg-info-light text-info;
+}
+
+/* Progress bar styles */
+.progress-bar {
+  @apply w-full bg-outline-variant rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-primary transition-all duration-medium2 ease-emphasized;
+}
+
+.progress-striped .progress-fill {
+  background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+  background-size: 1rem 1rem;
+  animation: progress-stripe 1s linear infinite;
+}
+
+@keyframes progress-stripe {
+  0% {
+    background-position: 1rem 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* Drawer styles */
+.drawer {
+  @apply fixed top-0 bg-surface shadow-elevation4 border-outline-variant z-drawer;
+  @apply transform transition-transform duration-long1 ease-emphasized;
+}
+
+.drawer-left {
+  @apply left-0 h-full border-r;
+  transform: translateX(-100%);
+}
+
+.drawer-right {
+  @apply right-0 h-full border-l;
+  transform: translateX(100%);
+}
+
+.drawer-top {
+  @apply top-0 w-full border-b;
+  transform: translateY(-100%);
+}
+
+.drawer-bottom {
+  @apply bottom-0 w-full border-t;
+  transform: translateY(100%);
+}
+
+.drawer.open {
+  transform: translateX(0) translateY(0);
+}
+
+/* Utility classes for common patterns */
+.text-ellipsis {
+  @apply truncate;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+
+/* Enhanced focus indicators */
+.focus-enhanced:focus-visible {
+  @apply ring-2 ring-primary ring-offset-2;
+  box-shadow: 
+    0 0 0 2px color-mix(in srgb, theme(colors.primary.DEFAULT) 60%, transparent),
+    0 0 0 4px color-mix(in srgb, theme(colors.primary.DEFAULT) 20%, transparent),
+    0 0 0 8px color-mix(in srgb, theme(colors.primary.DEFAULT) 12%, transparent);
+}
+
+/* Grid system utilities */
+.grid-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid-auto-fill {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+/* Container queries support */
+@container (min-width: 400px) {
+  .container-sm\:text-lg {
+    @apply text-lg;
+  }
+}
+
+@container (min-width: 600px) {
+  .container-md\:text-xl {
+    @apply text-xl;
+  }
+}
+
+/* Enhanced dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-scheme]) {
+    --color-primary: #D0BCFF;
+    --color-on-primary: #371E73;
+    --color-surface: #10080E;
+    --color-on-surface: #E6E0E9;
+    --color-outline: #938F99;
+    --color-outline-variant: #49454F;
+  }
+}
