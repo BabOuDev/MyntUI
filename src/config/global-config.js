@@ -25,31 +25,59 @@ export class MyntUIConfig {
         tailwind: {
           // Size mappings for components
           sizes: {
-            sm: 'h-input-sm text-label-medium px-sm',
-            md: 'h-input-md text-body-medium px-md',
-            lg: 'h-input-lg text-body-large px-lg'
+            sm: 'h-input-sm text-label-medium px-sm py-xs',
+            md: 'h-input-md text-body-medium px-md py-sm',
+            lg: 'h-input-lg text-body-large px-lg py-md'
           },
-          // Variant mappings
+          // Variant mappings for components
           variants: {
-            filled: 'bg-surface-container border-outline-variant',
-            outlined: 'bg-surface border-outline',
-            text: 'bg-transparent border-transparent'
+            input: {
+              filled: 'bg-surface-container border-outline-variant text-surface-on-surface',
+              outlined: 'bg-surface border-outline text-surface-on-surface',
+              underlined: 'bg-transparent border-transparent border-b-2 border-b-outline text-surface-on-surface',
+              text: 'bg-transparent border-transparent text-surface-on-surface'
+            },
+            button: {
+              filled: 'bg-primary text-primary-on-primary',
+              outlined: 'bg-transparent border-2 border-outline text-primary hover:bg-primary/10',
+              text: 'bg-transparent border-transparent text-primary hover:bg-primary/10',
+              'filled-tonal': 'bg-secondary-container text-secondary-on-container',
+              elevated: 'bg-surface shadow-elevation1 text-primary hover:shadow-elevation2'
+            },
+            toggle: {
+              checked: 'bg-primary',
+              unchecked: 'bg-outline',
+              track: 'bg-surface-variant'
+            },
+            checkbox: {
+              checked: 'bg-primary border-primary text-primary-on-primary',
+              unchecked: 'bg-transparent border-outline',
+              indeterminate: 'bg-primary border-primary text-primary-on-primary'
+            }
           },
-          // State classes
+          // State classes for interactive components
           states: {
-            hover: 'hover:bg-opacity-state-hover',
-            focus: 'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-            active: 'active:bg-opacity-state-pressed',
-            disabled: 'disabled:opacity-50 disabled:cursor-not-allowed',
-            error: 'border-error text-error'
+            hover: 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2',
+            focus: 'focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2',
+            active: 'active:bg-opacity-state-pressed active:scale-95',
+            disabled: 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
+            loading: 'opacity-75 cursor-wait',
+            error: 'border-error text-error bg-error/5',
+            success: 'border-success text-success bg-success/5',
+            warning: 'border-warning text-warning bg-warning/5'
           },
-          // Common component classes
+          // Common component base classes
           components: {
-            input: 'rounded-md border transition-all duration-medium1 focus-outline',
-            button: 'inline-flex items-center justify-center rounded-md transition-all duration-medium1 font-medium focus-ring state-layer min-w-button',
-            card: 'rounded-lg bg-surface shadow-elevation1 border border-outline-variant',
-            modal: 'rounded-xl bg-surface shadow-elevation4 border border-outline-variant',
-            tooltip: 'rounded px-sm py-xs text-label-small bg-neutral-800 text-white shadow-elevation2'
+            input: 'rounded-lg border transition-all duration-medium1 focus-outline font-medium',
+            button: 'inline-flex items-center justify-center rounded-full transition-all duration-medium1 font-medium focus-ring state-layer min-w-button',
+            card: 'rounded-lg bg-surface shadow-elevation1 border border-outline-variant p-md',
+            modal: 'rounded-xl bg-surface shadow-elevation4 border border-outline-variant max-w-lg',
+            tooltip: 'rounded-lg px-sm py-xs text-label-small bg-neutral-900 text-neutral-white shadow-elevation2',
+            drawer: 'bg-surface border-outline-variant shadow-elevation2',
+            dropdown: 'bg-surface border border-outline-variant rounded-lg shadow-elevation2 max-h-60 overflow-y-auto',
+            notification: 'rounded-lg shadow-elevation3 p-md border border-outline-variant',
+            progressBar: 'rounded-full bg-surface-variant overflow-hidden',
+            gauge: 'rounded-full border-4 border-surface-variant'
           }
         },
         
@@ -121,43 +149,99 @@ export class MyntUIConfig {
             'date': {
               component: 'date-picker',
               locale: 'auto',
-              format: 'YYYY-MM-DD'
+              format: 'YYYY-MM-DD',
+              showCalendarIcon: true,
+              enableNativeInput: true,
+              minDate: null,
+              maxDate: null
             },
             'datetime-local': {
               component: 'datetime-picker',
               locale: 'auto',
-              format: 'YYYY-MM-DD HH:mm'
+              format: 'YYYY-MM-DD HH:mm',
+              showCalendarIcon: true,
+              enableNativeInput: true,
+              step: 1
+            },
+            'time': {
+              component: 'time-picker',
+              format: '24h', // '12h' | '24h'
+              showClockIcon: true,
+              enableNativeInput: true,
+              step: 1
             },
             'date-of-birth': {
               component: 'date-picker',
+              locale: 'auto',
               maxDate: 'today',
-              yearRange: 120
+              yearRange: 120,
+              showCalendarIcon: true,
+              placeholder: 'Select your date of birth'
             },
             'select': {
               component: 'select-dropdown',
               searchable: false,
-              clearable: true
+              clearable: true,
+              multiple: false,
+              maxHeight: '240px',
+              showArrowIcon: true,
+              placeholder: 'Select an option'
             },
             'dynamic-select': {
               component: 'select-dropdown',
               searchable: true,
               clearable: true,
-              remote: true
+              remote: true,
+              debounceDelay: 300,
+              minSearchLength: 2,
+              loadingText: 'Loading options...',
+              noOptionsText: 'No options found'
             },
             'country': {
               component: 'country-selector',
               locale: 'auto',
-              includePhoneCode: true
+              includePhoneCode: true,
+              includeFlag: true,
+              searchable: true,
+              clearable: true,
+              placeholder: 'Select a country'
             },
             'currency': {
               component: 'currency-input',
               locale: 'auto',
-              symbol: 'auto'
+              symbol: 'auto',
+              precision: 2,
+              allowNegative: false,
+              showSymbol: true,
+              symbolPosition: 'left'
             },
             'multiple': {
               component: 'multi-select',
               searchable: true,
-              chips: true
+              clearable: true,
+              chips: true,
+              maxSelection: null,
+              placeholder: 'Select multiple options',
+              maxHeight: '200px'
+            },
+            'phone': {
+              component: 'phone-input',
+              locale: 'auto',
+              includeCountryCode: true,
+              format: 'international',
+              showFlag: true
+            },
+            'postal-code': {
+              component: 'postal-input',
+              locale: 'auto',
+              format: 'auto',
+              validateFormat: true
+            },
+            'credit-card': {
+              component: 'card-input',
+              showCardType: true,
+              maskNumber: true,
+              validateCard: true
             }
           }
         },
