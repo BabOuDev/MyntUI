@@ -270,7 +270,7 @@ class MyCheckbox extends MyntUIBaseComponent {
     this.emit('change', {
       checked: this.checked,
       indeterminate: this.indeterminate,
-      value: this.value,
+      value: this.checked ? this.value : null,
       name: this.name
     });
   }
@@ -411,9 +411,10 @@ class MyCheckbox extends MyntUIBaseComponent {
       </style>
       
       <label class="${classes.container}">
-        <div class="${classes.checkbox} checkbox-input" 
+        <div class="${classes.checkbox} checkbox-input checkbox-container" 
              role="checkbox" 
              aria-checked="${indeterminate ? 'mixed' : checked.toString()}"
+             aria-label="${label || 'Checkbox'}"
              ${disabled ? 'aria-disabled="true"' : ''}
              ${error ? 'aria-invalid="true"' : ''}
              tabindex="${disabled ? '-1' : '0'}"
@@ -427,10 +428,12 @@ class MyCheckbox extends MyntUIBaseComponent {
         </div>
         
         ${label ? `
-          <span class="${classes.label}">
+          <span class="${classes.label} label">
             ${label}
           </span>
         ` : ''}
+        
+        <slot></slot>
         
         <input type="checkbox" 
                ${name ? `name="${name}"` : ''}
@@ -468,7 +471,8 @@ class MyCheckbox extends MyntUIBaseComponent {
 
   connectedCallback() {
     super.connectedCallback();
-    this.render();
+    // Add small delay to ensure everything is properly set up
+    setTimeout(() => this.render(), 0);
   }
 
   disconnectedCallback() {
