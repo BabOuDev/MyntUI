@@ -1,7 +1,10 @@
 /**
- * MyntUI my-data-list Component
+ * MyntUI my-data-list Component - TailwindCSS Enhanced Version
  * Displays a list of data items, with built-in controls for searching, filtering, sorting, and pagination/infinite scroll
+ * Enhanced with Material Design 3 patterns and TailwindCSS
  */
+
+import { globalConfig } from '../../config/global-config.js';
 
 class MyDataList extends HTMLElement {
   constructor() {
@@ -245,7 +248,8 @@ class MyDataList extends HTMLElement {
 
   // Navigation helpers
   navigateItems(direction) {
-    const items = this.shadowRoot.querySelectorAll('.list-item');
+    const items = this.shadowRoot.querySelectorAll('[role="listitem"]');
+    const classes = this.getTailwindClasses();
     const currentIndex = Array.from(items).findIndex(item => 
       item.classList.contains('focused')
     );
@@ -260,9 +264,15 @@ class MyDataList extends HTMLElement {
     }
     
     // Update focus
-    items.forEach(item => item.classList.remove('focused'));
+    items.forEach(item => {
+      item.classList.remove('focused');
+      // Remove focus styling classes
+      classes.focusedItem.split(' ').forEach(cls => item.classList.remove(cls));
+    });
     if (items[nextIndex]) {
       items[nextIndex].classList.add('focused');
+      // Add focus styling classes
+      classes.focusedItem.split(' ').forEach(cls => items[nextIndex].classList.add(cls));
       items[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
@@ -322,15 +332,15 @@ class MyDataList extends HTMLElement {
   }
 
   // Generate controls HTML
-  generateControls() {
+  generateControls(classes) {
     const hasControls = this.searchable || this.sortable || this.filterable;
     if (!hasControls) return '';
     
     return `
-      <div class="controls-section">
+      <div class="${classes.controlsSection}">
         <slot name="controls">
           ${this.searchable ? `
-            <div class="search-container">
+            <div class="${classes.searchContainer}">
               <my-input 
                 name="list-search"
                 type="text" 
@@ -339,19 +349,19 @@ class MyDataList extends HTMLElement {
                 value="${this._query.searchBy}"
               >
                 <my-icon slot="left" icon="search"></my-icon>
-                ${this._query.searchBy ? '<my-icon slot="right" icon="clear" class="clear-search"></my-icon>' : ''}
+                ${this._query.searchBy ? `<my-icon slot="right" icon="clear" class="${classes.clearSearch}"></my-icon>` : ''}
               </my-input>
             </div>
           ` : ''}
           
           ${this.sortable ? `
-            <div class="sort-container">
+            <div class="${classes.sortContainer}">
               <slot name="sort-controls"></slot>
             </div>
           ` : ''}
           
           ${this.filterable ? `
-            <div class="filter-container">
+            <div class="${classes.filterContainer}">
               <slot name="filter-controls"></slot>
             </div>
           ` : ''}
@@ -361,14 +371,14 @@ class MyDataList extends HTMLElement {
   }
 
   // Generate list items
-  generateListItems() {
+  generateListItems(classes) {
     if (this._rows.length === 0) {
       return `
-        <div class="empty-state">
+        <div class="${classes.emptyState}">
           <slot name="empty">
             <div class="empty-content">
-              <my-icon icon="inbox" size="lg"></my-icon>
-              <p>${this.emptyMessage}</p>
+              <my-icon icon="inbox" size="lg" class="${classes.emptyIcon}"></my-icon>
+              <p class="${classes.emptyText}">${this.emptyMessage}</p>
             </div>
           </slot>
         </div>
@@ -377,17 +387,17 @@ class MyDataList extends HTMLElement {
 
     return this._rows.map((item, index) => `
       <div 
-        class="list-item" 
+        class="${classes.listItem}" 
         data-index="${index}"
         role="listitem"
         tabindex="0"
       >
         <slot name="item" data-item='${JSON.stringify(item)}'>
-          <div class="default-item">
+          <div class="${classes.defaultItem}">
             ${Object.entries(item).map(([key, value]) => `
-              <div class="item-field">
-                <span class="field-label">${key}:</span>
-                <span class="field-value">${value}</span>
+              <div class="${classes.itemField}">
+                <span class="${classes.fieldLabel}">${key}:</span>
+                <span class="${classes.fieldValue}">${value}</span>
               </div>
             `).join('')}
           </div>
@@ -397,14 +407,14 @@ class MyDataList extends HTMLElement {
   }
 
   // Generate pagination controls
-  generatePagination() {
+  generatePagination(classes) {
     if (this.paginationType === 'none') return '';
     
     if (this.paginationType === 'infinite') {
       return `
-        <div class="pagination-section infinite-scroll">
+        <div class="${classes.paginationSection} infinite-scroll">
           ${this._hasMore ? `
-            <button class="load-more-btn" ${this.loading ? 'disabled' : ''}>
+            <button class="${classes.loadMoreBtn}" ${this.loading ? 'disabled' : ''}>
               ${this.loading ? 'Loading...' : 'Load More'}
             </button>
           ` : ''}
@@ -414,13 +424,13 @@ class MyDataList extends HTMLElement {
     
     // Standard pagination
     return `
-      <div class="pagination-section">
-        <div class="page-info"></div>
-        <div class="pagination-controls">
-          <button class="prev-btn" aria-label="Previous page">
+      <div class="${classes.paginationSection}">
+        <div class="${classes.pageInfo}"></div>
+        <div class="${classes.paginationControls}">
+          <button class="${classes.paginationBtn} prev-btn" aria-label="Previous page">
             <my-icon icon="chevron_left"></my-icon>
           </button>
-          <button class="next-btn" aria-label="Next page">
+          <button class="${classes.paginationBtn} next-btn" aria-label="Next page">
             <my-icon icon="chevron_right"></my-icon>
           </button>
         </div>
@@ -500,174 +510,152 @@ class MyDataList extends HTMLElement {
     this.addEventListener('keydown', this.handleKeyDown);
     
     // List item focus management
-    const listItems = this.shadowRoot.querySelectorAll('.list-item');
+    const listItems = this.shadowRoot.querySelectorAll('[role="listitem"]');
+    const classes = this.getTailwindClasses();
     listItems.forEach(item => {
       item.addEventListener('focus', () => {
-        listItems.forEach(i => i.classList.remove('focused'));
+        listItems.forEach(i => {
+          i.classList.remove('focused');
+          classes.focusedItem.split(' ').forEach(cls => i.classList.remove(cls));
+        });
         item.classList.add('focused');
+        classes.focusedItem.split(' ').forEach(cls => item.classList.add(cls));
       });
     });
   }
 
-  // Render the component
+  // Generate TailwindCSS classes for the data list
+  getTailwindClasses() {
+    const config = globalConfig.get('theme.tailwind', {});
+
+    return {
+      container: [
+        'block bg-surface-container-low border border-outline-variant',
+        'rounded-lg shadow-elevation1 overflow-hidden font-sans'
+      ].join(' '),
+
+      headerSection: [
+        'px-lg py-lg border-b border-outline-variant bg-surface-container'
+      ].join(' '),
+
+      controlsSection: [
+        'flex gap-md items-center flex-wrap px-lg py-lg',
+        'bg-surface-container-high border-b border-outline-variant'
+      ].join(' '),
+
+      searchContainer: [
+        'flex-1 min-w-48'
+      ].join(' '),
+
+      sortContainer: [
+        'flex gap-sm items-center'
+      ].join(' '),
+
+      filterContainer: [
+        'flex gap-sm items-center'
+      ].join(' '),
+
+      clearSearch: [
+        'cursor-pointer text-surface-on-surface-variant',
+        'transition-colors duration-short2 hover:text-surface-on-surface'
+      ].join(' '),
+
+      listContainer: [
+        'px-md py-md',
+        this.paginationType === 'infinite' && 'max-h-96 overflow-y-auto'
+      ].filter(Boolean).join(' '),
+
+      listItem: [
+        'bg-surface border border-outline-variant rounded-lg',
+        'px-md py-md mb-sm cursor-pointer outline-none',
+        'transition-all duration-short2 ease-standard',
+        'hover:bg-surface-container hover:-translate-y-px hover:shadow-elevation2',
+        'focus:outline focus:outline-2 focus:outline-primary focus:outline-offset-2',
+        'last:mb-0'
+      ].join(' '),
+
+      focusedItem: [
+        'bg-surface-container'
+      ].join(' '),
+
+      defaultItem: [
+        'flex flex-col gap-xs'
+      ].join(' '),
+
+      itemField: [
+        'flex gap-sm'
+      ].join(' '),
+
+      fieldLabel: [
+        'font-medium text-surface-on-surface-variant min-w-24 flex-shrink-0'
+      ].join(' '),
+
+      fieldValue: [
+        'text-surface-on-surface flex-1'
+      ].join(' '),
+
+      emptyState: [
+        'flex flex-col items-center justify-center py-xl text-center',
+        'text-surface-on-surface-variant'
+      ].join(' '),
+
+      emptyIcon: [
+        'mb-md opacity-50'
+      ].join(' '),
+
+      emptyText: [
+        'm-0 text-body-large'
+      ].join(' '),
+
+      paginationSection: [
+        'flex justify-between items-center px-lg py-md',
+        'border-t border-outline-variant bg-surface-container'
+      ].join(' '),
+
+      pageInfo: [
+        'text-body-small text-surface-on-surface-variant'
+      ].join(' '),
+
+      paginationControls: [
+        'flex gap-sm items-center'
+      ].join(' '),
+
+      paginationBtn: [
+        'bg-surface border border-outline-variant rounded-sm px-sm py-sm',
+        'cursor-pointer transition-all duration-short2 text-surface-on-surface',
+        'hover:bg-surface-container hover:border-outline',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        'focus:outline focus:outline-2 focus:outline-primary focus:outline-offset-2'
+      ].join(' '),
+
+      loadMoreBtn: [
+        'block w-full px-md py-md bg-surface-container',
+        'border border-outline-variant rounded-lg text-surface-on-surface',
+        'cursor-pointer transition-all duration-short2 font-inherit',
+        'hover:bg-surface-container-high',
+        'disabled:opacity-50 disabled:cursor-not-allowed'
+      ].join(' ')
+    };
+  }
+
+  // Render the component with TailwindCSS
   render() {
     // Update query limits
     this._query.limit = this.pageSize;
+    const classes = this.getTailwindClasses();
 
     this.shadowRoot.innerHTML = `
       <style>
+        @import '/src/styles/tailwind.css';
+        
         :host {
-          /* Data list-specific variables using global semantic variables */
-          --_data-list-background: var(--_global-color-surface-container-low);
-          --_data-list-border: 1px solid var(--_global-color-outline-variant);
-          --_data-list-border-radius: var(--_global-border-radius-lg);
-          --_data-list-elevation: var(--_global-elevation-1);
-          
-          --_data-list-item-padding: var(--_global-spacing-md);
-          --_data-list-item-gap: var(--_global-spacing-sm);
-          --_data-list-item-border: 1px solid var(--_global-color-outline-variant);
-          --_data-list-item-border-radius: var(--_global-border-radius-md);
-          --_data-list-item-background: var(--_global-color-surface);
-          --_data-list-item-hover-background: var(--_global-color-surface-container);
-          
-          --_data-list-controls-padding: var(--_global-spacing-lg);
-          --_data-list-controls-gap: var(--_global-spacing-md);
-          --_data-list-controls-border: 1px solid var(--_global-color-outline-variant);
-          
-          --_data-list-transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
-          
           display: block;
-          background: var(--_data-list-background);
-          border: var(--_data-list-border);
-          border-radius: var(--_data-list-border-radius);
-          box-shadow: var(--_data-list-elevation);
-          overflow: hidden;
-          font-family: var(--_global-font-family-sans);
         }
 
-        /* Header section */
-        .header-section {
-          padding: var(--_data-list-controls-padding);
-          border-bottom: var(--_data-list-controls-border);
-          background: var(--_global-color-surface-container);
-        }
-
-        /* Controls section */
-        .controls-section {
-          display: flex;
-          gap: var(--_data-list-controls-gap);
-          flex-wrap: wrap;
-          align-items: center;
-          padding: var(--_data-list-controls-padding);
-          background: var(--_global-color-surface-container-high);
-          border-bottom: var(--_data-list-controls-border);
-        }
-
-        .search-container {
-          flex: 1;
-          min-width: 200px;
-        }
-
-        .sort-container,
-        .filter-container {
-          display: flex;
-          gap: var(--_global-spacing-sm);
-          align-items: center;
-        }
-
-        .clear-search {
-          cursor: pointer;
-          color: var(--_global-color-on-surface-variant);
-          transition: color var(--_data-list-transition);
-        }
-
-        .clear-search:hover {
-          color: var(--_global-color-on-surface);
-        }
-
-        /* List container */
-        .list-container {
-          max-height: ${this.paginationType === 'infinite' ? '400px' : 'none'};
-          overflow-y: ${this.paginationType === 'infinite' ? 'auto' : 'visible'};
-          padding: var(--_global-spacing-md);
-        }
-
-        /* List items */
-        .list-item {
-          background: var(--_data-list-item-background);
-          border: var(--_data-list-item-border);
-          border-radius: var(--_data-list-item-border-radius);
-          padding: var(--_data-list-item-padding);
-          margin-bottom: var(--_data-list-item-gap);
-          transition: var(--_data-list-transition);
-          cursor: pointer;
-          outline: none;
-        }
-
-        .list-item:hover {
-          background: var(--_data-list-item-hover-background);
-          transform: translateY(-1px);
-          box-shadow: var(--_global-elevation-2);
-        }
-
-        .list-item:focus,
-        .list-item.focused {
-          outline: 2px solid var(--_global-color-primary);
-          outline-offset: 2px;
-        }
-
-        .list-item:last-child {
-          margin-bottom: 0;
-        }
-
-        /* Default item styling */
-        .default-item {
-          display: flex;
-          flex-direction: column;
-          gap: var(--_global-spacing-xs);
-        }
-
-        .item-field {
-          display: flex;
-          gap: var(--_global-spacing-sm);
-        }
-
-        .field-label {
-          font-weight: var(--_global-font-weight-medium);
-          color: var(--_global-color-on-surface-variant);
-          min-width: 100px;
-        }
-
-        .field-value {
-          color: var(--_global-color-on-surface);
-          flex: 1;
-        }
-
-        /* Empty state */
-        .empty-state {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: var(--_global-spacing-xxl);
-          text-align: center;
-          color: var(--_global-color-on-surface-variant);
-        }
-
-        .empty-content my-icon {
-          margin-bottom: var(--_global-spacing-md);
-          opacity: 0.5;
-        }
-
-        .empty-content p {
-          margin: 0;
-          font-size: var(--_global-font-size-lg);
-        }
-
-        /* Loading state */
         :host([loading]) .list-container {
-          opacity: 0.6;
+          opacity: 60%;
           pointer-events: none;
+          position: relative;
         }
 
         :host([loading]) .list-container::after {
@@ -676,73 +664,27 @@ class MyDataList extends HTMLElement {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          background: var(--_global-color-surface);
-          padding: var(--_global-spacing-md);
-          border-radius: var(--_global-border-radius-md);
-          box-shadow: var(--_global-elevation-2);
+          background: theme(colors.surface.DEFAULT);
+          padding: theme(spacing.md);
+          border-radius: theme(borderRadius.lg);
+          box-shadow: theme(boxShadow.elevation2);
+          z-index: 10;
         }
 
-        /* Pagination section */
-        .pagination-section {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: var(--_global-spacing-md) var(--_data-list-controls-padding);
-          border-top: var(--_data-list-controls-border);
-          background: var(--_global-color-surface-container);
+        /* Scrollbar styling */
+        .list-container::-webkit-scrollbar {
+          width: 8px;
         }
-
-        .page-info {
-          font-size: var(--_global-font-size-sm);
-          color: var(--_global-color-on-surface-variant);
+        .list-container::-webkit-scrollbar-track {
+          background: theme(colors.surface-container);
+          border-radius: theme(borderRadius.sm);
         }
-
-        .pagination-controls {
-          display: flex;
-          gap: var(--_global-spacing-sm);
+        .list-container::-webkit-scrollbar-thumb {
+          background: theme(colors.outline-variant);
+          border-radius: theme(borderRadius.sm);
         }
-
-        .pagination-controls button {
-          background: var(--_global-color-surface);
-          border: 1px solid var(--_global-color-outline-variant);
-          border-radius: var(--_global-border-radius-sm);
-          padding: var(--_global-spacing-sm);
-          cursor: pointer;
-          transition: var(--_data-list-transition);
-          color: var(--_global-color-on-surface);
-        }
-
-        .pagination-controls button:hover:not(:disabled) {
-          background: var(--_global-color-surface-container);
-          border-color: var(--_global-color-outline);
-        }
-
-        .pagination-controls button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        /* Infinite scroll */
-        .load-more-btn {
-          display: block;
-          width: 100%;
-          padding: var(--_global-spacing-md);
-          background: var(--_global-color-surface-container);
-          border: 1px solid var(--_global-color-outline-variant);
-          border-radius: var(--_global-border-radius-md);
-          color: var(--_global-color-on-surface);
-          cursor: pointer;
-          transition: var(--_data-list-transition);
-          font-family: inherit;
-        }
-
-        .load-more-btn:hover:not(:disabled) {
-          background: var(--_global-color-surface-container-high);
-        }
-
-        .load-more-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
+        .list-container::-webkit-scrollbar-thumb:hover {
+          background: theme(colors.outline);
         }
 
         /* Responsive design */
@@ -756,76 +698,49 @@ class MyDataList extends HTMLElement {
             min-width: auto;
           }
           
-          .default-item {
-            gap: var(--_global-spacing-sm);
-          }
-          
           .item-field {
             flex-direction: column;
-            gap: var(--_global-spacing-xs);
+            gap: theme(spacing.xs);
           }
           
           .field-label {
             min-width: auto;
-            font-size: var(--_global-font-size-xs);
+            font-size: theme(fontSize.xs);
           }
         }
 
-        /* High contrast support */
+        /* Accessibility enhancements */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            transition: none !important;
+            transform: none !important;
+            animation: none !important;
+          }
+        }
+
         @media (prefers-contrast: high) {
           .list-item {
             border-width: 2px;
           }
-          
           .list-item:focus {
             outline-width: 3px;
           }
         }
-
-        /* Reduced motion support */
-        @media (prefers-reduced-motion: reduce) {
-          .list-item,
-          .pagination-controls button,
-          .load-more-btn {
-            transition: none;
-          }
-          
-          .list-item:hover {
-            transform: none;
-          }
-        }
-
-        /* Scrollbar styling */
-        .list-container::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .list-container::-webkit-scrollbar-track {
-          background: var(--_global-color-surface-container);
-          border-radius: var(--_global-border-radius-sm);
-        }
-
-        .list-container::-webkit-scrollbar-thumb {
-          background: var(--_global-color-outline-variant);
-          border-radius: var(--_global-border-radius-sm);
-        }
-
-        .list-container::-webkit-scrollbar-thumb:hover {
-          background: var(--_global-color-outline);
-        }
       </style>
 
-      <div class="header-section">
-        <slot name="header"></slot>
+      <div class="${classes.container}">
+        <div class="${classes.headerSection}">
+          <slot name="header"></slot>
+        </div>
+
+        ${this.generateControls(classes)}
+
+        <div class="${classes.listContainer}" role="list" aria-label="Data list">
+          ${this.generateListItems(classes)}
+        </div>
+
+        ${this.generatePagination(classes)}
       </div>
-
-      ${this.generateControls()}
-
-      <div class="list-container" role="list" aria-label="Data list">
-        ${this.generateListItems()}
-      </div>
-
-      ${this.generatePagination()}
     `;
 
     // Update pagination info

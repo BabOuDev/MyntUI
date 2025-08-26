@@ -1,11 +1,12 @@
 /**
- * MyntUI my-data-chart Component
+ * MyntUI my-data-chart Component - TailwindCSS Enhanced Version
  * A flexible data visualization component based on D3.js for rendering various chart types
  * Supports bar, line, pie, scatter, and area charts with Material Design 3 styling
- * Enhanced version using MyntUIBaseComponent for improved consistency and maintainability
+ * Enhanced version using MyntUIBaseComponent and TailwindCSS for consistent styling
  */
 
 import { MyntUIBaseComponent } from '../../core/base-component.js';
+import { globalConfig } from '../../config/global-config.js';
 
 class MyDataChart extends MyntUIBaseComponent {
   constructor() {
@@ -219,7 +220,7 @@ class MyDataChart extends MyntUIBaseComponent {
   _redrawChart() {
     if (!this._d3Loaded || !this.shadowRoot) return;
     
-    const container = this.shadowRoot.querySelector('.chart-container');
+    const container = this.shadowRoot.querySelector('[role="img"]');
     if (!container) return;
     
     // Clear previous chart
@@ -285,10 +286,10 @@ class MyDataChart extends MyntUIBaseComponent {
       .nice()
       .range([chartHeight, 0]);
     
-    // Color scale
+    // Color scale using CSS custom properties that work with TailwindCSS
     const colorScale = d3.scaleOrdinal()
       .domain(data.map(d => d.label || d.name || d.x))
-      .range(['var(--_global-color-primary)', 'var(--_global-color-secondary)', 'var(--_global-color-tertiary)']);
+      .range(['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--tertiary))']);
     
     // Bars
     g.selectAll('.bar')
@@ -370,9 +371,8 @@ class MyDataChart extends MyntUIBaseComponent {
       .attr('class', 'line')
       .attr('d', line)
       .style('fill', 'none')
-      .style('stroke', 'var(--_global-color-primary)')
-      .style('stroke-width', 2)
-      .style('transition', 'all var(--_global-animation-duration-normal) var(--_global-animation-easing-standard)');
+      .style('stroke', 'hsl(var(--primary))')
+      .style('stroke-width', 2);
     
     // Draw points
     g.selectAll('.dot')
@@ -382,7 +382,7 @@ class MyDataChart extends MyntUIBaseComponent {
       .attr('cx', (d, i) => xScale(d.x || i))
       .attr('cy', d => yScale(d.y || d.value))
       .attr('r', 4)
-      .style('fill', 'var(--_global-color-primary)');
+      .style('fill', 'hsl(var(--primary))');
     
     // X axis
     g.append('g')
@@ -433,9 +433,8 @@ class MyDataChart extends MyntUIBaseComponent {
     arcs.append('path')
       .attr('d', arc)
       .style('fill', d => colorScale(d.data.label || d.data.name))
-      .style('stroke', 'var(--_global-color-surface)')
-      .style('stroke-width', 2)
-      .style('transition', 'all var(--_global-animation-duration-normal) var(--_global-animation-easing-standard)');
+      .style('stroke', 'hsl(var(--surface))')
+      .style('stroke-width', 2);
     
     // Add labels
     arcs.append('text')
@@ -480,9 +479,8 @@ class MyDataChart extends MyntUIBaseComponent {
       .attr('cx', d => xScale(d.x))
       .attr('cy', d => yScale(d.y))
       .attr('r', d => d.size || 5)
-      .style('fill', 'var(--_global-color-primary)')
-      .style('opacity', 0.7)
-      .style('transition', 'all var(--_global-animation-duration-normal) var(--_global-animation-easing-standard)');
+      .style('fill', 'hsl(var(--primary))')
+      .style('opacity', 0.7);
     
     // X axis
     g.append('g')
@@ -533,9 +531,8 @@ class MyDataChart extends MyntUIBaseComponent {
       .datum(data)
       .attr('class', 'area')
       .attr('d', area)
-      .style('fill', 'var(--_global-color-primary)')
-      .style('fill-opacity', 0.3)
-      .style('transition', 'all var(--_global-animation-duration-normal) var(--_global-animation-easing-standard)');
+      .style('fill', 'hsl(var(--primary))')
+      .style('fill-opacity', 0.3);
     
     // Draw line
     const line = d3.line()
@@ -548,7 +545,7 @@ class MyDataChart extends MyntUIBaseComponent {
       .attr('class', 'line')
       .attr('d', line)
       .style('fill', 'none')
-      .style('stroke', 'var(--_global-color-primary)')
+      .style('stroke', 'hsl(var(--primary))')
       .style('stroke-width', 2);
     
     // X axis
@@ -629,66 +626,51 @@ class MyDataChart extends MyntUIBaseComponent {
     return this._query;
   }
 
-  // Render method
+  // Generate TailwindCSS classes for the chart
+  getTailwindClasses() {
+    const responsive = this.hasAttribute('responsive');
+    const config = globalConfig.get('theme.tailwind', {});
+
+    return {
+      container: [
+        'block bg-surface border border-outline-variant rounded-lg',
+        'p-lg text-surface-on-surface font-sans relative overflow-hidden',
+        responsive && 'w-full h-auto'
+      ].filter(Boolean).join(' '),
+
+      chartContainer: [
+        'relative w-full h-full flex items-center justify-center'
+      ].join(' '),
+
+      chartSvg: [
+        'max-w-full h-auto'
+      ].join(' '),
+
+      loadingIndicator: [
+        'flex items-center justify-center h-48 text-surface-on-surface-variant text-body-medium'
+      ].join(' '),
+
+      errorMessage: [
+        'flex items-center justify-center h-48 text-error text-body-medium'
+      ].join(' ')
+    };
+  }
+
+  // Render method with TailwindCSS
   render() {
+    const classes = this.getTailwindClasses();
+
     return `
       <style>
+        @import '/src/styles/tailwind.css';
+        
         :host {
-          --_chart-background: var(--_global-color-surface);
-          --_chart-border: var(--_global-color-outline-variant);
-          --_chart-text: var(--_global-color-on-surface);
-          
           display: block;
-          background: var(--_chart-background);
-          border: 1px solid var(--_chart-border);
-          border-radius: var(--_global-border-radius-lg);
-          padding: var(--_global-spacing-lg);
-          color: var(--_chart-text);
-          font-family: var(--_global-font-family-sans);
-          position: relative;
-          overflow: hidden;
         }
 
-        :host([responsive]) {
-          width: 100%;
-          height: auto;
-        }
-
-        .chart-container {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .chart-svg {
-          max-width: 100%;
-          height: auto;
-        }
-
-        .loading-indicator {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 200px;
-          color: var(--_global-color-on-surface-variant);
-          font-size: var(--_global-font-size-body-medium);
-        }
-
-        .error-message {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 200px;
-          color: var(--_global-color-error);
-          font-size: var(--_global-font-size-body-medium);
-        }
-
-        /* Chart-specific styles */
+        /* Chart-specific D3 styling that can't be done with TailwindCSS */
         .bar {
-          transition: opacity var(--_global-animation-duration-normal) var(--_global-animation-easing-standard);
+          transition: opacity theme(transitionDuration.300) theme(transitionTimingFunction.in-out);
         }
 
         .bar:hover {
@@ -701,39 +683,59 @@ class MyDataChart extends MyntUIBaseComponent {
         }
 
         .dot {
-          transition: r var(--_global-animation-duration-normal) var(--_global-animation-easing-standard);
+          transition: r theme(transitionDuration.300) theme(transitionTimingFunction.in-out);
         }
 
         .dot:hover {
-          r: 6;
+          r: 6px;
         }
 
         .arc path {
-          transition: transform var(--_global-animation-duration-normal) var(--_global-animation-easing-standard);
+          transition: transform theme(transitionDuration.300) theme(transitionTimingFunction.in-out);
         }
 
         .arc:hover path {
           transform: scale(1.05);
         }
 
-        /* Axis styling */
+        /* D3 Axis styling */
         .chart-svg .domain {
-          stroke: var(--_global-color-outline);
+          stroke: theme(colors.outline);
         }
 
         .chart-svg .tick line {
-          stroke: var(--_global-color-outline-variant);
+          stroke: theme(colors.outline-variant);
         }
 
         .chart-svg .tick text {
-          fill: var(--_global-color-on-surface-variant);
+          fill: theme(colors.surface-on-surface-variant);
           font-size: 12px;
-          font-family: var(--_global-font-family-sans);
+          font-family: theme(fontFamily.sans);
+        }
+
+        /* Accessibility and responsive enhancements */
+        @media (prefers-reduced-motion: reduce) {
+          .bar,
+          .dot,
+          .arc path {
+            transition: none !important;
+          }
+        }
+
+        @media (prefers-contrast: high) {
+          .chart-svg .domain {
+            stroke-width: 2px;
+          }
+          .chart-svg .tick line {
+            stroke-width: 1px;
+          }
         }
       </style>
       
-      <div class="chart-container" role="img" aria-label="Data visualization chart">
-        ${!this._d3Loaded ? '<div class="loading-indicator">Loading chart...</div>' : ''}
+      <div class="${classes.container}">
+        <div class="${classes.chartContainer}" role="img" aria-label="Data visualization chart">
+          ${!this._d3Loaded ? `<div class="${classes.loadingIndicator}">Loading chart...</div>` : ''}
+        </div>
       </div>
     `;
   }

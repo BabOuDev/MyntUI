@@ -1,10 +1,11 @@
 /**
- * MyntUI my-dropdown Component
+ * MyntUI my-dropdown Component - TailwindCSS Enhanced Version
  * A component that displays a list of options when clicked, typically used for navigation or actions
- * Enhanced version using MyntUIBaseComponent for improved memory management and consistency
+ * Enhanced version using MyntUIBaseComponent with TailwindCSS and Material Design 3 patterns
  */
 
 import { MyntUIBaseComponent } from '../../core/base-component.js';
+import { globalConfig } from '../../config/global-config.js';
 
 class MyDropdown extends MyntUIBaseComponent {
   constructor() {
@@ -194,16 +195,14 @@ class MyDropdown extends MyntUIBaseComponent {
     if (this.disabled || this._isOpen) return;
     
     this._isOpen = true;
-    const dropdown = this.shadowRoot.querySelector('.dropdown-menu');
-    if (dropdown) {
-      dropdown.classList.add('open');
-      this.positionDropdown();
-      
-      // Focus first option or selected option
-      const optionToFocus = this._selectedIndex >= 0 ? 
-        this._selectedIndex : 0;
-      this.focusOption(optionToFocus);
-    }
+    this.positionDropdown();
+    
+    // Focus first option or selected option
+    const optionToFocus = this._selectedIndex >= 0 ? this._selectedIndex : 0;
+    this.focusOption(optionToFocus);
+    
+    // Re-render to update classes
+    this.render();
     
     // Re-attach event listeners to include document listener
     this.attachEventListeners();
@@ -220,16 +219,15 @@ class MyDropdown extends MyntUIBaseComponent {
     if (!this._isOpen) return;
     
     this._isOpen = false;
-    const dropdown = this.shadowRoot.querySelector('.dropdown-menu');
-    if (dropdown) {
-      dropdown.classList.remove('open');
-    }
+    
+    // Re-render to update classes
+    this.render();
     
     // Re-attach event listeners to remove document listener
     this.attachEventListeners();
     
     // Return focus to trigger
-    const trigger = this.shadowRoot.querySelector('.dropdown-trigger');
+    const trigger = this.shadowRoot.querySelector('button');
     if (trigger) {
       trigger.focus();
     }
@@ -252,8 +250,8 @@ class MyDropdown extends MyntUIBaseComponent {
 
   // Position dropdown relative to trigger
   positionDropdown() {
-    const dropdown = this.shadowRoot.querySelector('.dropdown-menu');
-    const trigger = this.shadowRoot.querySelector('.dropdown-trigger');
+    const dropdown = this.shadowRoot.querySelector('[role="listbox"]');
+    const trigger = this.shadowRoot.querySelector('button');
     
     if (!dropdown || !trigger) return;
     
@@ -271,27 +269,37 @@ class MyDropdown extends MyntUIBaseComponent {
       position = spaceBelow >= dropdownRect.height || spaceBelow >= spaceAbove ? 'bottom' : 'top';
     }
     
-    // Apply positioning
-    dropdown.classList.toggle('position-top', position === 'top');
-    dropdown.classList.toggle('position-bottom', position === 'bottom');
+    // Apply positioning classes
+    if (position === 'top') {
+      dropdown.classList.add('top-auto', 'bottom-full', 'mt-0', 'mb-xs', 'origin-bottom');
+      dropdown.classList.remove('top-full', 'mt-xs');
+    } else {
+      dropdown.classList.add('top-full', 'mt-xs');
+      dropdown.classList.remove('top-auto', 'bottom-full', 'mt-0', 'mb-xs', 'origin-bottom');
+    }
     
     // Adjust horizontal position if needed
     const rightEdge = triggerRect.left + dropdownRect.width;
     if (rightEdge > viewportWidth - 16) {
-      dropdown.classList.add('align-right');
+      dropdown.classList.add('left-auto', 'right-0');
+      dropdown.classList.remove('left-0');
     } else {
-      dropdown.classList.remove('align-right');
+      dropdown.classList.add('left-0');
+      dropdown.classList.remove('left-auto', 'right-0');
     }
   }
 
   // Focus specific option
   focusOption(index) {
-    const options = this.shadowRoot.querySelectorAll('.dropdown-option');
+    const options = this.shadowRoot.querySelectorAll('[role="option"]');
     if (options[index]) {
       // Remove focus from all options
-      options.forEach(option => option.classList.remove('focused'));
+      options.forEach(option => {
+        option.classList.remove('focused');
+        option.classList.remove('bg-primary/8');
+      });
       // Focus the target option
-      options[index].classList.add('focused');
+      options[index].classList.add('focused', 'bg-primary/8');
       options[index].focus();
       this._selectedIndex = index;
     }
@@ -328,7 +336,7 @@ class MyDropdown extends MyntUIBaseComponent {
   }
 
   handleOptionClick(event) {
-    const optionElement = event.target.closest('.dropdown-option');
+    const optionElement = event.target.closest('[role="option"]');
     if (!optionElement) return;
     
     const index = parseInt(optionElement.dataset.index);
@@ -343,7 +351,8 @@ class MyDropdown extends MyntUIBaseComponent {
   handleKeyDown(event) {
     if (!this._isOpen) return;
     
-    const options = this.shadowRoot.querySelectorAll('.dropdown-option:not([disabled])');
+    const options = this.shadowRoot.querySelectorAll('[role="option"]:not([disabled])');
+    const allOptions = this.shadowRoot.querySelectorAll('[role="option"]');
     const currentIndex = Array.from(options).findIndex(option => 
       option.classList.contains('focused'));
     
@@ -351,13 +360,13 @@ class MyDropdown extends MyntUIBaseComponent {
       case 'ArrowDown':
         event.preventDefault();
         const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
-        this.focusOption(Array.from(this.shadowRoot.querySelectorAll('.dropdown-option')).indexOf(options[nextIndex]));
+        this.focusOption(Array.from(allOptions).indexOf(options[nextIndex]));
         break;
         
       case 'ArrowUp':
         event.preventDefault();
         const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
-        this.focusOption(Array.from(this.shadowRoot.querySelectorAll('.dropdown-option')).indexOf(options[prevIndex]));
+        this.focusOption(Array.from(allOptions).indexOf(options[prevIndex]));
         break;
         
       case 'Enter':
@@ -376,14 +385,14 @@ class MyDropdown extends MyntUIBaseComponent {
       case 'Home':
         event.preventDefault();
         if (options.length > 0) {
-          this.focusOption(Array.from(this.shadowRoot.querySelectorAll('.dropdown-option')).indexOf(options[0]));
+          this.focusOption(Array.from(allOptions).indexOf(options[0]));
         }
         break;
         
       case 'End':
         event.preventDefault();
         if (options.length > 0) {
-          this.focusOption(Array.from(this.shadowRoot.querySelectorAll('.dropdown-option')).indexOf(options[options.length - 1]));
+          this.focusOption(Array.from(allOptions).indexOf(options[options.length - 1]));
         }
         break;
     }
@@ -424,7 +433,7 @@ class MyDropdown extends MyntUIBaseComponent {
     const listeners = [];
     
     // Add trigger listeners
-    const trigger = this.shadowRoot.querySelector('.dropdown-trigger');
+    const trigger = this.shadowRoot.querySelector('button');
     if (trigger) {
       listeners.push({
         element: trigger,
@@ -440,7 +449,7 @@ class MyDropdown extends MyntUIBaseComponent {
     }
     
     // Add dropdown menu listeners
-    const dropdown = this.shadowRoot.querySelector('.dropdown-menu');
+    const dropdown = this.shadowRoot.querySelector('[role="listbox"]');
     if (dropdown) {
       listeners.push({
         element: dropdown,
@@ -504,138 +513,101 @@ class MyDropdown extends MyntUIBaseComponent {
     return this.triggerText || this.placeholder;
   }
 
-  // Render the component
+  // Generate TailwindCSS classes for different states and sizes
+  getTailwindClasses() {
+    const size = this.size;
+    const error = this.error;
+    const disabled = this.disabled;
+    const isOpen = this._isOpen;
+    const config = globalConfig.get('theme.tailwind', {});
+
+    const sizeConfig = config.sizes?.[size] || config.sizes?.md;
+    const dropdownConfig = config.components?.dropdown || {};
+    const stateConfig = config.states || {};
+
+    return {
+      container: [
+        'relative inline-block min-w-28 font-sans',
+        disabled && 'opacity-60 cursor-not-allowed pointer-events-none'
+      ].filter(Boolean).join(' '),
+
+      trigger: [
+        'flex items-center justify-between w-full',
+        sizeConfig?.input || 'h-input-md min-h-input-md px-md py-sm text-body-medium',
+        'border border-outline-variant rounded-lg bg-surface-container-low',
+        'text-surface-on-surface font-medium cursor-pointer select-none',
+        'transition-all duration-short2 ease-standard shadow-elevation1 relative z-10',
+        'hover:border-outline hover:bg-surface-container hover:shadow-elevation2',
+        'focus-visible:border-primary focus-visible:border-2 focus-visible:bg-surface-container-high',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2',
+        'before:absolute before:inset-0 before:bg-current before:opacity-0 before:transition-opacity before:rounded-lg before:pointer-events-none',
+        'hover:before:opacity-state-hover active:before:opacity-state-pressed',
+        isOpen && 'border-primary border-2 bg-surface-container-high shadow-elevation2',
+        error && 'border-error focus-visible:border-error focus-visible:outline-error',
+        disabled && 'opacity-60 bg-surface-variant border-outline cursor-not-allowed'
+      ].filter(Boolean).join(' '),
+
+      triggerText: [
+        'flex-1 text-left overflow-hidden text-ellipsis whitespace-nowrap',
+        (!this._selectedValue && !this.triggerText) && 'text-outline-variant'
+      ].filter(Boolean).join(' '),
+
+      dropdownIcon: [
+        'ml-sm w-4 h-4 text-outline-variant flex-shrink-0 flex items-center justify-center',
+        'transition-transform duration-short2 ease-emphasized',
+        isOpen && 'rotate-180'
+      ].filter(Boolean).join(' '),
+
+      menu: [
+        'absolute top-full left-0 right-0 min-w-full max-w-70 mt-xs z-dropdown',
+        'bg-surface-container border border-outline-variant rounded-lg shadow-elevation3',
+        'max-h-80 overflow-y-auto py-xs',
+        'transition-all duration-medium1 ease-emphasized origin-top',
+        isOpen ? 'opacity-100 visible scale-100 translate-y-0' : 'opacity-0 invisible scale-95 -translate-y-2',
+        this.position === 'top' && 'top-auto bottom-full mt-0 mb-xs origin-bottom',
+        this.position === 'top' && !isOpen && 'translate-y-2'
+      ].filter(Boolean).join(' '),
+
+      option: [
+        'flex items-center w-full px-md py-sm mx-xs rounded-xs',
+        'text-surface-on-surface text-body-medium cursor-pointer',
+        'transition-colors duration-short1 border-0 bg-transparent text-left min-h-8',
+        'hover:bg-primary/8 focus:bg-primary/12 focus:outline-none',
+        'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none'
+      ].filter(Boolean).join(' '),
+
+      selectedOption: [
+        'bg-primary/12 text-primary font-medium'
+      ].join(' '),
+
+      focusedOption: [
+        'bg-primary/8'
+      ].join(' '),
+
+      divider: [
+        'h-px bg-outline-variant my-xs'
+      ].join(' '),
+
+      optionIcon: [
+        'mr-sm text-lg'
+      ].join(' ')
+    };
+  }
+
+  // Render the component with TailwindCSS
   render() {
+    const classes = this.getTailwindClasses();
+
     this.shadowRoot.innerHTML = `
       <style>
+        @import '/src/styles/tailwind.css';
+        
         :host {
-          /* Component-specific variables using global variables */
-          --_dropdown-min-width: 112px;
-          --_dropdown-max-width: 280px;
-          --_dropdown-trigger-height: var(--_global-input-height);
-          --_dropdown-trigger-padding: var(--_global-spacing-sm) var(--_global-spacing-md);
-          --_dropdown-border-radius: var(--_global-border-radius-sm);
-          --_dropdown-menu-border-radius: var(--_global-border-radius-xs);
-          --_dropdown-border-color: var(--_global-color-outline-variant);
-          --_dropdown-border-color-hover: var(--_global-color-outline);
-          --_dropdown-border-color-focus: var(--_global-color-primary);
-          --_dropdown-trigger-bg: var(--_global-color-surface-container-low);
-          --_dropdown-trigger-bg-hover: var(--_global-color-surface-container);
-          --_dropdown-trigger-bg-focus: var(--_global-color-surface-container-high);
-          --_dropdown-menu-bg: var(--_global-color-surface-container);
-          --_dropdown-text-color: var(--_global-color-on-surface);
-          --_dropdown-placeholder-color: var(--_global-color-on-surface-variant);
-          --_dropdown-icon-color: var(--_global-color-on-surface-variant);
-          --_dropdown-elevation: var(--_global-elevation-1);
-          --_dropdown-elevation-hover: var(--_global-elevation-2);
-          --_dropdown-menu-elevation: var(--_global-elevation-3);
-          --_dropdown-z-index: var(--_global-z-index-dropdown);
-          --_dropdown-transition: all var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
-          
           display: inline-block;
-          position: relative;
-          min-width: var(--_dropdown-min-width);
-          font-family: var(--_global-font-family-sans);
         }
 
-        :host([disabled]) {
-          opacity: 0.6;
-          cursor: not-allowed;
-          pointer-events: none;
-        }
-
-        .dropdown-trigger {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          height: var(--_dropdown-trigger-height);
-          padding: var(--_dropdown-trigger-padding);
-          border: 1px solid var(--_dropdown-border-color);
-          border-radius: var(--_dropdown-border-radius);
-          background-color: var(--_dropdown-trigger-bg);
-          color: var(--_dropdown-text-color);
-          font-size: var(--_global-font-size-sm);
-          font-weight: var(--_global-font-weight-medium);
-          font-family: var(--_global-font-family-sans);
-          cursor: pointer;
-          outline: none;
-          transition: var(--_dropdown-transition);
-          user-select: none;
-          box-shadow: var(--_dropdown-elevation);
-          position: relative;
-          z-index: 1;
-        }
-        
-        /* State layer for Material Design 3 */
-        .dropdown-trigger::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: currentColor;
-          opacity: 0;
-          transition: opacity var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
-          pointer-events: none;
-          border-radius: inherit;
-        }
-
-        .dropdown-trigger:hover:not(:disabled)::before {
-          opacity: var(--_global-state-layer-hover);
-        }
-
-        .dropdown-trigger:hover:not(:disabled) {
-          border-color: var(--_dropdown-border-color-hover);
-          background-color: var(--_dropdown-trigger-bg-hover);
-          box-shadow: var(--_dropdown-elevation-hover);
-        }
-        
-        .dropdown-trigger:active:not(:disabled)::before {
-          opacity: var(--_global-state-layer-pressed);
-        }
-
-        .dropdown-trigger:focus-visible {
-          border-color: var(--_dropdown-border-color-focus);
-          border-width: 2px;
-          background-color: var(--_dropdown-trigger-bg-focus);
-          outline: 2px solid var(--_dropdown-border-color-focus);
-          outline-offset: 2px;
-        }
-
-        .dropdown-trigger.open {
-          border-color: var(--_dropdown-border-color-focus);
-          border-width: 2px;
-          background-color: var(--_dropdown-trigger-bg-focus);
-          box-shadow: var(--_dropdown-elevation-hover);
-        }
-
-        .trigger-text {
-          flex: 1;
-          text-align: left;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .trigger-text.placeholder {
-          color: var(--_dropdown-placeholder-color);
-        }
-
-        .dropdown-icon {
-          margin-left: var(--_global-spacing-sm);
-          width: 18px;
-          height: 18px;
-          color: var(--_dropdown-icon-color);
-          transition: transform var(--_global-motion-duration-short2) var(--_global-motion-easing-emphasized);
-          flex-shrink: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .dropdown-icon::before {
+        /* Custom arrow icon using pure CSS */
+        .dropdown-arrow::before {
           content: '';
           width: 0;
           height: 0;
@@ -645,219 +617,95 @@ class MyDropdown extends MyntUIBaseComponent {
           transition: inherit;
         }
 
-        .dropdown-trigger.open .dropdown-icon {
-          transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          min-width: 100%;
-          max-width: var(--_dropdown-max-width);
-          margin-top: var(--_global-spacing-xs);
-          background-color: var(--_dropdown-menu-bg);
-          border: 1px solid var(--_dropdown-border-color);
-          border-radius: var(--_dropdown-menu-border-radius);
-          box-shadow: var(--_dropdown-menu-elevation);
-          z-index: var(--_dropdown-z-index);
-          opacity: 0;
-          visibility: hidden;
-          transform: translateY(-8px) scale(0.95);
-          transition: all var(--_global-motion-duration-medium1) var(--_global-motion-easing-emphasized);
-          max-height: 320px;
-          overflow-y: auto;
-          padding: var(--_global-spacing-xs) 0;
-        }
-
-        .dropdown-menu.open {
-          opacity: 1;
-          visibility: visible;
-          transform: translateY(0) scale(1);
-        }
-
-        .dropdown-menu.position-top {
-          top: auto;
-          bottom: 100%;
-          margin-top: 0;
-          margin-bottom: var(--_global-spacing-xs);
-          transform: translateY(8px) scale(0.95);
-        }
-
-        .dropdown-menu.position-top.open {
-          transform: translateY(0) scale(1);
-        }
-
-        .dropdown-menu.align-right {
-          left: auto;
-          right: 0;
-        }
-
-        .dropdown-option {
-          display: flex;
-          align-items: center;
-          padding: var(--_global-spacing-sm) var(--_global-spacing-md);
-          color: var(--_global-color-on-surface);
-          font-size: var(--_global-font-size-sm);
-          font-weight: var(--_global-font-weight-normal);
-          cursor: pointer;
-          transition: background-color var(--_global-motion-duration-short1) var(--_global-motion-easing-standard);
-          outline: none;
-          border: none;
-          background: none;
-          width: 100%;
-          text-align: left;
-          min-height: 32px;
-          border-radius: var(--_global-border-radius-xs);
-          margin: 0 var(--_global-spacing-xs);
-          position: relative;
-        }
-
-        .dropdown-option:hover:not([disabled]) {
-          background-color: color-mix(in srgb, var(--_global-color-primary) calc(var(--_global-state-layer-hover) * 100%), transparent);
-        }
-
+        /* Enhanced focus management */
+        .dropdown-option:focus,
         .dropdown-option.focused {
-          background-color: color-mix(in srgb, var(--_global-color-primary) calc(var(--_global-state-layer-focus) * 100%), transparent);
+          outline: 2px solid theme(colors.primary.DEFAULT);
+          outline-offset: -2px;
         }
 
-        .dropdown-option.selected {
-          background-color: color-mix(in srgb, var(--_global-color-primary) calc(var(--_global-state-layer-selected) * 100%), transparent);
-          color: var(--_global-color-primary);
-          font-weight: var(--_global-font-weight-medium);
-        }
-
-        .dropdown-option[disabled] {
-          opacity: 0.5;
-          cursor: not-allowed;
-          pointer-events: none;
-        }
-
-        .dropdown-option-icon {
-          margin-right: var(--_global-spacing-sm);
-          font-size: 18px;
-        }
-
-        .dropdown-divider {
-          height: 1px;
-          background-color: var(--_global-color-outline-variant);
-          margin: var(--_global-spacing-xs) 0;
-        }
-
-        /* Size variants */
-        :host([size="sm"]) {
-          --_dropdown-trigger-height: var(--_global-input-height-sm);
-          --_dropdown-trigger-padding: 6px var(--_global-spacing-sm);
-          --_dropdown-min-width: 100px;
-        }
-
-        :host([size="lg"]) {
-          --_dropdown-trigger-height: var(--_global-input-height-lg);
-          --_dropdown-trigger-padding: var(--_global-spacing-sm) var(--_global-spacing-md);
-          --_dropdown-min-width: 140px;
-        }
-
-        /* Error state */
-        :host([error]) {
-          --_dropdown-border-color: var(--_global-color-error);
-          --_dropdown-border-color-hover: var(--_global-color-error);
-          --_dropdown-border-color-focus: var(--_global-color-error);
-        }
-
-        :host([error]) .dropdown-trigger {
-          border-color: var(--_global-color-error);
-        }
-
-        :host([error]) .dropdown-trigger:focus-visible {
-          outline-color: var(--_global-color-error);
-        }
-
-        :host([error]) .trigger-text {
-          color: var(--_global-color-error);
-        }
-
-        /* Enhanced disabled state */
-        :host([disabled]) .dropdown-trigger {
-          opacity: 0.6;
-          background-color: var(--_global-color-surface-variant);
-          border-color: var(--_global-color-outline);
-          cursor: not-allowed;
-        }
-
-        :host([disabled]) .trigger-text {
-          color: var(--_global-color-outline);
-        }
-
-        /* Improved animations with reduced motion support */
+        /* Accessibility enhancements */
         @media (prefers-reduced-motion: reduce) {
-          .dropdown-menu,
-          .dropdown-trigger,
-          .dropdown-icon,
-          .dropdown-option {
+          * {
             transition: none !important;
-          }
-          
-          .dropdown-trigger.open .dropdown-icon {
-            transform: none;
+            transform: none !important;
+            animation: none !important;
           }
         }
 
-        /* High contrast mode support */
         @media (prefers-contrast: high) {
           .dropdown-trigger {
             border-width: 2px;
           }
-          
-          .dropdown-option:focus,
-          .dropdown-option.focused {
-            outline: 2px solid currentColor;
-            outline-offset: -2px;
+          .dropdown-option:focus {
+            outline-width: 3px;
           }
+        }
+
+        /* Smooth scrollbar for dropdown menu */
+        .dropdown-menu::-webkit-scrollbar {
+          width: 6px;
+        }
+        .dropdown-menu::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .dropdown-menu::-webkit-scrollbar-thumb {
+          background: theme(colors.outline-variant);
+          border-radius: 3px;
+        }
+        .dropdown-menu::-webkit-scrollbar-thumb:hover {
+          background: theme(colors.outline);
         }
       </style>
 
-      <button 
-        class="dropdown-trigger ${this._isOpen ? 'open' : ''}"
-        type="button"
-        ${this.disabled ? 'disabled' : ''}
-        aria-expanded="${this._isOpen}"
-        aria-haspopup="listbox"
-        aria-label="${this.getAttribute('aria-label') || 'dropdown menu'}"
-      >
-        <slot name="trigger">
-          <span class="trigger-text ${!this._selectedValue && !this.triggerText ? 'placeholder' : ''}">
-            ${this.getDisplayText()}
+      <div class="${classes.container}">
+        <button 
+          class="${classes.trigger}"
+          type="button"
+          ${this.disabled ? 'disabled' : ''}
+          aria-expanded="${this._isOpen}"
+          aria-haspopup="listbox"
+          aria-label="${this.getAttribute('aria-label') || 'dropdown menu'}"
+        >
+          <slot name="trigger">
+            <span class="${classes.triggerText}">
+              ${this.getDisplayText()}
+            </span>
+          </slot>
+          <span class="${classes.dropdownIcon}">
+            <span class="dropdown-arrow"></span>
           </span>
-        </slot>
-        <span class="dropdown-icon"></span>
-      </button>
+        </button>
 
-      <div 
-        class="dropdown-menu ${this._isOpen ? 'open' : ''}"
-        role="listbox"
-        ${this._selectedValue ? `aria-activedescendant="option-${this._selectedIndex}"` : ''}
-      >
-        ${this._options.map((option, index) => {
-          if (option.type === 'divider') {
-            return '<div class="dropdown-divider"></div>';
-          }
-          
-          return `
-            <button
-              class="dropdown-option ${this._selectedIndex === index ? 'selected' : ''}"
-              role="option"
-              id="option-${index}"
-              data-index="${index}"
-              ${option.disabled ? 'disabled' : ''}
-              aria-selected="${this._selectedIndex === index}"
-              tabindex="-1"
-            >
-              ${option.icon ? `<span class="dropdown-option-icon" aria-label="${option.icon}">${option.icon}</span>` : ''}
-              ${option.label}
-            </button>
-          `;
-        }).join('')}
+        <div 
+          class="${classes.menu}"
+          role="listbox"
+          ${this._selectedValue ? `aria-activedescendant="option-${this._selectedIndex}"` : ''}
+        >
+          ${this._options.map((option, index) => {
+            if (option.type === 'divider') {
+              return `<div class="${classes.divider}"></div>`;
+            }
+            
+            const isSelected = this._selectedIndex === index;
+            const isFocused = false; // This will be managed by focusOption method
+            
+            return `
+              <button
+                class="${classes.option} ${isSelected ? classes.selectedOption : ''}"
+                role="option"
+                id="option-${index}"
+                data-index="${index}"
+                ${option.disabled ? 'disabled' : ''}
+                aria-selected="${isSelected}"
+                tabindex="-1"
+              >
+                ${option.icon ? `<span class="${classes.optionIcon}" aria-label="${option.icon}">${option.icon}</span>` : ''}
+                ${option.label}
+              </button>
+            `;
+          }).join('')}
+        </div>
       </div>
     `;
   }

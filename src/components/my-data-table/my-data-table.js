@@ -1,11 +1,12 @@
 /**
- * MyntUI my-data-table Component
+ * MyntUI my-data-table Component - TailwindCSS Enhanced Version
  * A comprehensive data table component with Material Design 3 styling
  * Features sorting, filtering, pagination, row selection, and responsive design
  * Enhanced with accessibility features and customizable column rendering
  */
 
 import { MyntUIBaseComponent } from '../../core/base-component.js';
+import { globalConfig } from '../../config/global-config.js';
 
 class MyDataTable extends MyntUIBaseComponent {
   constructor() {
@@ -366,12 +367,13 @@ class MyDataTable extends MyntUIBaseComponent {
     
     if (this._loading) {
       if (tbody && !loadingRow) {
+        const classes = this.getTailwindClasses();
         const colCount = this._columns.length + (this.hasAttribute('selectable') ? 1 : 0);
         tbody.innerHTML = `
           <tr class="loading-row">
-            <td colspan="${colCount}" style="text-align: center; padding: 2rem;">
-              <div class="loading-spinner"></div>
-              <div>${this.getAttribute('loading-message') || 'Loading...'}</div>
+            <td colspan="${colCount}" class="${classes.emptyCell}">
+              <div class="${classes.loadingSpinner}"></div>
+              <div class="mt-sm">${this.getAttribute('loading-message') || 'Loading...'}</div>
             </td>
           </tr>
         `;
@@ -387,6 +389,7 @@ class MyDataTable extends MyntUIBaseComponent {
     const tbody = this.shadowRoot.querySelector('tbody');
     if (!tbody) return;
 
+    const classes = this.getTailwindClasses();
     const startIndex = (this._currentPage - 1) * this._pageSize;
     const endIndex = Math.min(startIndex + this._pageSize, this._filteredData.length);
     const pageData = this._filteredData.slice(startIndex, endIndex);
@@ -395,7 +398,7 @@ class MyDataTable extends MyntUIBaseComponent {
       const colCount = this._columns.length + (this.hasAttribute('selectable') ? 1 : 0);
       tbody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="${colCount}" style="text-align: center; padding: 2rem; color: var(--_global-color-on-surface-variant);">
+          <td colspan="${colCount}" class="${classes.emptyCell}">
             ${this.getAttribute('empty-message') || 'No data available'}
           </td>
         </tr>
@@ -409,22 +412,23 @@ class MyDataTable extends MyntUIBaseComponent {
       const isSelected = this._selectedRows.has(rowId);
       
       return `
-        <tr class="data-row ${isSelected ? 'selected' : ''}" data-index="${actualIndex}">
+        <tr class="${classes.tr} ${isSelected ? classes.selectedTr : ''}" data-index="${actualIndex}">
           ${this.hasAttribute('selectable') ? `
-            <td class="select-cell">
-              <label class="checkbox-wrapper">
+            <td class="${classes.td} ${classes.selectCell}">
+              <label class="${classes.checkboxWrapper}">
                 <input 
                   type="checkbox" 
+                  class="${classes.checkbox} peer"
                   ${isSelected ? 'checked' : ''}
                   aria-label="Select row ${actualIndex + 1}"
                   data-row-index="${index}"
                 />
-                <span class="checkmark"></span>
+                <span class="${classes.checkmark}"></span>
               </label>
             </td>
           ` : ''}
           ${this._columns.map(column => `
-            <td class="data-cell" data-column="${column.key}">
+            <td class="${classes.td}" data-column="${column.key}">
               ${this.renderCell(row, column)}
             </td>
           `).join('')}
@@ -508,9 +512,10 @@ class MyDataTable extends MyntUIBaseComponent {
   }
 
   updatePagination() {
-    const pagination = this.shadowRoot.querySelector('.pagination');
+    const pagination = this.shadowRoot.querySelector('[role="navigation"]');
     if (!pagination || !this.hasAttribute('paginated')) return;
 
+    const classes = this.getTailwindClasses();
     const totalPages = Math.ceil(this._totalRows / this._pageSize);
     
     if (totalPages <= 1) {
@@ -524,31 +529,31 @@ class MyDataTable extends MyntUIBaseComponent {
     const endItem = Math.min(this._currentPage * this._pageSize, this._totalRows);
     
     pagination.innerHTML = `
-      <div class="pagination-info">
+      <div class="${classes.paginationInfo}">
         Showing ${startItem}-${endItem} of ${this._totalRows} items
       </div>
-      <div class="pagination-controls">
+      <div class="${classes.paginationControls}">
         <button 
-          class="pagination-btn" 
+          class="${classes.paginationBtn}" 
           ${this._currentPage === 1 ? 'disabled' : ''}
           data-action="first"
           aria-label="Go to first page"
         >⟪</button>
         <button 
-          class="pagination-btn" 
+          class="${classes.paginationBtn}" 
           ${this._currentPage === 1 ? 'disabled' : ''}
           data-action="prev"
           aria-label="Go to previous page"
         >❮</button>
-        <span class="page-indicator">Page ${this._currentPage} of ${totalPages}</span>
+        <span class="${classes.pageIndicator}">Page ${this._currentPage} of ${totalPages}</span>
         <button 
-          class="pagination-btn" 
+          class="${classes.paginationBtn}" 
           ${this._currentPage === totalPages ? 'disabled' : ''}
           data-action="next"
           aria-label="Go to next page"
         >❯</button>
         <button 
-          class="pagination-btn" 
+          class="${classes.paginationBtn}" 
           ${this._currentPage === totalPages ? 'disabled' : ''}
           data-action="last"
           aria-label="Go to last page"
@@ -571,7 +576,7 @@ class MyDataTable extends MyntUIBaseComponent {
   }
 
   attachPaginationEventListeners() {
-    const paginationBtns = this.shadowRoot.querySelectorAll('.pagination-btn');
+    const paginationBtns = this.shadowRoot.querySelectorAll('[data-action]');
     paginationBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
         const action = e.target.dataset.action;
@@ -591,7 +596,7 @@ class MyDataTable extends MyntUIBaseComponent {
     this.removeEventListeners();
 
     // Header sorting
-    const sortableHeaders = this.shadowRoot.querySelectorAll('.sortable-header');
+    const sortableHeaders = this.shadowRoot.querySelectorAll('[role="columnheader"]');
     sortableHeaders.forEach(header => {
       header.addEventListener('click', () => {
         this.handleSort(header.dataset.column);
@@ -605,137 +610,180 @@ class MyDataTable extends MyntUIBaseComponent {
     }
 
     // Search input
-    const searchInput = this.shadowRoot.querySelector('.search-input');
+    const searchInput = this.shadowRoot.querySelector('input[type="text"]');
     if (searchInput) {
       searchInput.addEventListener('input', this.handleSearch);
     }
   }
 
-  // Render the component
+  // Generate TailwindCSS classes for the data table
+  getTailwindClasses() {
+    const dense = this.hasAttribute('dense');
+    const striped = this.hasAttribute('striped');
+    const bordered = this.hasAttribute('bordered');
+    const config = globalConfig.get('theme.tailwind', {});
+
+    return {
+      container: [
+        'relative w-full overflow-hidden',
+        'bg-surface rounded-lg shadow-elevation1 font-sans'
+      ].join(' '),
+
+      controls: [
+        'flex gap-md items-center flex-wrap p-md',
+        'bg-surface-container-lowest border-b border-outline-variant',
+        dense && 'p-sm'
+      ].filter(Boolean).join(' '),
+
+      searchInput: [
+        'flex-1 min-w-48 px-md py-sm border border-outline-variant',
+        'rounded-sm text-body-medium bg-surface text-surface-on-surface',
+        'outline-none transition-all duration-short2',
+        'focus:border-primary focus:ring-2 focus:ring-primary/20'
+      ].join(' '),
+
+      tableWrapper: [
+        'overflow-x-auto overflow-y-visible'
+      ].join(' '),
+
+      table: [
+        'w-full border-collapse text-body-medium',
+        'text-surface-on-surface bg-surface'
+      ].join(' '),
+
+      thead: [
+        'bg-surface-container-low sticky top-0 z-10'
+      ].join(' '),
+
+      th: [
+        'px-md py-md text-left font-medium text-body-medium',
+        'text-surface-on-surface border-b-2 border-outline-variant',
+        'whitespace-nowrap relative',
+        dense && 'px-sm py-sm'
+      ].filter(Boolean).join(' '),
+
+      sortableHeader: [
+        'cursor-pointer select-none transition-all duration-short2',
+        'hover:bg-surface-container-high focus:outline focus:outline-2 focus:outline-primary focus:outline-offset-2'
+      ].join(' '),
+
+      sortIndicator: [
+        'ml-xs text-xs opacity-70 transition-all duration-short2'
+      ].join(' '),
+
+      tbody: [
+        // Base tbody styling is handled by individual rows
+      ].join(' '),
+
+      tr: [
+        'bg-surface transition-all duration-short2 h-13',
+        'hover:bg-surface-container-highest',
+        dense && 'h-8',
+        striped && 'even:bg-surface-container-lowest/30'
+      ].filter(Boolean).join(' '),
+
+      selectedTr: [
+        'bg-primary/12'
+      ].join(' '),
+
+      td: [
+        'px-md py-md border-b border-outline-variant align-middle',
+        dense && 'px-sm py-sm',
+        bordered && 'border border-outline-variant'
+      ].filter(Boolean).join(' '),
+
+      selectCell: [
+        'w-12 text-center'
+      ].join(' '),
+
+      checkboxWrapper: [
+        'inline-flex items-center relative cursor-pointer'
+      ].join(' '),
+
+      checkbox: [
+        'absolute opacity-0 cursor-pointer'
+      ].join(' '),
+
+      checkmark: [
+        'w-4 h-4 border-2 border-outline rounded-xs bg-surface',
+        'relative transition-all duration-short2',
+        'peer-checked:bg-primary peer-checked:border-primary',
+        'peer-indeterminate:bg-primary peer-indeterminate:border-primary'
+      ].join(' '),
+
+      loadingSpinner: [
+        'w-6 h-6 border-2 border-outline-variant border-t-primary',
+        'rounded-full animate-spin mx-auto mb-xs'
+      ].join(' '),
+
+      emptyCell: [
+        'text-center py-8 text-surface-on-surface-variant italic'
+      ].join(' '),
+
+      pagination: [
+        'flex justify-between items-center px-md py-md',
+        'bg-surface-container-lowest border-t border-outline-variant text-body-small'
+      ].join(' '),
+
+      paginationInfo: [
+        'text-surface-on-surface-variant'
+      ].join(' '),
+
+      paginationControls: [
+        'flex gap-xs items-center'
+      ].join(' '),
+
+      paginationBtn: [
+        'w-8 h-8 border border-outline-variant bg-surface',
+        'text-surface-on-surface rounded-xs cursor-pointer',
+        'transition-all duration-short2 flex items-center justify-center text-xs',
+        'hover:bg-surface-container-highest hover:border-primary',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        'focus:outline focus:outline-2 focus:outline-primary focus:outline-offset-2'
+      ].join(' '),
+
+      pageIndicator: [
+        'mx-sm font-medium'
+      ].join(' ')
+    };
+  }
+
+  // Render the component with TailwindCSS
   render() {
+    const classes = this.getTailwindClasses();
+
     this.shadowRoot.innerHTML = `
       <style>
+        @import '/src/styles/tailwind.css';
+        
         :host {
-          /* Material Design 3 Data Table Variables */
-          --_table-background: var(--_global-color-surface);
-          --_table-border-color: var(--_global-color-outline-variant);
-          --_table-header-background: var(--_global-color-surface-container-low);
-          --_table-header-text-color: var(--_global-color-on-surface);
-          --_table-row-background: var(--_global-color-surface);
-          --_table-row-background-hover: var(--_global-color-surface-container-highest);
-          --_table-row-background-selected: color-mix(in srgb, var(--_global-color-primary) 12%, var(--_global-color-surface));
-          --_table-cell-padding: var(--_global-spacing-md);
-          --_table-border-radius: var(--_global-border-radius-md);
-          --_table-shadow: var(--_global-elevation-1);
-          --_table-transition: var(--_global-motion-duration-short2) var(--_global-motion-easing-standard);
-          
-          /* Typography */
-          --_table-font-family: var(--_global-font-family-sans);
-          --_table-font-size: var(--_global-font-size-sm);
-          --_table-header-font-size: var(--_global-font-size-sm);
-          --_table-header-font-weight: var(--_global-font-weight-medium);
-          
-          /* Density variants */
-          --_table-row-height-compact: 32px;
-          --_table-row-height-normal: 52px;
-          --_table-row-height-comfortable: 64px;
-          --_table-row-height: var(--_table-row-height-normal);
-          
           display: block;
-          font-family: var(--_table-font-family);
-          background: var(--_table-background);
-          border-radius: var(--_table-border-radius);
-          overflow: hidden;
-          box-shadow: var(--_table-shadow);
         }
 
-        /* Table container */
-        .table-container {
-          position: relative;
-          width: 100%;
-          overflow: hidden;
-        }
-
-        /* Search and filters */
-        .table-controls {
-          padding: var(--_global-spacing-md);
-          background: var(--_global-color-surface-container-lowest);
-          border-bottom: 1px solid var(--_table-border-color);
-          display: flex;
-          gap: var(--_global-spacing-md);
-          align-items: center;
-          flex-wrap: wrap;
-        }
-
-        .search-input {
-          flex: 1;
-          min-width: 200px;
-          padding: var(--_global-spacing-sm) var(--_global-spacing-md);
-          border: 1px solid var(--_table-border-color);
-          border-radius: var(--_global-border-radius-sm);
-          font-size: var(--_table-font-size);
-          background: var(--_global-color-surface);
-          color: var(--_global-color-on-surface);
-          outline: none;
-          transition: var(--_table-transition);
-        }
-
-        .search-input:focus {
-          border-color: var(--_global-color-primary);
-          box-shadow: 0 0 0 2px color-mix(in srgb, var(--_global-color-primary) 20%, transparent);
-        }
-
-        /* Table wrapper for horizontal scrolling */
-        .table-wrapper {
-          overflow-x: auto;
-          overflow-y: visible;
-        }
-
-        /* Main table */
-        .data-table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: var(--_table-font-size);
-          color: var(--_global-color-on-surface);
-          background: var(--_table-background);
-        }
-
-        /* Table header */
-        .data-table thead {
-          background: var(--_table-header-background);
-          position: sticky;
-          top: 0;
-          z-index: 2;
-        }
-
-        .data-table th {
-          padding: var(--_table-cell-padding);
-          text-align: left;
-          font-weight: var(--_table-header-font-weight);
-          font-size: var(--_table-header-font-size);
-          color: var(--_table-header-text-color);
-          border-bottom: 2px solid var(--_table-border-color);
-          white-space: nowrap;
-          position: relative;
-        }
-
-        .sortable-header {
-          cursor: pointer;
-          user-select: none;
-          transition: var(--_table-transition);
-        }
-
-        .sortable-header:hover {
-          background: var(--_global-color-surface-container-high);
-        }
-
-        .sort-indicator {
-          margin-left: var(--_global-spacing-xs);
+        /* Custom checkbox styling */
+        .checkbox-wrapper input[type="checkbox"]:checked + .checkmark::after {
+          content: "✓";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: theme(colors.primary.on-primary);
           font-size: 12px;
-          opacity: 0.7;
-          transition: var(--_table-transition);
+          font-weight: bold;
         }
 
+        .checkbox-wrapper input[type="checkbox"]:indeterminate + .checkmark::after {
+          content: "−";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: theme(colors.primary.on-primary);
+          font-size: 12px;
+          font-weight: bold;
+        }
+
+        /* Sort indicators */
         .sortable-header[data-sort="asc"] .sort-indicator::after {
           content: "▲";
           opacity: 1;
@@ -746,219 +794,7 @@ class MyDataTable extends MyntUIBaseComponent {
           opacity: 1;
         }
 
-        /* Table body */
-        .data-table tbody tr {
-          background: var(--_table-row-background);
-          transition: var(--_table-transition);
-          height: var(--_table-row-height);
-        }
-
-        .data-table tbody tr:hover {
-          background: var(--_table-row-background-hover);
-        }
-
-        .data-table tbody tr.selected {
-          background: var(--_table-row-background-selected);
-        }
-
-        .data-table tbody tr:nth-child(even) {
-          background: color-mix(in srgb, var(--_global-color-surface-container-lowest) 30%, var(--_table-row-background));
-        }
-
-        .data-table tbody tr:nth-child(even):hover {
-          background: var(--_table-row-background-hover);
-        }
-
-        .data-table tbody tr:nth-child(even).selected {
-          background: var(--_table-row-background-selected);
-        }
-
-        .data-table td {
-          padding: var(--_table-cell-padding);
-          border-bottom: 1px solid var(--_table-border-color);
-          vertical-align: middle;
-        }
-
-        /* Selection styles */
-        .select-cell {
-          width: 48px;
-          text-align: center;
-        }
-
-        .checkbox-wrapper {
-          display: inline-flex;
-          align-items: center;
-          position: relative;
-          cursor: pointer;
-        }
-
-        .checkbox-wrapper input[type="checkbox"] {
-          position: absolute;
-          opacity: 0;
-          cursor: pointer;
-        }
-
-        .checkmark {
-          width: 18px;
-          height: 18px;
-          border: 2px solid var(--_global-color-outline);
-          border-radius: var(--_global-border-radius-xs);
-          background: var(--_global-color-surface);
-          position: relative;
-          transition: var(--_table-transition);
-        }
-
-        .checkbox-wrapper input[type="checkbox"]:checked + .checkmark {
-          background: var(--_global-color-primary);
-          border-color: var(--_global-color-primary);
-        }
-
-        .checkbox-wrapper input[type="checkbox"]:checked + .checkmark::after {
-          content: "✓";
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: var(--_global-color-on-primary);
-          font-size: 12px;
-          font-weight: bold;
-        }
-
-        .checkbox-wrapper input[type="checkbox"]:indeterminate + .checkmark {
-          background: var(--_global-color-primary);
-          border-color: var(--_global-color-primary);
-        }
-
-        .checkbox-wrapper input[type="checkbox"]:indeterminate + .checkmark::after {
-          content: "−";
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: var(--_global-color-on-primary);
-          font-size: 12px;
-          font-weight: bold;
-        }
-
-        /* Loading and empty states */
-        .loading-spinner {
-          width: 24px;
-          height: 24px;
-          border: 2px solid var(--_global-color-outline-variant);
-          border-top: 2px solid var(--_global-color-primary);
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 8px auto;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .empty-row td,
-        .loading-row td {
-          text-align: center;
-          padding: 2rem;
-          color: var(--_global-color-on-surface-variant);
-          font-style: italic;
-        }
-
-        /* Pagination */
-        .pagination {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: var(--_global-spacing-md);
-          background: var(--_global-color-surface-container-lowest);
-          border-top: 1px solid var(--_table-border-color);
-          font-size: var(--_global-font-size-sm);
-        }
-
-        .pagination-info {
-          color: var(--_global-color-on-surface-variant);
-        }
-
-        .pagination-controls {
-          display: flex;
-          gap: var(--_global-spacing-xs);
-          align-items: center;
-        }
-
-        .pagination-btn {
-          width: 32px;
-          height: 32px;
-          border: 1px solid var(--_table-border-color);
-          background: var(--_global-color-surface);
-          color: var(--_global-color-on-surface);
-          border-radius: var(--_global-border-radius-xs);
-          cursor: pointer;
-          transition: var(--_table-transition);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-          background: var(--_global-color-surface-container-highest);
-          border-color: var(--_global-color-primary);
-        }
-
-        .pagination-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .page-indicator {
-          margin: 0 var(--_global-spacing-sm);
-          font-weight: var(--_global-font-weight-medium);
-        }
-
-        /* Density variants */
-        :host([dense]) {
-          --_table-row-height: var(--_table-row-height-compact);
-          --_table-cell-padding: var(--_global-spacing-sm);
-        }
-
-        :host([dense]) .table-controls {
-          padding: var(--_global-spacing-sm) var(--_global-spacing-md);
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-          .table-controls {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .search-input {
-            min-width: unset;
-          }
-
-          .pagination {
-            flex-direction: column;
-            gap: var(--_global-spacing-sm);
-          }
-
-          .pagination-info {
-            order: 2;
-          }
-        }
-
-        /* Striped variant */
-        :host([striped]) .data-table tbody tr:nth-child(odd) {
-          background: var(--_global-color-surface-container-lowest);
-        }
-
-        /* Bordered variant */
-        :host([bordered]) .data-table,
-        :host([bordered]) .data-table th,
-        :host([bordered]) .data-table td {
-          border: 1px solid var(--_table-border-color);
-        }
-
-        /* Accessibility improvements */
+        /* Accessibility enhancements */
         @media (prefers-reduced-motion: reduce) {
           * {
             transition: none !important;
@@ -966,65 +802,86 @@ class MyDataTable extends MyntUIBaseComponent {
           }
         }
 
-        /* Focus styles */
-        .sortable-header:focus,
-        .pagination-btn:focus,
-        .checkbox-wrapper:focus-within {
-          outline: 2px solid var(--_global-color-primary);
-          outline-offset: 2px;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .table-controls {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          
+          .pagination {
+            flex-direction: column;
+            gap: theme(spacing.sm);
+          }
+          
+          .pagination-info {
+            order: 2;
+          }
+        }
+
+        /* Enhanced striped rows for host attribute */
+        :host([striped]) tbody tr:nth-child(odd) {
+          background-color: theme(colors.surface-container-lowest);
+        }
+
+        /* Enhanced bordered table for host attribute */
+        :host([bordered]) table,
+        :host([bordered]) th,
+        :host([bordered]) td {
+          border: 1px solid theme(colors.outline-variant);
         }
       </style>
       
-      <div class="table-container">
+      <div class="${classes.container}">
         ${this.hasAttribute('searchable') ? `
-          <div class="table-controls">
+          <div class="${classes.controls}">
             <input 
               type="text" 
-              class="search-input" 
+              class="${classes.searchInput}" 
               placeholder="Search..."
               aria-label="Search table data"
             />
           </div>
         ` : ''}
         
-        <div class="table-wrapper">
-          <table class="data-table" role="table" aria-label="Data table">
-            <thead>
+        <div class="${classes.tableWrapper}">
+          <table class="${classes.table}" role="table" aria-label="Data table">
+            <thead class="${classes.thead}">
               <tr>
                 ${this.hasAttribute('selectable') ? `
-                  <th class="select-cell">
-                    <label class="checkbox-wrapper">
+                  <th class="${classes.th} ${classes.selectCell}">
+                    <label class="${classes.checkboxWrapper}">
                       <input 
                         type="checkbox" 
-                        class="select-all-checkbox"
+                        class="${classes.checkbox} select-all-checkbox peer"
                         aria-label="Select all rows"
                       />
-                      <span class="checkmark"></span>
+                      <span class="${classes.checkmark}"></span>
                     </label>
                   </th>
                 ` : ''}
                 ${this._columns.map(column => `
                   <th 
-                    class="${column.sortable ? 'sortable-header' : ''}"
+                    class="${classes.th} ${column.sortable ? classes.sortableHeader : ''}"
                     data-column="${column.key}"
                     ${column.sortable ? `data-sort="${this._currentSort.column === column.key ? this._currentSort.direction : ''}"` : ''}
                     ${column.sortable ? 'role="columnheader" tabindex="0"' : ''}
                     ${column.sortable ? `aria-sort="${this._currentSort.column === column.key ? (this._currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}"` : ''}
                   >
                     ${column.label || column.key}
-                    ${column.sortable ? '<span class="sort-indicator"></span>' : ''}
+                    ${column.sortable ? `<span class="${classes.sortIndicator}"></span>` : ''}
                   </th>
                 `).join('')}
               </tr>
             </thead>
-            <tbody>
+            <tbody class="${classes.tbody}">
               <!-- Data rows will be populated by updateDisplay() -->
             </tbody>
           </table>
         </div>
 
         ${this.hasAttribute('paginated') ? `
-          <div class="pagination" role="navigation" aria-label="Table pagination">
+          <div class="${classes.pagination}" role="navigation" aria-label="Table pagination">
             <!-- Pagination controls will be populated by updatePagination() -->
           </div>
         ` : ''}
