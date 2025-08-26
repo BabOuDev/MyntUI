@@ -106,36 +106,47 @@ class MyCheckbox extends MyntUIBaseComponent {
     const disabled = this.disabled;
     const checked = this.checked;
     const indeterminate = this.indeterminate;
+    const error = this.error;
     const config = globalConfig.get('theme.tailwind', {});
+    const sizeConfig = config.sizes?.[size] || config.sizes?.md || {};
+    const stateConfig = config.states || {};
     
     // Container classes
     let containerClasses = [
       'inline-flex',
       'items-start',
-      'gap-3',
+      sizeConfig.spacing || 'gap-sm',
       'cursor-pointer',
-      'group'
+      'group',
+      'relative',
+      'transition-all',
+      'duration-200',
+      'ease-standard'
     ];
 
-    // Checkbox input base classes
+    // Checkbox input base classes with Material Design 3 styling
     let checkboxClasses = [
       'relative',
       'flex-shrink-0',
       'border-2',
       'rounded',
       'transition-all',
-      'duration-medium1',
+      'duration-200',
       'ease-standard',
+      'focus:outline-none',
       'focus-visible:ring-2',
       'focus-visible:ring-primary/60',
-      'focus-visible:ring-offset-2'
+      'focus-visible:ring-offset-2',
+      'overflow-hidden'
     ];
 
-    // Size classes - specific dimensions for checkboxes
+    // Size classes with Material Design 3 proportions
     const sizeClasses = {
-      sm: ['w-4', 'h-4'],
-      md: ['w-5', 'h-5'], 
-      lg: ['w-6', 'h-6']
+      xs: ['w-4', 'h-4', 'text-xs'],
+      sm: ['w-5', 'h-5', 'text-sm'], 
+      md: ['w-6', 'h-6', 'text-base'],
+      lg: ['w-7', 'h-7', 'text-lg'],
+      xl: ['w-8', 'h-8', 'text-xl']
     };
     checkboxClasses.push(...(sizeClasses[size] || sizeClasses.md));
 
@@ -151,37 +162,62 @@ class MyCheckbox extends MyntUIBaseComponent {
     if (variantConfig) {
       checkboxClasses.push(...variantConfig.split(' ').filter(Boolean));
     } else {
-      // Fallback styling
+      // Material Design 3 styling with proper state layers
       if (checked || indeterminate) {
-        checkboxClasses.push('bg-primary', 'border-primary', 'text-primary-on-primary');
+        checkboxClasses.push(
+          'bg-primary',
+          'border-primary',
+          'text-primary-on-primary',
+          'shadow-sm'
+        );
       } else {
-        checkboxClasses.push('bg-surface', 'border-outline', 'hover:border-primary', 'hover:shadow-sm');
+        checkboxClasses.push(
+          'bg-surface',
+          'border-outline',
+          'text-transparent',
+          'hover:border-primary',
+          'hover:bg-primary/8'
+        );
       }
     }
 
     // Apply state classes from global config
-    const stateConfig = config.states || {};
-    
     if (disabled) {
-      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
-      containerClasses.push(...disabledState.split(' ').filter(Boolean));
-      checkboxClasses.push('border-outline-variant');
+      const disabledClasses = stateConfig.disabled || 'opacity-50 cursor-not-allowed pointer-events-none grayscale';
+      containerClasses.push(...disabledClasses.split(' '));
+      checkboxClasses.push('border-outline-variant', 'bg-surface-variant/20');
     } else {
-      // Interactive states
-      const hoverState = stateConfig.hover || 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2';
-      checkboxClasses.push(...hoverState.split(' ').filter(Boolean));
+      // Interactive states with Material Design ripple
+      checkboxClasses.push(
+        'hover:shadow-md',
+        'active:scale-95',
+        'group-hover:bg-opacity-90',
+        config.animations?.ripple || 'relative'
+      );
     }
 
-    // Label classes
+    // Error state
+    if (error) {
+      const errorState = stateConfig.error || 'border-error text-error focus:border-error focus:ring-error/20';
+      checkboxClasses.push(...errorState.split(' '));
+    }
+
+    // Label classes with Material Design 3 typography
     let labelClasses = [
       'text-surface-on-surface',
       'text-body-medium',
+      'font-normal',
       'leading-normal',
-      'select-none'
+      'select-none',
+      'transition-colors',
+      'duration-200',
+      'flex-1'
     ];
 
     if (disabled) {
       labelClasses.push('text-outline');
+    } else if (error) {
+      labelClasses.push('text-error');
     }
 
     return {
@@ -189,6 +225,34 @@ class MyCheckbox extends MyntUIBaseComponent {
       checkbox: checkboxClasses.join(' '),
       label: labelClasses.join(' ')
     };
+  }
+
+  // Create ripple effect for Material Design authenticity
+  createRipple(event) {
+    const checkbox = this.shadowRoot.querySelector('.checkbox-input');
+    if (!checkbox || this.disabled) return;
+
+    const rect = checkbox.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2.5;
+    const x = (event?.clientX || rect.left + rect.width / 2) - rect.left - size / 2;
+    const y = (event?.clientY || rect.top + rect.height / 2) - rect.top - size / 2;
+
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+
+    // Remove any existing ripples
+    const existingRipples = checkbox.querySelectorAll('.ripple');
+    existingRipples.forEach(r => r.remove());
+
+    checkbox.appendChild(ripple);
+
+    // Remove ripple after animation
+    setTimeout(() => {
+      ripple.remove();
+    }, 600);
   }
 
   // Toggle checkbox state
@@ -202,17 +266,13 @@ class MyCheckbox extends MyntUIBaseComponent {
       this.checked = !this.checked;
     }
 
-    // Emit change event
-    this.dispatchEvent(new CustomEvent('change', {
-      detail: {
-        checked: this.checked,
-        indeterminate: this.indeterminate,
-        value: this.value,
-        name: this.name
-      },
-      bubbles: true,
-      composed: true
-    }));
+    // Emit change event using base component method
+    this.emit('change', {
+      checked: this.checked,
+      indeterminate: this.indeterminate,
+      value: this.value,
+      name: this.name
+    });
   }
 
   // Handle click events
@@ -222,6 +282,7 @@ class MyCheckbox extends MyntUIBaseComponent {
       return;
     }
 
+    this.createRipple(event);
     this.toggle();
   }
 
@@ -231,13 +292,14 @@ class MyCheckbox extends MyntUIBaseComponent {
 
     if (event.key === ' ') {
       event.preventDefault();
+      this.createRipple(event);
       this.toggle();
     }
   }
 
   // Render the component
   render() {
-    const { checked, indeterminate, label, name, value, disabled } = this;
+    const { checked, indeterminate, label, name, value, disabled, error } = this;
     const classes = this.getTailwindClasses();
     const checkboxId = name ? `${name}-checkbox` : 'checkbox';
     
@@ -249,7 +311,7 @@ class MyCheckbox extends MyntUIBaseComponent {
           display: inline-block;
         }
         
-        /* Checkbox check mark */
+        /* Material Design 3 checkbox mark with enhanced animation */
         .checkbox-mark {
           position: absolute;
           inset: 0;
@@ -257,53 +319,103 @@ class MyCheckbox extends MyntUIBaseComponent {
           align-items: center;
           justify-content: center;
           opacity: 0;
-          transform: scale(0);
-          transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+          transform: scale(0) rotate(-90deg);
+          transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .checkbox-mark.visible {
           opacity: 1;
-          transform: scale(1);
+          transform: scale(1) rotate(0deg);
         }
         
-        /* Check mark SVG */
+        /* Enhanced check mark SVG with path animation */
         .check-icon {
-          width: 75%;
-          height: 75%;
+          width: 70%;
+          height: 70%;
           stroke: currentColor;
           stroke-width: 2.5;
           fill: none;
           stroke-linecap: round;
           stroke-linejoin: round;
+          stroke-dasharray: 16;
+          stroke-dashoffset: 16;
+          transition: stroke-dashoffset 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* Indeterminate mark */
+        .checkbox-mark.visible .check-icon {
+          stroke-dashoffset: 0;
+        }
+        
+        /* Indeterminate mark with smooth animation */
         .indeterminate-mark {
           width: 60%;
           height: 2px;
           background: currentColor;
           border-radius: 1px;
+          transform: scaleX(0);
+          transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* Accessibility */
+        .checkbox-mark.visible .indeterminate-mark {
+          transform: scaleX(1);
+        }
+        
+        /* Ripple effect for Material Design authenticity */
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple-animation 0.6s linear;
+          background-color: currentColor;
+          opacity: 0.2;
+          pointer-events: none;
+          z-index: 1;
+        }
+        
+        @keyframes ripple-animation {
+          to {
+            transform: scale(1);
+            opacity: 0;
+          }
+        }
+        
+        /* Enhanced accessibility */
         @media (prefers-reduced-motion: reduce) {
-          .checkbox-mark {
+          .checkbox-mark,
+          .check-icon,
+          .indeterminate-mark,
+          .ripple {
+            animation: none !important;
             transition: none !important;
+          }
+          
+          .checkbox-mark.visible {
+            transform: scale(1) rotate(0deg);
+          }
+          
+          .checkbox-mark.visible .check-icon {
+            stroke-dashoffset: 0;
+          }
+          
+          .checkbox-mark.visible .indeterminate-mark {
+            transform: scaleX(1);
           }
         }
         
         @media (prefers-contrast: high) {
           .checkbox-input {
-            outline: 2px solid currentColor;
+            outline: 3px solid currentColor;
             outline-offset: 2px;
           }
         }
       </style>
       
       <label class="${classes.container}">
-        <div class="${classes.checkbox} checkbox-input" role="checkbox" 
+        <div class="${classes.checkbox} checkbox-input" 
+             role="checkbox" 
              aria-checked="${indeterminate ? 'mixed' : checked.toString()}"
              ${disabled ? 'aria-disabled="true"' : ''}
+             ${error ? 'aria-invalid="true"' : ''}
              tabindex="${disabled ? '-1' : '0'}"
              id="${checkboxId}">
           <div class="checkbox-mark ${(checked || indeterminate) ? 'visible' : ''}">
@@ -324,6 +436,7 @@ class MyCheckbox extends MyntUIBaseComponent {
                ${name ? `name="${name}"` : ''}
                ${value ? `value="${value}"` : ''}
                ${checked ? 'checked' : ''}
+               ${indeterminate ? 'indeterminate' : ''}
                ${disabled ? 'disabled' : ''}
                style="position: absolute; opacity: 0; pointer-events: none;"
                tabindex="-1"
@@ -331,17 +444,25 @@ class MyCheckbox extends MyntUIBaseComponent {
       </label>
     `;
 
-    // Attach event listeners
+    // Use base component's standardized event listener management
+    this.removeEventListeners();
+    
     const checkboxElement = this.shadowRoot.querySelector('.checkbox-input');
     const labelElement = this.shadowRoot.querySelector('label');
     
     if (checkboxElement) {
-      checkboxElement.addEventListener('click', this.handleClick);
-      checkboxElement.addEventListener('keydown', this.handleKeyDown);
-    }
-    
-    if (labelElement && !label) {
-      labelElement.addEventListener('click', this.handleClick);
+      this.addEventListeners([
+        {
+          element: checkboxElement,
+          events: ['click'],
+          handler: this.handleClick
+        },
+        {
+          element: checkboxElement,
+          events: ['keydown'],
+          handler: this.handleKeyDown
+        }
+      ]);
     }
   }
 

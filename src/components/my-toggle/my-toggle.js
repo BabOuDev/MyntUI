@@ -110,18 +110,22 @@ class MyToggle extends MyntUIBaseComponent {
     const checked = this.checked;
     const error = this.error;
     const config = globalConfig.get('theme.tailwind', {});
-    const sizeConfig = config.sizes?.[size] || config.sizes?.md;
+    const sizeConfig = config.sizes?.[size] || config.sizes?.md || {};
     const stateConfig = config.states || {};
     
     // Container classes using enhanced config
     let containerClasses = [
       'inline-flex',
       'items-center',
-      sizeConfig?.spacing || 'gap-sm',
+      sizeConfig.spacing || 'gap-sm',
       'cursor-pointer',
       'select-none',
-      'group'
-    ].filter(Boolean);
+      'group',
+      'relative',
+      'transition-all',
+      'duration-200',
+      'ease-standard'
+    ];
 
     // Toggle track classes using enhanced global config
     let trackClasses = [
@@ -129,51 +133,41 @@ class MyToggle extends MyntUIBaseComponent {
       'flex-shrink-0',
       'rounded-full',
       'border-2',
-      'p-1',
-      stateConfig.base || 'transition-all duration-medium1',
-      stateConfig.focus || 'focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2'
-    ].filter(Boolean);
+      'transition-all',
+      'duration-200',
+      'ease-standard',
+      'focus:outline-none',
+      'focus-visible:ring-2',
+      'focus-visible:ring-primary/60',
+      'focus-visible:ring-offset-2'
+    ];
 
-    // Size classes for toggle using enhanced config
-    if (sizeConfig?.spacing) {
-      // Use size config if available
-      const toggleSizes = {
-        xs: 'w-8 h-5',
-        sm: 'w-10 h-6',
-        md: 'w-12 h-7',
-        lg: 'w-14 h-8',
-        xl: 'w-16 h-10'
-      };
-      trackClasses.push(toggleSizes[size] || toggleSizes.md);
-    } else {
-      // Fallback size classes
-      const sizeClasses = {
-        sm: 'w-10 h-6',
-        md: 'w-12 h-7', 
-        lg: 'w-14 h-8'
-      };
-      trackClasses.push(sizeClasses[size] || sizeClasses.md);
-    }
+    // Size classes for toggle using Material Design 3 proportions
+    const toggleSizes = {
+      xs: { track: 'w-7 h-4', thumb: 'w-2.5 h-2.5', translate: 'translate-x-3' },
+      sm: { track: 'w-9 h-5', thumb: 'w-3.5 h-3.5', translate: 'translate-x-4' },
+      md: { track: 'w-11 h-6', thumb: 'w-4 h-4', translate: 'translate-x-5' },
+      lg: { track: 'w-13 h-7', thumb: 'w-5 h-5', translate: 'translate-x-6' },
+      xl: { track: 'w-16 h-8', thumb: 'w-6 h-6', translate: 'translate-x-8' }
+    };
+    
+    const currentSize = toggleSizes[size] || toggleSizes.md;
+    trackClasses.push(currentSize.track);
 
     // Toggle thumb classes using enhanced global config
     let thumbClasses = [
-      'block',
+      'absolute',
+      'top-0.5',
+      'left-0.5',
       'bg-surface',
       'rounded-full',
-      'shadow-elevation1',
-      'border',
-      stateConfig.base || 'transition-transform duration-medium1'
-    ].filter(Boolean);
-
-    // Thumb size classes using enhanced config
-    const thumbSizes = {
-      xs: 'w-3 h-3',
-      sm: 'w-4 h-4',
-      md: 'w-5 h-5',
-      lg: 'w-6 h-6',
-      xl: 'w-8 h-8'
-    };
-    thumbClasses.push(thumbSizes[size] || thumbSizes.md);
+      'shadow-md',
+      'transition-all',
+      'duration-200',
+      'ease-standard',
+      'transform',
+      currentSize.thumb
+    ];
 
     // Get toggle variant classes from enhanced global config
     const trackVariant = checked ? 'checked' : 'unchecked';
@@ -185,13 +179,13 @@ class MyToggle extends MyntUIBaseComponent {
     if (trackConfig) {
       trackClasses.push(trackConfig);
     } else {
-      // Enhanced fallback styling using design tokens
+      // Material Design 3 styling
       if (checked) {
-        trackClasses.push('bg-primary/24', 'border-primary');
-        thumbClasses.push('translate-x-5', 'border-primary', 'bg-primary');
+        trackClasses.push('bg-primary', 'border-primary');
+        thumbClasses.push(currentSize.translate, 'bg-primary-on-primary');
       } else {
         trackClasses.push('bg-surface-variant', 'border-outline');
-        thumbClasses.push('translate-x-0', 'border-outline', 'bg-outline');
+        thumbClasses.push('translate-x-0', 'bg-outline');
       }
     }
     
@@ -201,31 +195,33 @@ class MyToggle extends MyntUIBaseComponent {
 
     // Apply enhanced state classes from global config
     if (disabled) {
-      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:grayscale';
-      containerClasses.push(disabledState);
+      const disabledClasses = stateConfig.disabled || 'opacity-50 cursor-not-allowed pointer-events-none grayscale';
+      containerClasses.push(...disabledClasses.split(' '));
     } else {
-      // Interactive states from enhanced config
-      if (stateConfig.hover) {
-        trackClasses.push(stateConfig.hover);
-      }
-      
-      if (stateConfig.active) {
-        trackClasses.push(stateConfig.active);
-      }
+      // Interactive states with ripple effect
+      trackClasses.push(
+        'hover:shadow-lg',
+        'active:scale-95',
+        'group-hover:bg-opacity-90',
+        config.animations?.ripple || 'relative overflow-hidden'
+      );
     }
 
     // Error state using enhanced config
     if (error) {
       const errorState = stateConfig.error || 'border-error focus:border-error focus:ring-error/20';
-      trackClasses.push(errorState);
+      trackClasses.push(...errorState.split(' '));
     }
 
-    // Label classes
+    // Label classes with Material Design 3 typography
     let labelClasses = [
       'text-surface-on-surface',
       'text-body-medium',
+      'font-normal',
       'leading-normal',
-      'select-none'
+      'select-none',
+      'transition-colors',
+      'duration-200'
     ];
 
     if (disabled) {
@@ -242,6 +238,34 @@ class MyToggle extends MyntUIBaseComponent {
     };
   }
 
+  // Create ripple effect for Material Design authenticity
+  createRipple(event) {
+    const button = this.shadowRoot.querySelector('.toggle-track');
+    if (!button || this.disabled) return;
+
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = (event?.clientX || rect.left + rect.width / 2) - rect.left - size / 2;
+    const y = (event?.clientY || rect.top + rect.height / 2) - rect.top - size / 2;
+
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+
+    // Remove any existing ripples
+    const existingRipples = button.querySelectorAll('.ripple');
+    existingRipples.forEach(r => r.remove());
+
+    button.appendChild(ripple);
+
+    // Remove ripple after animation
+    setTimeout(() => {
+      ripple.remove();
+    }, 600);
+  }
+
   // Event handlers
   handleClick(event) {
     if (this.disabled) {
@@ -249,6 +273,7 @@ class MyToggle extends MyntUIBaseComponent {
       return;
     }
 
+    this.createRipple(event);
     this.toggle();
   }
 
@@ -257,6 +282,7 @@ class MyToggle extends MyntUIBaseComponent {
 
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
+      this.createRipple(event);
       this.toggle();
     }
   }
@@ -307,33 +333,57 @@ class MyToggle extends MyntUIBaseComponent {
         @import '/src/styles/tailwind.css';
         
         :host {
-          display: block;
+          display: inline-block;
           width: fit-content;
         }
         
-        /* Custom thumb positioning */
-        .toggle-thumb {
-          transition-property: transform;
+        /* Ripple effect for Material Design authenticity */
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple-animation 0.6s linear;
+          background-color: currentColor;
+          opacity: 0.3;
+          pointer-events: none;
         }
         
-        .toggle-track[aria-checked="true"] .toggle-thumb {
-          transform: translateX(100%);
+        @keyframes ripple-animation {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+        
+        /* Enhanced accessibility */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+        
+        @media (prefers-contrast: high) {
+          .toggle-track {
+            border-width: 3px;
+          }
         }
       </style>
 
       <div class="${classes.container}">
         <button 
-          class="${classes.track}"
+          class="${classes.track} toggle-track"
           role="switch"
           aria-checked="${this.checked}"
           aria-label="${this.label || 'toggle switch'}"
           ${this.disabled ? 'aria-disabled="true" disabled' : ''}
+          ${this.error ? 'aria-invalid="true"' : ''}
           tabindex="${this.disabled ? '-1' : '0'}"
         >
-          <span class="${classes.thumb}" aria-hidden="true"></span>
+          <span class="${classes.thumb} toggle-thumb" aria-hidden="true"></span>
         </button>
         
-        ${this.label ? `<span class="${classes.label}">${this.label}</span>` : ''}
+        ${this.label ? `<label class="${classes.label}">${this.label}</label>` : ''}
       </div>
     `;
 
