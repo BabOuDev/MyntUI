@@ -109,7 +109,7 @@ describe('Comprehensive Input Types Test', () => {
     cy.get('my-input[type="checkbox"]')
       .shadow()
       .find('input[type="checkbox"]')
-      .check()
+      .check({ force: true })
       .should('be.checked');
   });
 
