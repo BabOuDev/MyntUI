@@ -409,6 +409,59 @@ export default {
     },
     // Custom plugin for component-specific utilities
     function({ addUtilities, theme, addComponents }) {
+      // Specialized input components
+      addComponents({
+        '.mynt-password-input': {
+          '&[type="password"]': {
+            fontFamily: 'monospace',
+            letterSpacing: '0.1em'
+          }
+        },
+        '.mynt-search-input': {
+          paddingLeft: theme('spacing.10'),
+          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24'%3e%3cpath d='M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3e%3c/svg%3e")`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: '8px center',
+          backgroundSize: '16px 16px'
+        },
+        '.mynt-currency-input': {
+          '&::before': {
+            content: 'attr(data-currency-symbol)',
+            position: 'absolute',
+            left: theme('spacing.3'),
+            top: '50%',
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+            color: theme('colors.outline.DEFAULT')
+          }
+        },
+        '.mynt-date-input': {
+          '&::-webkit-calendar-picker-indicator': {
+            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24'%3e%3cpath d='M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z'/%3e%3c/svg%3e")`,
+            cursor: 'pointer'
+          }
+        },
+        '.mynt-file-input': {
+          '&[type="file"]': {
+            '&::file-selector-button': {
+              padding: `${theme('spacing.2')} ${theme('spacing.4')}`,
+              marginRight: theme('spacing.3'),
+              border: 'none',
+              borderRadius: theme('borderRadius.md'),
+              backgroundColor: theme('colors.primary.DEFAULT'),
+              color: theme('colors.primary.on-primary'),
+              cursor: 'pointer',
+              fontSize: theme('fontSize.label-medium[0]'),
+              fontWeight: '500',
+              transition: `background-color ${theme('transitionDuration.medium1')}`
+            },
+            '&:hover::file-selector-button': {
+              backgroundColor: theme('colors.primary.hover')
+            }
+          }
+        }
+      });
+
       // Component base styles
       addComponents({
         '.mynt-input-base': {
@@ -476,6 +529,62 @@ export default {
           padding: `${theme('spacing.md')} ${theme('spacing.lg')}`,
           fontSize: theme('fontSize.body-large[0]'),
           lineHeight: theme('fontSize.body-large[1].lineHeight')
+        },
+        // Variant-specific utilities
+        '.mynt-variant-filled': {
+          backgroundColor: theme('colors.surface.container'),
+          borderColor: theme('colors.outline.variant'),
+          color: theme('colors.surface.on-surface')
+        },
+        '.mynt-variant-outlined': {
+          backgroundColor: theme('colors.surface.DEFAULT'),
+          borderColor: theme('colors.outline.DEFAULT'),
+          color: theme('colors.surface.on-surface')
+        },
+        '.mynt-variant-underlined': {
+          backgroundColor: 'transparent',
+          borderColor: 'transparent',
+          borderBottomWidth: '2px',
+          borderBottomColor: theme('colors.outline.DEFAULT'),
+          color: theme('colors.surface.on-surface'),
+          borderRadius: '0'
+        },
+        '.mynt-variant-text': {
+          backgroundColor: 'transparent',
+          borderColor: 'transparent',
+          color: theme('colors.surface.on-surface')
+        },
+        // Label position utilities
+        '.mynt-label-floating': {
+          position: 'absolute',
+          left: '12px',
+          pointerEvents: 'none',
+          transformOrigin: 'left center',
+          transition: `all ${theme('transitionDuration.medium1')} ${theme('transitionTimingFunction.standard')}`,
+          '&.floating-active': {
+            top: '0',
+            transform: 'translateY(-50%) scale(0.75)',
+            backgroundColor: theme('colors.surface.DEFAULT'),
+            padding: '0 4px',
+            color: theme('colors.primary.DEFAULT')
+          },
+          '&.floating-inactive': {
+            top: '50%',
+            transform: 'translateY(-50%)'
+          }
+        },
+        // Interactive state utilities
+        '.mynt-interactive': {
+          transition: `all ${theme('transitionDuration.medium1')} ${theme('transitionTimingFunction.standard')}`,
+          '&:hover': {
+            backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-hover')}, transparent)`
+          },
+          '&:focus-visible': {
+            backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-focus')}, transparent)`
+          },
+          '&:active': {
+            backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-pressed')}, transparent)`
+          }
         }
       });
     }
