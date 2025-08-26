@@ -299,7 +299,7 @@ class MyInput extends MyntUIBaseComponent {
     }
   }
 
-  // Generate standard text input
+  // Generate standard text input with specialized handling using TailwindCSS
   generateTextInputElement(commonAttributes, type) {
     const { minLength, maxLength, pattern } = this._schema;
     const typeAttributes = [`type="${type}"`];
@@ -308,23 +308,63 @@ class MyInput extends MyntUIBaseComponent {
     if (maxLength !== null) typeAttributes.push(`maxlength="${maxLength}"`);
     if (pattern) typeAttributes.push(`pattern="${pattern}"`);
 
-    // Add type-specific classes for better styling
-    const additionalClasses = [];
+    // Handle search input with clear button
     if (type === 'search') {
-      additionalClasses.push('mynt-search-input');
-    } else if (type === 'password') {
-      additionalClasses.push('mynt-password-input');
+      return this.generateSearchInputElement(typeAttributes, commonAttributes);
     }
 
-    if (additionalClasses.length > 0) {
-      const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
-      const classIndex = commonAttributes.indexOf(currentClass);
-      if (currentClass && classIndex !== -1) {
-        commonAttributes[classIndex] = currentClass.replace('"', ` ${additionalClasses.join(' ')}"');
+    // Add type-specific classes using TailwindCSS
+    const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
+    const classIndex = commonAttributes.indexOf(currentClass);
+    if (currentClass && classIndex !== -1) {
+      let additionalClasses = '';
+      if (type === 'email') additionalClasses = 'lowercase';
+      else if (type === 'url') additionalClasses = 'lowercase';
+      else if (type === 'tel') additionalClasses = 'font-mono tracking-wide';
+      
+      if (additionalClasses) {
+        commonAttributes[classIndex] = currentClass.replace('"', ` ${additionalClasses}"`);
       }
     }
 
     return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+  }
+
+  // Generate search input with clear button and debounced search using TailwindCSS
+  generateSearchInputElement(typeAttributes, commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.search', {});
+    const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Add search-specific styling
+    const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
+    const classIndex = commonAttributes.indexOf(currentClass);
+    if (currentClass && classIndex !== -1) {
+      commonAttributes[classIndex] = currentClass.replace('"', ' pl-10 pr-10"');
+    }
+
+    return `
+      <div class="relative w-full">
+        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-outline pointer-events-none">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input ${[...typeAttributes, ...commonAttributes, `id="${searchId}"`].join(' ')} 
+               oninput="this.parentElement.parentElement.parentElement.host.handleSearchInput(this, '${searchId}', ${typeConfig.debounceDelay || 300})"
+               onkeydown="this.parentElement.parentElement.parentElement.host.handleSearchKeydown(event, '${searchId}')" />
+        ${typeConfig.showClearButton !== false ? `
+          <button type="button" 
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-outline hover:text-primary transition-all duration-short2 rounded-full hover:bg-surface-variant opacity-0 pointer-events-none" 
+                  data-clear-btn
+                  onclick="this.parentElement.parentElement.parentElement.host.clearSearch('${searchId}')"
+                  aria-label="Clear search">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        ` : ''}
+      </div>
+    `;
   }
 
   // Generate number input with enhanced controls
@@ -367,12 +407,20 @@ class MyInput extends MyntUIBaseComponent {
     }
   }
 
-  // Generate enhanced textarea
+  // Generate enhanced textarea with TailwindCSS only
   generateTextareaElement(commonAttributes) {
     const rows = this._schema.rows || 3;
     const resize = this._schema.resize || 'vertical';
     
-    return `<textarea ${commonAttributes.join(' ')} rows="${rows}" style="resize: ${resize};"></textarea>`;
+    // Add textarea-specific classes using TailwindCSS
+    const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
+    const classIndex = commonAttributes.indexOf(currentClass);
+    if (currentClass && classIndex !== -1) {
+      const resizeClass = resize === 'none' ? 'resize-none' : resize === 'horizontal' ? 'resize-x' : resize === 'vertical' ? 'resize-y' : 'resize';
+      commonAttributes[classIndex] = currentClass.replace('"', ` ${resizeClass} min-h-20"`);
+    }
+    
+    return `<textarea ${commonAttributes.join(' ')} rows="${rows}"></textarea>`;
   }
 
   // Generate select element with options
@@ -641,33 +689,74 @@ class MyInput extends MyntUIBaseComponent {
     return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
   }
 
-  // Generate password input with visibility toggle
+  // Generate enhanced password input with visibility toggle and strength indicator
   generatePasswordInputElement(commonAttributes) {
     const typeConfig = globalConfig.get('components.input.typeConfigs.password', {});
     const typeAttributes = ['type="password"'];
     
-    // Add password-specific styling
+    const passwordId = `password-${Math.random().toString(36).substr(2, 9)}`;
+    const strengthId = `strength-${passwordId}`;
+    
+    // Add password-specific classes using TailwindCSS
     const currentClass = commonAttributes.find(attr => attr.startsWith('class='));
     const classIndex = commonAttributes.indexOf(currentClass);
     if (currentClass && classIndex !== -1) {
-      commonAttributes[classIndex] = currentClass.replace('"', ' mynt-password-input"');
+      commonAttributes[classIndex] = currentClass.replace('"', ' pr-20 font-mono tracking-wider"');
     }
 
-    const passwordId = `password-${Math.random().toString(36).substr(2, 9)}`;
-    
     return `
       <div class="relative w-full">
-        <input ${[...typeAttributes, ...commonAttributes, `id="${passwordId}"`].join(' ')} />
-        ${typeConfig.toggleVisibility ? `
-          <button 
-            type="button" 
-            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-outline hover:text-primary transition-colors"
-            onclick="this.parentElement.querySelector('input').type = this.parentElement.querySelector('input').type === 'password' ? 'text' : 'password'; this.innerHTML = this.parentElement.querySelector('input').type === 'password' ? '👁️' : '🙈';"
-            aria-label="Toggle password visibility"
-            tabindex="-1"
-          >
-            👁️
-          </button>
+        <input ${[...typeAttributes, ...commonAttributes, `id="${passwordId}"`].join(' ')} 
+               oninput="this.parentElement.parentElement.parentElement.host.updatePasswordStrength(this.value, '${strengthId}')" />
+        <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+          ${typeConfig.toggleVisibility !== false ? `
+            <button 
+              type="button" 
+              class="p-1 rounded-md text-outline hover:text-primary hover:bg-surface-variant transition-all duration-short2 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-1"
+              onclick="this.parentElement.parentElement.host.togglePasswordVisibility(this, '${passwordId}')"
+              aria-label="Toggle password visibility"
+              tabindex="0"
+              data-password-visible="false"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          ` : ''}
+        </div>
+        ${typeConfig.strengthIndicator !== false ? `
+          <div class="mt-2" id="${strengthId}">
+            <div class="flex items-center justify-between text-label-small mb-1">
+              <span class="text-outline">Password Strength</span>
+              <span class="strength-text text-outline">Weak</span>
+            </div>
+            <div class="w-full bg-surface-variant rounded-full h-1.5 overflow-hidden">
+              <div class="strength-bar h-full bg-error rounded-full transition-all duration-medium1 ease-standard" style="width: 0%"></div>
+            </div>
+            <div class="mt-1 text-xs text-outline space-y-1 hidden" data-requirements>
+              <div class="flex items-center gap-2" data-req="length">
+                <span class="w-4 h-4 text-error">✗</span>
+                <span>At least 8 characters</span>
+              </div>
+              <div class="flex items-center gap-2" data-req="uppercase">
+                <span class="w-4 h-4 text-error">✗</span>
+                <span>One uppercase letter</span>
+              </div>
+              <div class="flex items-center gap-2" data-req="lowercase">
+                <span class="w-4 h-4 text-error">✗</span>
+                <span>One lowercase letter</span>
+              </div>
+              <div class="flex items-center gap-2" data-req="number">
+                <span class="w-4 h-4 text-error">✗</span>
+                <span>One number</span>
+              </div>
+              <div class="flex items-center gap-2" data-req="special">
+                <span class="w-4 h-4 text-error">✗</span>
+                <span>One special character</span>
+              </div>
+            </div>
+          </div>
         ` : ''}
       </div>
     `;
@@ -1106,21 +1195,39 @@ class MyInput extends MyntUIBaseComponent {
           width: 100%;
         }
         
-        /* Material Icons support */
-        .material-icons {
-          font-family: 'Material Icons';
-          font-weight: normal;
-          font-style: normal;
-          font-size: 24px;
-          line-height: 1;
-          letter-spacing: normal;
-          text-transform: none;
-          display: inline-block;
-          white-space: nowrap;
-          word-wrap: normal;
-          direction: ltr;
-          -webkit-font-feature-settings: 'liga';
-          -webkit-font-smoothing: antialiased;
+        /* Native HTML5 input enhancements */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+          background: transparent;
+          bottom: 0;
+          color: transparent;
+          cursor: pointer;
+          height: auto;
+          left: 0;
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: auto;
+        }
+        
+        /* Remove default number input spinners */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        
+        input[type="number"] {
+          -moz-appearance: textfield;
+        }
+        
+        /* Search input enhancements */
+        input[type="search"]::-webkit-search-decoration,
+        input[type="search"]::-webkit-search-cancel-button,
+        input[type="search"]::-webkit-search-results-button,
+        input[type="search"]::-webkit-search-results-decoration {
+          display: none;
         }
       </style>
 
@@ -1201,6 +1308,351 @@ class MyInput extends MyntUIBaseComponent {
 
     // Update validation UI
     this.updateValidationUI();
+  }
+
+  // Helper methods for specialized input types
+
+  // Get currency symbol based on locale and config
+  getCurrencySymbol(typeConfig) {
+    const locale = typeConfig.locale || 'auto';
+    const currency = typeConfig.currency || 'USD';
+    const actualLocale = locale === 'auto' ? navigator.language || 'en-US' : locale;
+    
+    if (typeConfig.symbol && typeConfig.symbol !== 'auto') {
+      return typeConfig.symbol;
+    }
+    
+    try {
+      const formatter = new Intl.NumberFormat(actualLocale, { 
+        style: 'currency', 
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+      return formatter.formatToParts(0).find(part => part.type === 'currency').value;
+    } catch (error) {
+      return '$'; // Fallback
+    }
+  }
+
+  // Get appropriate icon for date/time input types
+  getDateTimeIcon(type) {
+    switch (type) {
+      case 'date':
+      case 'date-of-birth':
+        return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>`;
+      case 'time':
+        return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
+      case 'datetime-local':
+        return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>`;
+      default:
+        return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>`;
+    }
+  }
+
+  // Password visibility toggle handler
+  togglePasswordVisibility(button, passwordId) {
+    const input = this.shadowRoot.querySelector(`#${passwordId}`);
+    const isVisible = button.dataset.passwordVisible === 'true';
+    
+    input.type = isVisible ? 'password' : 'text';
+    button.dataset.passwordVisible = !isVisible;
+    
+    // Update icon
+    const svg = button.querySelector('svg');
+    if (isVisible) {
+      svg.innerHTML = `
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+      `;
+    } else {
+      svg.innerHTML = `
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+      `;
+    }
+  }
+
+  // Password strength calculator and UI updater
+  updatePasswordStrength(password, strengthId) {
+    const strengthContainer = this.shadowRoot.querySelector(`#${strengthId}`);
+    if (!strengthContainer) return;
+
+    const strengthBar = strengthContainer.querySelector('.strength-bar');
+    const strengthText = strengthContainer.querySelector('.strength-text');
+    const requirements = strengthContainer.querySelector('[data-requirements]');
+    
+    // Calculate strength
+    const checks = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+    
+    const passedCount = Object.values(checks).filter(Boolean).length;
+    const strength = passedCount <= 1 ? 0 : passedCount <= 2 ? 25 : passedCount <= 3 ? 50 : passedCount <= 4 ? 75 : 100;
+    
+    // Update visual indicators
+    strengthBar.style.width = `${strength}%`;
+    
+    if (strength === 0) {
+      strengthBar.className = strengthBar.className.replace(/bg-\w+/g, '') + ' bg-error';
+      strengthText.textContent = 'Weak';
+      strengthText.className = strengthText.className.replace(/text-\w+/g, '') + ' text-error';
+    } else if (strength <= 25) {
+      strengthBar.className = strengthBar.className.replace(/bg-\w+/g, '') + ' bg-error';
+      strengthText.textContent = 'Weak';
+      strengthText.className = strengthText.className.replace(/text-\w+/g, '') + ' text-error';
+    } else if (strength <= 50) {
+      strengthBar.className = strengthBar.className.replace(/bg-\w+/g, '') + ' bg-warning';
+      strengthText.textContent = 'Fair';
+      strengthText.className = strengthText.className.replace(/text-\w+/g, '') + ' text-warning';
+    } else if (strength <= 75) {
+      strengthBar.className = strengthBar.className.replace(/bg-\w+/g, '') + ' bg-info';
+      strengthText.textContent = 'Good';
+      strengthText.className = strengthText.className.replace(/text-\w+/g, '') + ' text-info';
+    } else {
+      strengthBar.className = strengthBar.className.replace(/bg-\w+/g, '') + ' bg-success';
+      strengthText.textContent = 'Strong';
+      strengthText.className = strengthText.className.replace(/text-\w+/g, '') + ' text-success';
+    }
+    
+    // Show/update requirements
+    if (password.length > 0) {
+      requirements.classList.remove('hidden');
+      Object.entries(checks).forEach(([req, passed]) => {
+        const reqElement = requirements.querySelector(`[data-req="${req}"]`);
+        if (reqElement) {
+          const icon = reqElement.querySelector('span:first-child');
+          if (passed) {
+            icon.textContent = '✓';
+            icon.className = icon.className.replace(/text-\w+/g, '') + ' text-success';
+          } else {
+            icon.textContent = '✗';
+            icon.className = icon.className.replace(/text-\w+/g, '') + ' text-error';
+          }
+        }
+      });
+    } else {
+      requirements.classList.add('hidden');
+    }
+  }
+
+  // Format currency input with proper decimal places
+  formatCurrencyInput(input, precision) {
+    let value = input.value;
+    if (value && !isNaN(value)) {
+      // Format to specified decimal places on blur
+      input.addEventListener('blur', () => {
+        if (input.value && !isNaN(input.value)) {
+          input.value = parseFloat(input.value).toFixed(precision);
+        }
+      }, { once: true });
+    }
+  }
+
+  // Format date input display
+  formatDateInput(input) {
+    if (input.value) {
+      const date = new Date(input.value);
+      if (!isNaN(date.getTime())) {
+        // Emit formatted date event
+        this.dispatchEvent(new CustomEvent('dateSelected', {
+          detail: {
+            value: input.value,
+            formatted: date.toLocaleDateString(),
+            date: date
+          },
+          bubbles: true
+        }));
+      }
+    }
+  }
+
+  // Search input handlers
+  handleSearchInput(input, searchId, debounceDelay) {
+    const clearBtn = input.parentElement.querySelector('[data-clear-btn]');
+    
+    // Show/hide clear button
+    if (input.value.length > 0) {
+      clearBtn.classList.remove('opacity-0', 'pointer-events-none');
+      clearBtn.classList.add('opacity-100');
+    } else {
+      clearBtn.classList.add('opacity-0', 'pointer-events-none');
+      clearBtn.classList.remove('opacity-100');
+    }
+    
+    // Debounced search
+    clearTimeout(input.dataset.searchTimer);
+    input.dataset.searchTimer = setTimeout(() => {
+      this.dispatchEvent(new CustomEvent('search', {
+        detail: {
+          query: input.value,
+          searchId: searchId
+        },
+        bubbles: true
+      }));
+    }, debounceDelay);
+  }
+
+  handleSearchKeydown(event, searchId) {
+    if (event.key === 'Escape') {
+      this.clearSearch(searchId);
+      event.preventDefault();
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      this.dispatchEvent(new CustomEvent('searchSubmit', {
+        detail: {
+          query: event.target.value,
+          searchId: searchId
+        },
+        bubbles: true
+      }));
+    }
+  }
+
+  clearSearch(searchId) {
+    const input = this.shadowRoot.querySelector(`#${searchId}`);
+    const clearBtn = input.parentElement.querySelector('[data-clear-btn]');
+    
+    input.value = '';
+    input.focus();
+    clearBtn.classList.add('opacity-0', 'pointer-events-none');
+    clearBtn.classList.remove('opacity-100');
+    
+    this.dispatchEvent(new CustomEvent('searchClear', {
+      detail: { searchId: searchId },
+      bubbles: true
+    }));
+  }
+
+  // Multi-select handlers
+  showMultiSelectDropdown(multiSelectId) {
+    const container = this.shadowRoot.querySelector(`#${multiSelectId}`);
+    const dropdown = container.querySelector('[data-dropdown]');
+    dropdown.classList.remove('hidden');
+  }
+
+  hideMultiSelectDropdown(multiSelectId) {
+    const container = this.shadowRoot.querySelector(`#${multiSelectId}`);
+    const dropdown = container.querySelector('[data-dropdown]');
+    dropdown.classList.add('hidden');
+  }
+
+  filterMultiSelectOptions(query, multiSelectId) {
+    const container = this.shadowRoot.querySelector(`#${multiSelectId}`);
+    const dropdown = container.querySelector('[data-dropdown]');
+    const options = dropdown.querySelectorAll('[data-value]');
+    
+    options.forEach(option => {
+      const label = option.dataset.label.toLowerCase();
+      const matches = label.includes(query.toLowerCase());
+      option.style.display = matches ? 'block' : 'none';
+    });
+    
+    dropdown.classList.remove('hidden');
+  }
+
+  toggleMultiSelectOption(value, label, multiSelectId) {
+    const currentValues = Array.isArray(this._value) ? [...this._value] : [];
+    const index = currentValues.indexOf(value);
+    
+    if (index === -1) {
+      currentValues.push(value);
+    } else {
+      currentValues.splice(index, 1);
+    }
+    
+    this._value = currentValues;
+    this.setAttribute('value', currentValues.join(','));
+    
+    // Re-render to update chips
+    this.render();
+  }
+
+  removeChip(value) {
+    const currentValues = Array.isArray(this._value) ? [...this._value] : [];
+    const index = currentValues.indexOf(value);
+    
+    if (index !== -1) {
+      currentValues.splice(index, 1);
+      this._value = currentValues;
+      this.setAttribute('value', currentValues.join(','));
+      this.render();
+    }
+  }
+
+  handleMultiSelectKeydown(event, multiSelectId) {
+    if (event.key === 'Escape') {
+      this.hideMultiSelectDropdown(multiSelectId);
+      event.preventDefault();
+    }
+  }
+
+  // Country selector handlers
+  showCountryDropdown(countrySelectId) {
+    const container = this.shadowRoot.querySelector(`#${countrySelectId}`);
+    const dropdown = container.querySelector('[data-dropdown]');
+    dropdown.classList.remove('hidden');
+  }
+
+  hideCountryDropdown(countrySelectId) {
+    const container = this.shadowRoot.querySelector(`#${countrySelectId}`);
+    const dropdown = container.querySelector('[data-dropdown]');
+    dropdown.classList.add('hidden');
+  }
+
+  toggleCountryDropdown(countrySelectId) {
+    const container = this.shadowRoot.querySelector(`#${countrySelectId}`);
+    const dropdown = container.querySelector('[data-dropdown]');
+    dropdown.classList.toggle('hidden');
+  }
+
+  filterCountryOptions(query, countrySelectId) {
+    const container = this.shadowRoot.querySelector(`#${countrySelectId}`);
+    const dropdown = container.querySelector('[data-dropdown]');
+    const options = dropdown.querySelectorAll('[data-value]');
+    
+    options.forEach(option => {
+      const name = option.dataset.name.toLowerCase();
+      const matches = name.includes(query.toLowerCase());
+      option.style.display = matches ? 'block' : 'none';
+    });
+    
+    dropdown.classList.remove('hidden');
+  }
+
+  selectCountry(code, name, flag, phoneCode, countrySelectId) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.country', {});
+    const container = this.shadowRoot.querySelector(`#${countrySelectId}`);
+    const input = container.querySelector('input[type="text"]');
+    const hiddenInput = container.querySelector('input[type="hidden"]');
+    
+    this._value = code;
+    hiddenInput.value = code;
+    
+    let displayValue = name;
+    if (typeConfig.includeFlag !== false) displayValue = `${flag} ${displayValue}`;
+    if (typeConfig.includePhoneCode !== false && phoneCode) displayValue += ` (+${phoneCode})`;
+    
+    input.value = displayValue;
+    this.hideCountryDropdown(countrySelectId);
+    
+    this.dispatchEvent(new CustomEvent('countrySelected', {
+      detail: { code, name, flag, phoneCode },
+      bubbles: true
+    }));
+  }
+
+  handleCountryKeydown(event, countrySelectId) {
+    if (event.key === 'Escape') {
+      this.hideCountryDropdown(countrySelectId);
+      event.preventDefault();
+    } else if (event.key === 'ArrowDown') {
+      this.showCountryDropdown(countrySelectId);
+      event.preventDefault();
+    }
   }
 
   connectedCallback() {
