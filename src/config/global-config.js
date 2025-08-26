@@ -242,6 +242,51 @@ export class MyntUIConfig {
               showCardType: true,
               maskNumber: true,
               validateCard: true
+            },
+            'password': {
+              component: 'password-input',
+              showStrength: true,
+              toggleVisibility: true,
+              minStrength: 'medium',
+              strengthIndicator: true
+            },
+            'search': {
+              component: 'search-input',
+              showClearButton: true,
+              instantSearch: false,
+              debounceDelay: 300,
+              searchIcon: 'search',
+              clearIcon: 'clear'
+            },
+            'range': {
+              component: 'range-slider',
+              showValue: true,
+              showTicks: false,
+              showLabels: true,
+              thumbShape: 'circle'
+            },
+            'color': {
+              component: 'color-picker',
+              format: 'hex',
+              showPresets: true,
+              allowAlpha: false,
+              showInput: true
+            },
+            'file': {
+              component: 'file-upload',
+              multiple: false,
+              accept: '*',
+              maxSize: '10MB',
+              showPreview: true,
+              dragAndDrop: true
+            },
+            'image': {
+              component: 'image-upload',
+              accept: 'image/*',
+              maxSize: '5MB',
+              showPreview: true,
+              cropAspectRatio: null,
+              resizeQuality: 0.8
             }
           }
         },
