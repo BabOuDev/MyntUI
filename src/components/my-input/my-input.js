@@ -111,8 +111,40 @@ class MyInput extends MyntUIBaseComponent {
       ...this._schema
     };
 
+    // Apply automatic icon assignment if no explicit icons are set
+    this.applyAutomaticIcons();
+
     // Set initial value
     this._value = this._schema.value;
+  }
+
+  // Automatic icon assignment based on input type
+  getDefaultIconForType(type) {
+    const iconMap = {
+      'email': 'mail',
+      'password': 'lock',
+      'search': 'search',
+      'date': 'event',
+      'datetime-local': 'schedule',
+      'time': 'access_time',
+      'date-of-birth': 'cake',
+      'tel': 'phone',
+      'url': 'link',
+      'number': 'tag',
+      'integer': 'tag'
+    };
+    return iconMap[type] || null;
+  }
+
+  // Apply automatic icon assignment if no explicit icons are provided
+  applyAutomaticIcons() {
+    // Only assign automatic icons if no explicit icons are set
+    if (!this._schema.leadingIcon && !this._schema.trailingIcon) {
+      const autoIcon = this.getDefaultIconForType(this._schema.type);
+      if (autoIcon) {
+        this._schema.leadingIcon = autoIcon;
+      }
+    }
   }
 
   // Getters and setters
