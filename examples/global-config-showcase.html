@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyntUI Global Config & TailwindCSS Showcase</title>
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        
+        .showcase-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .component-demo {
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+        
+        .component-demo h4 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            color: #334155;
+        }
+        
+        .demo-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .size-demo {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .config-display {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-info {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="showcase-container">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">MyntUI Global Config Showcase</h1>
+            <p class="text-gray-600 text-lg">Comprehensive TailwindCSS integration with global configuration system</p>
+            <div class="flex justify-center gap-4 mt-4">
+                <span class="status-indicator status-success">
+                    <span class="material-icons text-sm">check_circle</span>
+                    Global Config Enhanced
+                </span>
+                <span class="status-indicator status-info">
+                    <span class="material-icons text-sm">palette</span>
+                    TailwindCSS Integrated
+                </span>
+            </div>
+        </header>
+
+        <!-- Input Components Section -->
+        <section class="section">
+            <h2 class="section-title">Enhanced Input Components</h2>
+            <div class="component-grid">
+                <!-- Basic Inputs -->
+                <div class="component-demo">
+                    <h4>Text Inputs with Variants</h4>
+                    <div class="space-y-4">
+                        <my-input 
+                            type="text" 
+                            label="Outlined Input (Default)" 
+                            placeholder="Enter text here..." 
+                            variant="outlined">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Filled Input" 
+                            placeholder="Enter text here..." 
+                            variant="filled">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Text Input" 
+                            placeholder="Enter text here..." 
+                            variant="text">
+                        </my-input>
+                    </div>
+                </div>
+
+                <!-- Sizes -->
+                <div class="component-demo">
+                    <h4>Input Sizes</h4>
+                    <div class="space-y-4">
+                        <my-input 
+                            type="text" 
+                            label="Small Input" 
+                            placeholder="Small size..." 
+                            size="sm">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Medium Input (Default)" 
+                            placeholder="Medium size..." 
+                            size="md">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Large Input" 
+                            placeholder="Large size..." 
+                            size="lg">
+                        </my-input>
+                    </div>
+                </div>
+
+                <!-- Label Positions -->
+                <div class="component-demo">
+                    <h4>Label Positioning</h4>
+                    <div class="space-y-4">
+                        <my-input 
+                            type="text" 
+                            label="Top Label" 
+                            placeholder="Label on top..." 
+                            label-position="top">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Left Label" 
+                            placeholder="Label on left..." 
+                            label-position="left">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Floating Label" 
+                            placeholder="Floating label..." 
+                            label-position="over">
+                        </my-input>
+                    </div>
+                </div>
+
+                <!-- Specialized Inputs -->
+                <div class="component-demo">
+                    <h4>Specialized Input Types</h4>
+                    <div class="space-y-4">
+                        <my-input 
+                            type="email" 
+                            label="Email Address" 
+                            placeholder="Enter your email..." 
+                            leading-icon="mail">
+                        </my-input>
+                        <my-input 
+                            type="password" 
+                            label="Password" 
+                            placeholder="Enter password..." 
+                            leading-icon="lock">
+                        </my-input>
+                        <my-input 
+                            type="tel" 
+                            label="Phone Number" 
+                            placeholder="Enter phone..." 
+                            leading-icon="phone">
+                        </my-input>
+                        <my-input 
+                            type="date" 
+                            label="Date Picker" 
+                            leading-icon="event">
+                        </my-input>
+                    </div>
+                </div>
+
+                <!-- Validation States -->
+                <div class="component-demo">
+                    <h4>Validation States</h4>
+                    <div class="space-y-4">
+                        <my-input 
+                            type="email" 
+                            label="Valid Email" 
+                            value="user@example.com" 
+                            helper-text="This email is valid">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Required Field" 
+                            placeholder="This field is required..." 
+                            required 
+                            helper-text="Please fill this field">
+                        </my-input>
+                        <my-input 
+                            type="text" 
+                            label="Character Count" 
+                            placeholder="Type here..." 
+                            maxlength="50" 
+                            character-count 
+                            helper-text="Character limit demonstration">
+                        </my-input>
+                    </div>
+                </div>
+
+                <!-- Advanced Inputs -->
+                <div class="component-demo">
+                    <h4>Advanced Input Features</h4>
+                    <div class="space-y-4">
+                        <my-input 
+                            type="country" 
+                            label="Country Selector" 
+                            placeholder="Select your country..." 
+                            leading-icon="public">
+                        </my-input>
+                        <my-input 
+                            type="currency" 
+                            label="Currency Input" 
+                            placeholder="0.00" 
+                            leading-icon="attach_money">
+                        </my-input>
+                        <my-input 
+                            type="textarea" 
+                            label="Message" 
+                            placeholder="Enter your message..." 
+                            helper-text="Multi-line text input">
+                        </my-input>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Button Components Section -->
+        <section class="section">
+            <h2 class="section-title">Enhanced Button Components</h2>
+            <div class="component-grid">
+                <!-- Button Variants -->
+                <div class="component-demo">
+                    <h4>Button Variants</h4>
+                    <div class="space-y-4">
+                        <div class="demo-row">
+                            <my-button variant="filled" label="Filled Button"></my-button>
+                            <my-button variant="outlined" label="Outlined Button"></my-button>
+                        </div>
+                        <div class="demo-row">
+                            <my-button variant="text" label="Text Button"></my-button>
+                            <my-button variant="filled-tonal" label="Filled Tonal"></my-button>
+                        </div>
+                        <div class="demo-row">
+                            <my-button variant="elevated" label="Elevated Button"></my-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Button Sizes -->
+                <div class="component-demo">
+                    <h4>Button Sizes</h4>
+                    <div class="space-y-4">
+                        <div class="demo-row">
+                            <my-button size="sm" label="Small"></my-button>
+                            <my-button size="md" label="Medium"></my-button>
+                            <my-button size="lg" label="Large"></my-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Button States -->
+                <div class="component-demo">
+                    <h4>Button States</h4>
+                    <div class="space-y-4">
+                        <div class="demo-row">
+                            <my-button label="Normal Button"></my-button>
+                            <my-button label="Disabled Button" disabled></my-button>
+                        </div>
+                        <div class="demo-row">
+                            <my-button label="Loading Button" loading></my-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAB and Icon Buttons -->
+                <div class="component-demo">
+                    <h4>Special Button Types</h4>
+                    <div class="space-y-4">
+                        <div class="demo-row">
+                            <my-button fab size="md">
+                                <span class="material-icons">add</span>
+                            </my-button>
+                            <my-button fab size="lg">
+                                <span class="material-icons">favorite</span>
+                            </my-button>
+                        </div>
+                        <div class="demo-row">
+                            <my-button icon-only size="md">
+                                <span class="material-icons">menu</span>
+                            </my-button>
+                            <my-button icon-only size="lg">
+                                <span class="material-icons">search</span>
+                            </my-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Toggle Components Section -->
+        <section class="section">
+            <h2 class="section-title">Toggle Components</h2>
+            <div class="component-grid">
+                <!-- Toggle Sizes -->
+                <div class="component-demo">
+                    <h4>Toggle Sizes</h4>
+                    <div class="space-y-4">
+                        <my-toggle label="Small Toggle" size="sm"></my-toggle>
+                        <my-toggle label="Medium Toggle" size="md" checked></my-toggle>
+                        <my-toggle label="Large Toggle" size="lg"></my-toggle>
+                    </div>
+                </div>
+
+                <!-- Toggle States -->
+                <div class="component-demo">
+                    <h4>Toggle States</h4>
+                    <div class="space-y-4">
+                        <my-toggle label="Enabled Toggle"></my-toggle>
+                        <my-toggle label="Checked Toggle" checked></my-toggle>
+                        <my-toggle label="Disabled Toggle" disabled></my-toggle>
+                        <my-toggle label="Disabled Checked" disabled checked></my-toggle>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Global Configuration Display -->
+        <section class="section">
+            <h2 class="section-title">Global Configuration System</h2>
+            <p class="text-gray-600 mb-4">All components now use a unified global configuration system that provides:</p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 mb-4">
+                <li><strong>Consistent Sizing:</strong> Unified size system across all components (xs, sm, md, lg, xl)</li>
+                <li><strong>Theme Integration:</strong> All colors, spacing, and design tokens from global config</li>
+                <li><strong>TailwindCSS Classes:</strong> Dynamic class generation from configuration</li>
+                <li><strong>Label Positioning:</strong> Configurable label layouts (top, left, over, floating)</li>
+                <li><strong>State Management:</strong> Consistent hover, focus, active, and disabled states</li>
+                <li><strong>Validation System:</strong> Unified validation with proper error handling</li>
+            </ul>
+            <div class="config-display" id="configDisplay">
+                <!-- Configuration will be loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Load MyntUI Components -->
+    <script type="module">
+        // Import MyntUI components
+        import '../src/index.js';
+        import { globalConfig } from '../src/config/global-config.js';
+
+        // Display current configuration
+        document.addEventListener('DOMContentLoaded', () => {
+            const configDisplay = document.getElementById('configDisplay');
+            const config = globalConfig.getAll();
+            
+            configDisplay.textContent = JSON.stringify({
+                theme: config.theme.tailwind.sizes,
+                variants: Object.keys(config.theme.tailwind.variants),
+                labelPositions: Object.keys(config.theme.tailwind.labelPositions),
+                states: Object.keys(config.theme.tailwind.states),
+                components: Object.keys(config.theme.tailwind.components)
+            }, null, 2);
+        });
+
+        // Add interactivity demonstrations
+        document.addEventListener('change', (e) => {
+            if (e.target.tagName.toLowerCase().includes('my-')) {
+                console.log('Component changed:', {
+                    component: e.target.tagName.toLowerCase(),
+                    detail: e.detail,
+                    value: e.target.value || e.target.checked
+                });
+            }
+        });
+
+        // Demonstrate programmatic API
+        setTimeout(() => {
+            console.log('MyntUI Global Config Showcase loaded successfully!');
+            console.log('Global Config:', globalConfig.getAll());
+        }, 1000);
+    </script>
+</body>
+</html>
