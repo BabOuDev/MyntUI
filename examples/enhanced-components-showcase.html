@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyntUI Enhanced Components Showcase - Global Config & TailwindCSS</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../src/index.js" type="module"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f7f2fa;
+            color: #1c1b1f;
+            line-height: 1.6;
+        }
+        .showcase {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        .grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        .demo-item {
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fefefe;
+        }
+        .demo-item h4 {
+            margin: 0 0 12px 0;
+            color: #6750A4;
+        }
+        h1 {
+            color: #6750A4;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        h2 {
+            color: #21005D;
+            border-bottom: 2px solid #EADDFF;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        h3 {
+            color: #4F378B;
+            margin-bottom: 12px;
+        }
+        .config-demo {
+            background: #F6EDFF;
+            border: 1px solid #EADDFF;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="showcase">
+        <h1>🎨 MyntUI Enhanced Components Showcase</h1>
+        <p style="text-align: center; font-size: 18px; color: #625B71; margin-bottom: 32px;">
+            Comprehensive demonstration of global configuration, TailwindCSS integration, and enhanced input types
+        </p>
+
+        <section class="section">
+            <h2>🔧 Global Configuration Integration</h2>
+            <div class="config-demo">
+                <h3>Active Configuration</h3>
+                <p>The components below automatically use the global configuration for theming, spacing, colors, and behavior.</p>
+                <button onclick="toggleTheme()" style="padding: 8px 16px; background: #6750A4; color: white; border: none; border-radius: 20px; cursor: pointer;">
+                    Toggle Dark Mode
+                </button>
+                <button onclick="changeSize()" style="padding: 8px 16px; background: #625B71; color: white; border: none; border-radius: 20px; cursor: pointer; margin-left: 8px;">
+                    Cycle Sizes
+                </button>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📝 Enhanced Input Components</h2>
+            <div class="grid">
+                <div class="demo-item">
+                    <h4>🌍 Country Selector (with Intl API)</h4>
+                    <my-input 
+                        type="country" 
+                        label="Select Country" 
+                        name="country" 
+                        placeholder="Choose your country"
+                        helper-text="Uses Intl.DisplayNames API with localized country names"
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>🗓️ Enhanced Date Picker</h4>
+                    <my-input 
+                        type="date-of-birth" 
+                        label="Date of Birth" 
+                        name="dob" 
+                        helper-text="Automatically limits to past dates"
+                        required
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>📞 Phone Number</h4>
+                    <my-input 
+                        type="phone" 
+                        label="Phone Number" 
+                        name="phone" 
+                        placeholder="+1 (555) 123-4567"
+                        helper-text="International phone number format"
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>💰 Currency Input</h4>
+                    <my-input 
+                        type="currency" 
+                        label="Amount" 
+                        name="amount" 
+                        placeholder="0.00"
+                        helper-text="Automatic currency formatting"
+                        min="0"
+                        step="0.01"
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>🔍 Dynamic Select (Searchable)</h4>
+                    <my-input 
+                        type="dynamic-select" 
+                        label="Choose Technology" 
+                        name="tech" 
+                        helper-text="Searchable dropdown with dynamic options"
+                        schema='{"options": [
+                            {"label": "JavaScript", "value": "js"},
+                            {"label": "TypeScript", "value": "ts"},
+                            {"label": "Python", "value": "py"},
+                            {"label": "Java", "value": "java"},
+                            {"label": "C++", "value": "cpp"},
+                            {"label": "Rust", "value": "rust"},
+                            {"label": "Go", "value": "go"},
+                            {"label": "Swift", "value": "swift"}
+                        ]}'
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>📧 Multiple Select</h4>
+                    <my-input 
+                        type="multiple" 
+                        label="Skills" 
+                        name="skills" 
+                        helper-text="Select multiple skills"
+                        schema='{"options": [
+                            {"label": "Frontend Development", "value": "frontend"},
+                            {"label": "Backend Development", "value": "backend"},
+                            {"label": "DevOps", "value": "devops"},
+                            {"label": "Mobile Development", "value": "mobile"},
+                            {"label": "UI/UX Design", "value": "design"},
+                            {"label": "Data Science", "value": "data"},
+                            {"label": "Machine Learning", "value": "ml"}
+                        ]}'
+                    ></my-input>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📊 Enhanced Form Validation</h2>
+            <div class="grid">
+                <div class="demo-item">
+                    <h4>✉️ Email with Real-time Validation</h4>
+                    <my-input 
+                        type="email" 
+                        label="Email Address" 
+                        name="email" 
+                        placeholder="user@example.com"
+                        required
+                        helper-text="Enter a valid email address"
+                        character-count
+                        maxlength="50"
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>🔐 Password with Strength Validation</h4>
+                    <my-input 
+                        type="password" 
+                        label="Password" 
+                        name="password" 
+                        placeholder="Enter secure password"
+                        required
+                        minlength="8"
+                        helper-text="Minimum 8 characters required"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*?&]{8,}$"
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>🌐 URL Validation</h4>
+                    <my-input 
+                        type="url" 
+                        label="Website URL" 
+                        name="website" 
+                        placeholder="https://example.com"
+                        helper-text="Enter a valid URL"
+                    ></my-input>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>📝 Textarea with Character Count</h4>
+                    <my-input 
+                        type="textarea" 
+                        label="Description" 
+                        name="description" 
+                        placeholder="Tell us about yourself..."
+                        helper-text="Brief description (optional)"
+                        character-count
+                        maxlength="500"
+                        rows="4"
+                    ></my-input>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🎛️ Interactive Components</h2>
+            <div class="grid">
+                <div class="demo-item">
+                    <h4>🔘 Enhanced Buttons</h4>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                        <my-button label="Primary" variant="filled"></my-button>
+                        <my-button label="Secondary" variant="outlined"></my-button>
+                        <my-button label="Text" variant="text"></my-button>
+                        <my-button label="Elevated" elevated></my-button>
+                        <my-button label="Tonal" filled-tonal></my-button>
+                        <my-button variant="filled" disabled>
+                            <my-icon icon="settings" slot="prefix"></my-icon>
+                            Disabled
+                        </my-button>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>🔀 Toggle Switches</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <my-toggle name="notifications" label="Notifications" checked></my-toggle>
+                            <label for="notifications">Enable Notifications</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <my-toggle name="darkmode" label="Dark Mode"></my-toggle>
+                            <label for="darkmode">Dark Mode</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <my-toggle name="analytics" label="Analytics" disabled></my-toggle>
+                            <label for="analytics">Analytics (Disabled)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>☑️ Enhanced Checkboxes</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <my-checkbox name="terms" label="I agree to the Terms and Conditions" required></my-checkbox>
+                        <my-checkbox name="newsletter" label="Subscribe to newsletter" checked></my-checkbox>
+                        <my-checkbox name="updates" label="Receive product updates" indeterminate></my-checkbox>
+                        <my-checkbox name="disabled-option" label="This option is disabled" disabled></my-checkbox>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>🎯 Enhanced Icons</h4>
+                    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                        <my-icon icon="home" size="sm" color="primary"></my-icon>
+                        <my-icon icon="settings" size="md" color="secondary"></my-icon>
+                        <my-icon icon="favorite" size="lg" color="error"></my-icon>
+                        <my-icon icon="star" size="xl" color="warning" interactive></my-icon>
+                        <my-icon icon="search" size="md" interactive></my-icon>
+                        <my-icon icon="info" size="sm" color="info"></my-icon>
+                    </div>
+                    <p style="margin-top: 12px; font-size: 14px; color: #625B71;">
+                        Icons support multiple sizes, semantic colors from global config, and interactive states
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📈 Data Visualization Components</h2>
+            <div class="grid">
+                <div class="demo-item">
+                    <h4>📊 Progress Indicators</h4>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <my-progress value="25" label="Loading..." variant="primary"></my-progress>
+                        <my-progress value="60" label="Upload Progress" variant="secondary"></my-progress>
+                        <my-progress value="85" label="Almost Complete" variant="success"></my-progress>
+                        <my-progress value="100" label="Completed!" variant="primary"></my-progress>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>🎛️ Gauge Display</h4>
+                    <div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                        <my-gauge value="75" min="0" max="100" label="CPU Usage"></my-gauge>
+                        <my-gauge value="42" min="0" max="100" label="Memory"></my-gauge>
+                        <my-gauge value="88" min="0" max="100" label="Storage"></my-gauge>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🌐 Accessibility & Global Configuration</h2>
+            <div class="demo-item">
+                <h3>♿ Accessibility Features</h3>
+                <ul style="color: #625B71;">
+                    <li><strong>Screen Reader Support:</strong> All components provide proper ARIA labels and descriptions</li>
+                    <li><strong>Keyboard Navigation:</strong> Full keyboard support with proper focus management</li>
+                    <li><strong>High Contrast Support:</strong> Components adapt to high contrast mode preferences</li>
+                    <li><strong>Reduced Motion:</strong> Animations respect user's motion preferences</li>
+                    <li><strong>Semantic HTML:</strong> Components use proper semantic elements and roles</li>
+                </ul>
+                
+                <h3>🎨 Global Configuration Benefits</h3>
+                <ul style="color: #625B71;">
+                    <li><strong>Consistent Theming:</strong> All components use centralized color and spacing tokens</li>
+                    <li><strong>TailwindCSS Integration:</strong> Seamless integration with utility-first CSS framework</li>
+                    <li><strong>Responsive Design:</strong> Components automatically adapt to different screen sizes</li>
+                    <li><strong>Runtime Configuration:</strong> Theme and behavior can be changed dynamically</li>
+                    <li><strong>Internationalization:</strong> Country selector uses Intl API for localized names</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🧪 Live Configuration Demo</h2>
+            <div id="config-display" class="config-demo">
+                <h3>Current Global Configuration Preview</h3>
+                <pre id="config-json" style="background: white; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px;"></pre>
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        import { globalConfig } from '../src/config/global-config.js';
+
+        // Display current configuration
+        function updateConfigDisplay() {
+            const configElement = document.getElementById('config-json');
+            if (configElement) {
+                const config = globalConfig.getAll();
+                configElement.textContent = JSON.stringify({
+                    theme: config.theme,
+                    components: {
+                        input: config.components.input,
+                        button: config.components.button
+                    },
+                    api: config.api.pagination
+                }, null, 2);
+            }
+        }
+
+        // Theme toggle functionality
+        let currentTheme = 'light';
+        window.toggleTheme = () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            globalConfig.set('theme.colorScheme', currentTheme);
+            document.documentElement.setAttribute('data-color-scheme', currentTheme);
+            updateConfigDisplay();
+        };
+
+        // Size cycling functionality
+        const sizes = ['sm', 'md', 'lg'];
+        let currentSizeIndex = 1;
+        window.changeSize = () => {
+            currentSizeIndex = (currentSizeIndex + 1) % sizes.length;
+            const newSize = sizes[currentSizeIndex];
+            
+            // Update global config
+            globalConfig.set('components.input.size', newSize);
+            globalConfig.set('components.button.size', newSize);
+            
+            // Update all components
+            const inputs = document.querySelectorAll('my-input');
+            const buttons = document.querySelectorAll('my-button');
+            const icons = document.querySelectorAll('my-icon');
+            
+            inputs.forEach(input => input.setAttribute('size', newSize));
+            buttons.forEach(button => button.setAttribute('size', newSize));
+            icons.forEach(icon => icon.setAttribute('size', newSize));
+            
+            updateConfigDisplay();
+        };
+
+        // Listen for component events
+        document.addEventListener('input', (event) => {
+            if (event.target.tagName.toLowerCase().startsWith('my-')) {
+                console.log('Component input:', {
+                    component: event.target.tagName.toLowerCase(),
+                    detail: event.detail,
+                    value: event.detail?.value
+                });
+            }
+        });
+
+        document.addEventListener('change', (event) => {
+            if (event.target.tagName.toLowerCase().startsWith('my-')) {
+                console.log('Component change:', {
+                    component: event.target.tagName.toLowerCase(),
+                    detail: event.detail,
+                    valid: event.detail?.valid,
+                    errors: event.detail?.errors
+                });
+            }
+        });
+
+        document.addEventListener('icon-click', (event) => {
+            console.log('Icon clicked:', event.detail);
+            alert(`Icon "${event.detail.icon}" clicked!`);
+        });
+
+        // Initialize
+        updateConfigDisplay();
+
+        // Listen for global config changes
+        window.addEventListener('myntuiConfigChange', () => {
+            updateConfigDisplay();
+        });
+    </script>
+</body>
+</html>
