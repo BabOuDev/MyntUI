@@ -2243,8 +2243,8 @@ class MyInput extends MyntUIBaseComponent {
 
   connectedCallback() {
     super.connectedCallback();
-    // Add small delay to ensure everything is properly set up
-    setTimeout(() => this.render(), 0);
+    // Ensure shadow root is initialized before rendering
+    this.render();
   }
 
   disconnectedCallback() {
