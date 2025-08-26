@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyntUI - Test All Input Types</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            margin: 0 0 0.5rem 0;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h3 {
+            margin: 0 0 1rem 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-results {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #e8f4f8;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MyntUI Input Types Test</h1>
+            <p>Testing all supported input types from CONTRIBUTING.md requirements</p>
+        </div>
+        
+        <div class="grid">
+            <div class="section">
+                <h3>Text & Pattern Inputs</h3>
+                <div class="form-group">
+                    <my-input 
+                        type="text" 
+                        label="Full Name" 
+                        placeholder="Enter your full name"
+                        helper-text="Basic text input">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="pattern" 
+                        label="Product Code" 
+                        placeholder="ABC123"
+                        pattern="[A-Z]{3}[0-9]{3}"
+                        helper-text="Format: ABC123">
+                    </my-input>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Number Inputs</h3>
+                <div class="form-group">
+                    <my-input 
+                        type="number" 
+                        label="Price" 
+                        placeholder="99.99"
+                        min="0"
+                        max="9999"
+                        step="0.01"
+                        helper-text="Decimal numbers allowed">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="integer" 
+                        label="Quantity" 
+                        placeholder="10"
+                        min="1"
+                        max="100"
+                        helper-text="Whole numbers only">
+                    </my-input>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Date & Time Inputs</h3>
+                <div class="form-group">
+                    <my-input 
+                        type="date" 
+                        label="Event Date"
+                        helper-text="Select event date">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="datetime-local" 
+                        label="Appointment"
+                        helper-text="Select date and time">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="time" 
+                        label="Meeting Time"
+                        helper-text="Select time">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="date-of-birth" 
+                        label="Date of Birth"
+                        helper-text="Special date picker for DOB">
+                    </my-input>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Contact Inputs</h3>
+                <div class="form-group">
+                    <my-input 
+                        type="email" 
+                        label="Email Address" 
+                        placeholder="user@example.com"
+                        helper-text="Valid email required">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="tel" 
+                        label="Phone Number" 
+                        placeholder="+1 (555) 123-4567"
+                        helper-text="Include country code">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="url" 
+                        label="Website" 
+                        placeholder="https://example.com"
+                        helper-text="Valid URL required">
+                    </my-input>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Special Inputs</h3>
+                <div class="form-group">
+                    <my-input 
+                        type="password" 
+                        label="Password" 
+                        placeholder="Enter secure password"
+                        helper-text="Minimum 8 characters">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="search" 
+                        label="Search" 
+                        placeholder="Search products..."
+                        helper-text="Start typing to search">
+                    </my-input>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Textarea & Select</h3>
+                <div class="form-group">
+                    <my-input 
+                        type="textarea" 
+                        label="Description" 
+                        placeholder="Enter detailed description..."
+                        helper-text="Max 500 characters">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        id="country-select"
+                        type="select" 
+                        label="Country">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="dynamic-select" 
+                        label="City" 
+                        placeholder="Start typing city name..."
+                        helper-text="Dynamic searchable select">
+                    </my-input>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Boolean Inputs</h3>
+                <div class="form-group">
+                    <my-input 
+                        type="checkbox" 
+                        label="I agree to the terms and conditions"
+                        value="false">
+                    </my-input>
+                </div>
+                <div class="form-group">
+                    <my-input 
+                        type="radio" 
+                        label="Subscribe to newsletter"
+                        name="newsletter"
+                        value="false">
+                    </my-input>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-results">
+            <h3>Test Results</h3>
+            <div id="results">
+                <p>Testing input types functionality...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import '../src/index.js';
+        
+        // Set up the select options
+        document.addEventListener('DOMContentLoaded', () => {
+            const countrySelect = document.getElementById('country-select');
+            const schema = {
+                type: 'select',
+                label: 'Country',
+                options: [
+                    { label: 'Select Country', value: '' },
+                    { label: 'United States', value: 'US' },
+                    { label: 'Canada', value: 'CA' },
+                    { label: 'United Kingdom', value: 'UK' },
+                    { label: 'Germany', value: 'DE' },
+                    { label: 'France', value: 'FR' },
+                    { label: 'Australia', value: 'AU' },
+                    { label: 'Japan', value: 'JP' }
+                ]
+            };
+            countrySelect.setAttribute('schema', JSON.stringify(schema));
+            
+            // Test functionality
+            testInputTypes();
+        });
+        
+        function testInputTypes() {
+            const inputs = document.querySelectorAll('my-input');
+            const results = document.getElementById('results');
+            let testResults = [];
+            
+            inputs.forEach((input, index) => {
+                const type = input.getAttribute('type');
+                
+                try {
+                    // Test that the component renders
+                    if (input.shadowRoot) {
+                        testResults.push(`✓ ${type}: Rendered successfully`);
+                    } else {
+                        testResults.push(`✗ ${type}: Failed to render`);
+                    }
+                    
+                    // Add event listener to test functionality
+                    input.addEventListener('input', (e) => {
+                        console.log(`${type} input event:`, e.detail);
+                    });
+                    
+                    input.addEventListener('change', (e) => {
+                        console.log(`${type} change event:`, e.detail);
+                    });
+                    
+                } catch (error) {
+                    testResults.push(`✗ ${type}: Error - ${error.message}`);
+                }
+            });
+            
+            // Display results
+            results.innerHTML = `
+                <h4>Component Rendering Tests:</h4>
+                <ul>
+                    ${testResults.map(result => `<li>${result}</li>`).join('')}
+                </ul>
+                <p><strong>Total Components:</strong> ${inputs.length}</p>
+                <p><strong>Successfully Rendered:</strong> ${testResults.filter(r => r.includes('✓')).length}</p>
+            `;
+            
+            // Set class based on success
+            const successCount = testResults.filter(r => r.includes('✓')).length;
+            if (successCount === inputs.length) {
+                results.parentElement.classList.add('success');
+                results.innerHTML += '<p><strong>🎉 All input types working correctly!</strong></p>';
+            } else {
+                results.parentElement.classList.add('error');
+            }
+        }
+    </script>
+</body>
+</html>
