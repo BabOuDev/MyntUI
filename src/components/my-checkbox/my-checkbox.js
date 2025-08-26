@@ -100,12 +100,13 @@ class MyCheckbox extends MyntUIBaseComponent {
     this.setAttribute('value', value || '');
   }
 
-  // Generate TailwindCSS classes
+  // Generate TailwindCSS classes using global config
   getTailwindClasses() {
     const size = this.size || 'md';
     const disabled = this.disabled;
     const checked = this.checked;
     const indeterminate = this.indeterminate;
+    const config = globalConfig.get('theme.tailwind', {});
     
     // Container classes
     let containerClasses = [
@@ -116,11 +117,7 @@ class MyCheckbox extends MyntUIBaseComponent {
       'group'
     ];
 
-    if (disabled) {
-      containerClasses.push('cursor-not-allowed', 'opacity-50');
-    }
-
-    // Checkbox input classes
+    // Checkbox input base classes
     let checkboxClasses = [
       'relative',
       'flex-shrink-0',
@@ -130,41 +127,49 @@ class MyCheckbox extends MyntUIBaseComponent {
       'duration-medium1',
       'ease-standard',
       'focus-visible:ring-2',
-      'focus-visible:ring-primary',
+      'focus-visible:ring-primary/60',
       'focus-visible:ring-offset-2'
     ];
 
-    // Size classes
+    // Size classes - specific dimensions for checkboxes
     const sizeClasses = {
       sm: ['w-4', 'h-4'],
-      md: ['w-5', 'h-5'],
+      md: ['w-5', 'h-5'], 
       lg: ['w-6', 'h-6']
     };
-
     checkboxClasses.push(...(sizeClasses[size] || sizeClasses.md));
 
-    // State-specific classes
-    if (checked || indeterminate) {
-      checkboxClasses.push(
-        'bg-primary',
-        'border-primary',
-        'text-primary-on-primary'
-      );
-    } else {
-      checkboxClasses.push(
-        'bg-surface',
-        'border-outline',
-        'hover:border-primary',
-        'hover:shadow-sm'
-      );
+    // Get checkbox variant classes from global config
+    let variantKey = 'unchecked';
+    if (checked) {
+      variantKey = 'checked';
+    } else if (indeterminate) {
+      variantKey = 'indeterminate';
     }
 
+    const variantConfig = config.variants?.checkbox?.[variantKey] || '';
+    if (variantConfig) {
+      checkboxClasses.push(...variantConfig.split(' ').filter(Boolean));
+    } else {
+      // Fallback styling
+      if (checked || indeterminate) {
+        checkboxClasses.push('bg-primary', 'border-primary', 'text-primary-on-primary');
+      } else {
+        checkboxClasses.push('bg-surface', 'border-outline', 'hover:border-primary', 'hover:shadow-sm');
+      }
+    }
+
+    // Apply state classes from global config
+    const stateConfig = config.states || {};
+    
     if (disabled) {
-      checkboxClasses = checkboxClasses.filter(c => 
-        !c.startsWith('hover:') && 
-        !c.includes('focus')
-      );
+      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+      containerClasses.push(...disabledState.split(' ').filter(Boolean));
       checkboxClasses.push('border-outline-variant');
+    } else {
+      // Interactive states
+      const hoverState = stateConfig.hover || 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2';
+      checkboxClasses.push(...hoverState.split(' ').filter(Boolean));
     }
 
     // Label classes
