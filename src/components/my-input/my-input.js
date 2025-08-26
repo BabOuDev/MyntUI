@@ -11,6 +11,16 @@ class MyInput extends MyntUIBaseComponent {
   constructor() {
     super();
     
+    // Ensure shadow root is created (backup in case base component fails)
+    if (!this.shadowRoot) {
+      try {
+        this.attachShadow({ mode: 'open' });
+        console.log('Shadow root created successfully');
+      } catch (error) {
+        console.error('Failed to create shadow root:', error);
+      }
+    }
+    
     // Component-specific internal state
     this._schema = {};
     this._value = '';
@@ -28,8 +38,12 @@ class MyInput extends MyntUIBaseComponent {
     this._validationTimer = null;
     
     // Initialize with base component pattern
-    this.log('Input component initializing...');
-    this.parseAttributes();
+    try {
+      this.log('Input component initializing...');
+      this.parseAttributes();
+    } catch (error) {
+      console.error('Failed to initialize component:', error);
+    }
   }
 
   // Extended observed attributes (inherits base ones)
@@ -1181,7 +1195,11 @@ class MyInput extends MyntUIBaseComponent {
 
   // Render method using TailwindCSS
   render() {
-    if (!this.shadowRoot) return;
+    // Ensure shadow root exists
+    if (!this.shadowRoot && !this.attachShadow) return;
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: 'open' });
+    }
 
     const { label, labelPosition, name, leadingIcon, trailingIcon, helperText, characterCount } = this._schema;
     const classes = this.getTailwindClasses();
@@ -1657,7 +1675,8 @@ class MyInput extends MyntUIBaseComponent {
 
   connectedCallback() {
     super.connectedCallback();
-    this.render();
+    // Add small delay to ensure everything is properly set up
+    setTimeout(() => this.render(), 0);
   }
 
   disconnectedCallback() {
@@ -1670,6 +1689,15 @@ class MyInput extends MyntUIBaseComponent {
 }
 
 // Register the component
-customElements.define('my-input', MyInput);
+try {
+  if (!customElements.get('my-input')) {
+    customElements.define('my-input', MyInput);
+    console.log('MyInput component registered successfully');
+  } else {
+    console.log('MyInput component already registered');
+  }
+} catch (error) {
+  console.error('Failed to register MyInput component:', error);
+}
 
 export { MyInput };
