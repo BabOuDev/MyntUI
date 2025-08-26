@@ -1,4 +1,23 @@
-Add storybook in this repo, and showcase every component, with all potential variants.
+
+Ensure all input types mentioned in contributing are properly implemented and displayed in storybook ("text",
+        "pattern",
+        "number",
+        "integer",
+        "date",
+        "datetime-local",
+        "time",
+        "date-of-birth",
+        "select",
+        "dynamic-select",
+        "textarea",
+        "checkbox",
+        "radio",
+        "email",
+        "password",
+        "url",
+        "tel")
+
+Add/Update storybook in this repo, and showcase every component, with all potential variants.
 
 Then, your job is update, enhance quality and consistency, and test the repository. Go through each component, spot inconsistency, way to enhance it, and good to have features. use the CONTRIBUTING.md file to know a bit more what needs to be done. Make the library look beautiful. 
 Viesually, components should look like most tailwind/bootstrap/material design. Keep it simple, sharp, and consistent. Follow guidelines from the CONTRIBUTING.md file.
