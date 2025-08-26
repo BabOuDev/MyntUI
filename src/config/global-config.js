@@ -23,61 +23,227 @@ export class MyntUIConfig {
         
         // TailwindCSS class mappings for consistent styling
         tailwind: {
-          // Size mappings for components
+          // Size mappings for components - comprehensive system
           sizes: {
-            sm: 'h-input-sm text-label-medium px-sm py-xs',
-            md: 'h-input-md text-body-medium px-md py-sm',
-            lg: 'h-input-lg text-body-large px-lg py-md'
-          },
-          // Variant mappings for components
-          variants: {
-            input: {
-              filled: 'bg-surface-container border-outline-variant text-surface-on-surface',
-              outlined: 'bg-surface border-outline text-surface-on-surface',
-              underlined: 'bg-transparent border-transparent border-b-2 border-b-outline text-surface-on-surface',
-              text: 'bg-transparent border-transparent text-surface-on-surface'
+            xs: {
+              input: 'h-7 min-h-7 px-2 py-1 text-xs',
+              button: 'h-7 min-w-16 px-2 py-1 text-xs',
+              icon: 'w-4 h-4',
+              spacing: 'gap-1 p-1'
             },
-            button: {
-              filled: 'bg-primary text-primary-on-primary',
-              outlined: 'bg-transparent border-2 border-outline text-primary hover:bg-primary/10',
-              text: 'bg-transparent border-transparent text-primary hover:bg-primary/10',
-              'filled-tonal': 'bg-secondary-container text-secondary-on-container',
-              elevated: 'bg-surface shadow-elevation1 text-primary hover:shadow-elevation2'
+            sm: {
+              input: 'h-input-sm min-h-input-sm px-sm py-xs text-label-medium',
+              button: 'h-input-sm min-w-button px-sm py-xs text-label-medium',
+              icon: 'w-5 h-5',
+              spacing: 'gap-xs p-xs'
             },
-            toggle: {
-              checked: 'bg-primary',
-              unchecked: 'bg-outline',
-              track: 'bg-surface-variant'
+            md: {
+              input: 'h-input-md min-h-input-md px-md py-sm text-body-medium',
+              button: 'h-input-md min-w-button px-md py-sm text-body-medium',
+              icon: 'w-6 h-6',
+              spacing: 'gap-sm p-sm'
             },
-            checkbox: {
-              checked: 'bg-primary border-primary text-primary-on-primary',
-              unchecked: 'bg-transparent border-outline',
-              indeterminate: 'bg-primary border-primary text-primary-on-primary'
+            lg: {
+              input: 'h-input-lg min-h-input-lg px-lg py-md text-body-large',
+              button: 'h-input-lg min-w-button px-lg py-md text-body-large',
+              icon: 'w-7 h-7',
+              spacing: 'gap-md p-md'
+            },
+            xl: {
+              input: 'h-14 min-h-14 px-6 py-4 text-title-small',
+              button: 'h-14 min-w-button px-6 py-4 text-title-small',
+              icon: 'w-8 h-8',
+              spacing: 'gap-lg p-lg'
             }
           },
+
+          // Variant mappings for different component styles
+          variants: {
+            input: {
+              filled: 'bg-surface-container border border-outline-variant text-surface-on-surface placeholder:text-outline hover:border-outline focus:border-primary',
+              outlined: 'bg-surface border border-outline text-surface-on-surface placeholder:text-outline hover:border-surface-on-surface focus:border-primary',
+              underlined: 'bg-transparent border-0 border-b-2 border-b-outline text-surface-on-surface placeholder:text-outline hover:border-b-surface-on-surface focus:border-b-primary rounded-none',
+              text: 'bg-transparent border-transparent text-surface-on-surface placeholder:text-outline focus:bg-surface-variant/20'
+            },
+            button: {
+              filled: 'bg-primary text-primary-on-primary border-0 shadow-elevation1 hover:shadow-elevation2 state-layer-primary',
+              outlined: 'bg-transparent border border-outline text-primary hover:bg-primary/8 focus:bg-primary/12 state-layer-primary',
+              text: 'bg-transparent border-0 text-primary hover:bg-primary/8 focus:bg-primary/12 state-layer-primary',
+              'filled-tonal': 'bg-secondary-container text-secondary-on-container border-0 hover:shadow-elevation1 state-layer-secondary',
+              elevated: 'bg-surface shadow-elevation1 text-primary border-0 hover:shadow-elevation2 focus:shadow-elevation1 state-layer-surface'
+            },
+            toggle: {
+              track: {
+                checked: 'bg-primary/24 border-primary',
+                unchecked: 'bg-surface-variant border-outline'
+              },
+              thumb: {
+                checked: 'bg-primary shadow-elevation1 translate-x-5',
+                unchecked: 'bg-outline shadow-elevation1 translate-x-0'
+              }
+            },
+            checkbox: {
+              checked: 'bg-primary border-primary text-primary-on-primary shadow-none',
+              unchecked: 'bg-transparent border-outline hover:border-primary',
+              indeterminate: 'bg-primary border-primary text-primary-on-primary shadow-none'
+            },
+            radio: {
+              checked: 'border-primary bg-primary shadow-none',
+              unchecked: 'border-outline bg-transparent hover:border-primary'
+            },
+            card: {
+              elevated: 'bg-surface shadow-elevation1 border-0',
+              outlined: 'bg-surface border border-outline-variant shadow-none',
+              filled: 'bg-surface-container border-0 shadow-none'
+            },
+            modal: {
+              standard: 'bg-surface shadow-elevation4 border border-outline-variant',
+              fullscreen: 'bg-surface shadow-none border-0'
+            }
+          },
+
+          // Label positioning styles
+          labelPositions: {
+            top: {
+              container: 'flex flex-col gap-xs',
+              label: 'text-label-medium text-surface-on-surface mb-xs',
+              wrapper: 'relative'
+            },
+            left: {
+              container: 'flex items-center gap-md',
+              label: 'text-label-medium text-surface-on-surface min-w-24 flex-shrink-0',
+              wrapper: 'flex-1'
+            },
+            over: {
+              container: 'relative',
+              label: 'absolute left-3 top-0 transform -translate-y-1/2 bg-surface px-1 text-label-small text-outline transition-all duration-200 pointer-events-none',
+              labelActive: 'text-primary scale-90',
+              wrapper: 'relative'
+            },
+            floating: {
+              container: 'relative',
+              label: 'absolute left-3 transition-all duration-200 pointer-events-none text-outline',
+              labelFloating: 'top-0 transform -translate-y-1/2 bg-surface px-1 text-label-small text-primary scale-90',
+              labelResting: 'top-1/2 transform -translate-y-1/2 text-body-medium',
+              wrapper: 'relative'
+            }
+          },
+
           // State classes for interactive components
           states: {
-            hover: 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2',
-            focus: 'focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2',
-            active: 'active:bg-opacity-state-pressed active:scale-95',
-            disabled: 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
-            loading: 'opacity-75 cursor-wait',
-            error: 'border-error text-error bg-error/5',
-            success: 'border-success text-success bg-success/5',
-            warning: 'border-warning text-warning bg-warning/5'
+            base: 'transition-all duration-medium1 ease-standard',
+            hover: 'hover:bg-opacity-state-hover hover:scale-[1.02] hover:-translate-y-px',
+            focus: 'focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 focus-visible:ring-4 focus-visible:ring-primary/20',
+            focusWithin: 'focus-within:outline-2 focus-within:outline-primary focus-within:outline-offset-2',
+            active: 'active:bg-opacity-state-pressed active:scale-95 active:translate-y-0',
+            disabled: 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:grayscale',
+            readonly: 'read-only:bg-surface-variant/50 read-only:cursor-default',
+            loading: 'opacity-75 cursor-wait animate-pulse',
+            error: 'border-error text-error bg-error-light/10 focus:border-error focus:ring-error/20',
+            success: 'border-success text-success bg-success-light/10 focus:border-success focus:ring-success/20',
+            warning: 'border-warning text-warning bg-warning-light/10 focus:border-warning focus:ring-warning/20',
+            info: 'border-info text-info bg-info-light/10 focus:border-info focus:ring-info/20'
           },
-          // Common component base classes
+
+          // Animation classes
+          animations: {
+            ripple: 'relative overflow-hidden before:absolute before:inset-0 before:bg-current before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-8 active:before:opacity-16',
+            fadeIn: 'animate-fade-in',
+            slideUp: 'animate-slide-up',
+            bounce: 'animate-bounce',
+            spin: 'animate-spin',
+            pulse: 'animate-pulse',
+            ping: 'animate-ping'
+          },
+
+          // Common component base classes with full specifications
           components: {
-            input: 'rounded-lg border transition-all duration-medium1 focus-outline font-medium',
-            button: 'inline-flex items-center justify-center rounded-full transition-all duration-medium1 font-medium focus-ring state-layer min-w-button',
-            card: 'rounded-lg bg-surface shadow-elevation1 border border-outline-variant p-md',
-            modal: 'rounded-xl bg-surface shadow-elevation4 border border-outline-variant max-w-lg',
-            tooltip: 'rounded-lg px-sm py-xs text-label-small bg-neutral-900 text-neutral-white shadow-elevation2',
-            drawer: 'bg-surface border-outline-variant shadow-elevation2',
-            dropdown: 'bg-surface border border-outline-variant rounded-lg shadow-elevation2 max-h-60 overflow-y-auto',
-            notification: 'rounded-lg shadow-elevation3 p-md border border-outline-variant',
-            progressBar: 'rounded-full bg-surface-variant overflow-hidden',
-            gauge: 'rounded-full border-4 border-surface-variant'
+            input: {
+              base: 'rounded-lg border font-sans transition-all duration-medium1 ease-standard focus-outline',
+              container: 'relative w-full',
+              field: 'w-full bg-transparent outline-none',
+              addon: 'flex items-center justify-center text-outline',
+              helperText: 'text-label-small text-outline mt-xs',
+              errorText: 'text-label-small text-error mt-xs flex items-center gap-xs',
+              successText: 'text-label-small text-success mt-xs flex items-center gap-xs'
+            },
+            button: {
+              base: 'inline-flex items-center justify-center font-medium text-center cursor-pointer select-none transition-all duration-medium1 ease-standard focus-ring disabled:pointer-events-none min-w-button',
+              icon: 'flex items-center justify-center',
+              loading: 'opacity-75 cursor-wait',
+              iconOnly: 'aspect-square min-w-0'
+            },
+            card: {
+              base: 'rounded-lg overflow-hidden transition-all duration-medium1',
+              header: 'px-lg py-md border-b border-outline-variant',
+              body: 'px-lg py-md',
+              footer: 'px-lg py-md border-t border-outline-variant bg-surface-variant/20',
+              media: 'w-full object-cover'
+            },
+            modal: {
+              overlay: 'fixed inset-0 bg-background-overlay backdrop-blur-sm z-modal flex items-center justify-center p-md',
+              container: 'relative max-h-[90vh] w-full max-w-lg overflow-hidden rounded-xl transition-all duration-medium2',
+              header: 'flex items-center justify-between p-lg border-b border-outline-variant',
+              body: 'p-lg overflow-y-auto',
+              footer: 'flex items-center justify-end gap-md p-lg border-t border-outline-variant'
+            },
+            tooltip: {
+              base: 'absolute z-tooltip rounded-lg px-sm py-xs text-label-small shadow-elevation2 transition-all duration-short2',
+              arrow: 'absolute w-2 h-2 rotate-45'
+            },
+            drawer: {
+              overlay: 'fixed inset-0 bg-background-overlay backdrop-blur-sm z-drawer',
+              container: 'fixed bg-surface border-outline-variant shadow-elevation3 transition-transform duration-medium2',
+              header: 'flex items-center justify-between p-lg border-b border-outline-variant',
+              body: 'flex-1 overflow-y-auto p-lg',
+              footer: 'border-t border-outline-variant p-lg'
+            },
+            dropdown: {
+              trigger: 'inline-flex items-center justify-between w-full',
+              menu: 'absolute z-dropdown mt-1 w-full bg-surface border border-outline-variant rounded-lg shadow-elevation2 max-h-60 overflow-y-auto',
+              item: 'px-md py-sm text-body-medium cursor-pointer transition-colors duration-short1 hover:bg-surface-variant focus:bg-surface-variant',
+              separator: 'border-t border-outline-variant my-xs'
+            },
+            notification: {
+              container: 'fixed z-notification space-y-md',
+              item: 'flex items-start gap-md p-md rounded-lg shadow-elevation3 border transition-all duration-medium2 max-w-sm',
+              icon: 'flex-shrink-0 mt-xs',
+              content: 'flex-1 min-w-0',
+              title: 'font-medium text-surface-on-surface',
+              message: 'text-body-small text-outline mt-xs',
+              close: 'flex-shrink-0 p-xs -m-xs rounded-full transition-colors hover:bg-surface-variant'
+            },
+            progress: {
+              track: 'relative w-full bg-surface-variant rounded-full overflow-hidden',
+              fill: 'absolute top-0 left-0 h-full bg-primary transition-all duration-medium2 rounded-full',
+              text: 'text-label-small text-center'
+            },
+            gauge: {
+              container: 'relative inline-flex items-center justify-center',
+              track: 'rounded-full border-4 border-surface-variant',
+              fill: 'rounded-full border-4 border-primary transition-all duration-medium2',
+              text: 'absolute inset-0 flex items-center justify-center text-title-medium font-medium'
+            },
+            tabs: {
+              container: 'w-full',
+              list: 'flex border-b border-outline-variant',
+              tab: 'px-md py-sm font-medium text-outline border-b-2 border-transparent transition-all duration-short2 hover:text-surface-on-surface focus:text-surface-on-surface',
+              tabActive: 'text-primary border-primary',
+              panel: 'py-md focus:outline-none'
+            }
+          },
+
+          // Utility classes for common patterns
+          utilities: {
+            container: 'container mx-auto px-md',
+            section: 'py-section-gap',
+            divider: 'border-t border-outline-variant',
+            visuallyHidden: 'sr-only',
+            truncate: 'truncate',
+            ellipsis: 'text-ellipsis overflow-hidden',
+            backdrop: 'backdrop-blur-sm bg-background-overlay',
+            skeleton: 'animate-pulse bg-surface-variant rounded',
+            loading: 'relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-surface-variant before:to-transparent before:animate-shimmer'
           }
         },
         
