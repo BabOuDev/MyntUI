@@ -361,6 +361,19 @@ export default {
           '&:focus-visible': {
             boxShadow: `${theme('boxShadow.focus-primary')}, ${theme('boxShadow.focus-secondary')}`
           }
+        },
+        // Micro-interaction utilities
+        '.scale-subtle': {
+          transform: 'scale(1.02) translateY(-1px)'
+        },
+        '.bg-opacity-state-hover': {
+          backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-hover')}, transparent)`
+        },
+        '.bg-opacity-state-focus': {
+          backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-focus')}, transparent)`
+        },
+        '.bg-opacity-state-pressed': {
+          backgroundColor: `color-mix(in srgb, currentColor ${theme('opacity.state-pressed')}, transparent)`
         }
       });
     }
