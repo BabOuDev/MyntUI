@@ -47,12 +47,36 @@ describe('MyButton Component', () => {
         
         const buttonElement = button.shadowRoot.querySelector('button');
         expect(buttonElement).toBeTruthy();
-        expect(buttonElement.classList.contains(`variant-${variant}`)).toBe(true);
+        
+        // Test for specific TailwindCSS classes based on variant
+        switch (variant) {
+          case 'filled':
+            expect(buttonElement.classList.contains('bg-primary')).toBe(true);
+            expect(buttonElement.classList.contains('text-primary-on-primary')).toBe(true);
+            break;
+          case 'outlined':
+            expect(buttonElement.classList.contains('bg-transparent')).toBe(true);
+            expect(buttonElement.classList.contains('text-primary')).toBe(true);
+            expect(buttonElement.classList.contains('border-outline')).toBe(true);
+            break;
+          case 'text':
+            expect(buttonElement.classList.contains('bg-transparent')).toBe(true);
+            expect(buttonElement.classList.contains('border-transparent')).toBe(true);
+            break;
+          case 'filled-tonal':
+            expect(buttonElement.classList.contains('bg-secondary-container')).toBe(true);
+            expect(buttonElement.classList.contains('text-secondary-on-container')).toBe(true);
+            break;
+          case 'elevated':
+            expect(buttonElement.classList.contains('bg-surface')).toBe(true);
+            expect(buttonElement.classList.contains('shadow-elevation1')).toBe(true);
+            break;
+        }
       });
     });
 
-    test('should default to default variant', () => {
-      expect(button.variant).toBe('default');
+    test('should default to filled variant', () => {
+      expect(button.variant).toBe('default'); // This maps to 'filled' internally
     });
   });
 
@@ -74,10 +98,11 @@ describe('MyButton Component', () => {
       await waitForComponent(button);
       
       const buttonElement = button.shadowRoot.querySelector('button');
-      const spinner = button.shadowRoot.querySelector('.loading-spinner');
+      const spinner = button.shadowRoot.querySelector('svg.animate-spin');
       
       expect(button.loading).toBe(true);
-      expect(buttonElement.classList.contains('loading')).toBe(true);
+      expect(buttonElement.classList.contains('opacity-75')).toBe(true);
+      expect(buttonElement.classList.contains('cursor-wait')).toBe(true);
       expect(spinner).toBeTruthy();
       expect(buttonElement.getAttribute('aria-busy')).toBe('true');
     });
@@ -112,6 +137,14 @@ describe('MyButton Component', () => {
   describe('Size Variants', () => {
     const sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
+    const expectedHeights = {
+      xs: 'h-7',
+      sm: 'h-8', 
+      md: 'h-10',
+      lg: 'h-12',
+      xl: 'h-14'
+    };
+
     sizes.forEach(size => {
       test(`should apply ${size} size correctly`, async () => {
         button.setAttribute('size', size);
@@ -119,7 +152,7 @@ describe('MyButton Component', () => {
         await waitForComponent(button);
         
         const buttonElement = button.shadowRoot.querySelector('button');
-        expect(buttonElement.classList.contains(`size-${size}`)).toBe(true);
+        expect(buttonElement.classList.contains(expectedHeights[size])).toBe(true);
       });
     });
 
@@ -130,6 +163,11 @@ describe('MyButton Component', () => {
 
   describe('Density Variants', () => {
     const densities = ['default', 'compact', 'comfortable'];
+    const expectedClasses = {
+      default: [], // No additional classes for default
+      compact: ['tracking-tight', 'leading-tight'],
+      comfortable: ['tracking-wide', 'leading-relaxed']
+    };
 
     densities.forEach(density => {
       test(`should apply ${density} density correctly`, async () => {
@@ -138,7 +176,17 @@ describe('MyButton Component', () => {
         await waitForComponent(button);
         
         const buttonElement = button.shadowRoot.querySelector('button');
-        expect(buttonElement.classList.contains(`density-${density}`)).toBe(true);
+        
+        // Check for density-specific classes
+        if (density !== 'default') {
+          expectedClasses[density].forEach(className => {
+            expect(buttonElement.classList.contains(className)).toBe(true);
+          });
+        } else {
+          // For default, ensure compact/comfortable classes are not present
+          expect(buttonElement.classList.contains('tracking-tight')).toBe(false);
+          expect(buttonElement.classList.contains('tracking-wide')).toBe(false);
+        }
       });
     });
   });
@@ -157,8 +205,11 @@ describe('MyButton Component', () => {
       await waitForComponent(button);
       
       const buttonElement = button.shadowRoot.querySelector('button');
-      // Check CSS custom properties are applied for FAB
-      expect(button.shadowRoot.innerHTML).toContain(':host([fab])');
+      // Check for FAB-specific TailwindCSS classes
+      expect(buttonElement.classList.contains('rounded-2xl')).toBe(true);
+      expect(buttonElement.classList.contains('shadow-lg')).toBe(true);
+      expect(buttonElement.classList.contains('w-14')).toBe(true); // Default md size for FAB
+      expect(buttonElement.classList.contains('h-14')).toBe(true);
     });
   });
 
@@ -205,14 +256,20 @@ describe('MyButton Component', () => {
       
       await waitForComponent(button);
       
-      // Mock the createRipple method
-      const createRippleSpy = vi.spyOn(button, 'createRipple');
+      // Mock the enhanced ripple method
+      const createRippleSpy = vi.spyOn(button, 'createEnhancedRipple');
       
       // Simulate button click by calling the handleClick method directly
-      const mockEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      const mockEvent = new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 100, clientY: 50 });
       button.handleClick(mockEvent);
       
       expect(createRippleSpy).toHaveBeenCalled();
+      
+      // Check if ripple element is created temporarily
+      setTimeout(() => {
+        const rippleElement = button.shadowRoot.querySelector('.ripple-effect');
+        expect(rippleElement).toBeTruthy();
+      }, 50);
     });
   });
 
