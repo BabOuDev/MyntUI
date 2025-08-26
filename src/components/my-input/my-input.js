@@ -1384,14 +1384,14 @@ class MyInput extends MyntUIBaseComponent {
           --_input-outlined-outline-color-hover: var(--_global-color-outline);
           --_input-outlined-outline-color-disabled: var(--_global-color-outline-variant);
           --_input-outlined-container-color: var(--_global-color-surface);
-          --_input-outlined-container-color-hover: color-mix(in srgb, var(--_global-color-on-surface) 4%, var(--_global-color-surface));
-          --_input-outlined-container-color-focus: color-mix(in srgb, var(--_global-color-primary) 3%, var(--_global-color-surface));
+          --_input-outlined-container-color-hover: var(--_global-color-surface-container-low);
+          --_input-outlined-container-color-focus: var(--_global-color-surface-container-lowest);
           
           /* Filled variant colors with enhanced visual depth */
           --_input-filled-container-color: var(--_global-color-surface-container-highest);
-          --_input-filled-container-color-hover: color-mix(in srgb, var(--_global-color-on-surface) 6%, var(--_global-color-surface-container-highest));
-          --_input-filled-container-color-focus: color-mix(in srgb, var(--_global-color-primary) 8%, var(--_global-color-surface-container-highest));
-          --_input-filled-container-color-disabled: color-mix(in srgb, var(--_global-color-on-surface) 4%, var(--_global-color-surface));
+          --_input-filled-container-color-hover: var(--_global-color-surface-container-high);
+          --_input-filled-container-color-focus: var(--_global-color-surface-container);
+          --_input-filled-container-color-disabled: var(--_global-color-surface-variant);
           --_input-filled-active-indicator-color: var(--_global-color-primary);
           --_input-filled-active-indicator-color-error: var(--_global-color-error);
           --_input-filled-active-indicator-height: 1px;
@@ -1486,6 +1486,14 @@ class MyInput extends MyntUIBaseComponent {
         }
         
         /* Variant styles with consistent elevation */
+        :host([variant="outlined"]),
+        :host(:not([variant])) {
+          --_input-container-color: var(--_input-outlined-container-color);
+          --_input-container-color-hover: var(--_input-outlined-container-color-hover);
+          --_input-container-color-focus: var(--_input-outlined-container-color-focus);
+          --_input-outline-color: var(--_input-outlined-outline-color);
+        }
+        
         :host([variant="filled"]) {
           --_input-container-color: var(--_input-filled-container-color);
           --_input-container-color-hover: var(--_input-filled-container-color-hover);
@@ -1639,7 +1647,7 @@ class MyInput extends MyntUIBaseComponent {
           padding: var(--_input-padding-y, var(--_input-padding-y-medium)) var(--_input-padding-x, var(--_input-padding-x-medium));
           border: 1px solid var(--_input-outline-color);
           border-radius: var(--_input-container-shape);
-          background-color: var(--_input-container-color, transparent);
+          background-color: var(--_input-container-color, var(--_global-color-surface));
           color: var(--_input-text-color);
           font-size: inherit;
           font-family: inherit;
@@ -1999,7 +2007,7 @@ class MyInput extends MyntUIBaseComponent {
         @keyframes successFlash {
           0% {
             border-color: var(--_input-outline-color);
-            background-color: var(--_input-container-color, transparent);
+            background-color: var(--_input-container-color, var(--_global-color-surface));
             box-shadow: var(--_input-container-elevation);
             transform: scale(1);
           }
@@ -2017,7 +2025,7 @@ class MyInput extends MyntUIBaseComponent {
           }
           100% {
             border-color: var(--_input-outline-color);
-            background-color: var(--_input-container-color, transparent);
+            background-color: var(--_input-container-color, var(--_global-color-surface));
             box-shadow: var(--_input-container-elevation);
             transform: scale(1);
           }
