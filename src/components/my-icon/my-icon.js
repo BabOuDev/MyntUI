@@ -119,12 +119,13 @@ class MyIcon extends HTMLElement {
     this.toggleAttribute('interactive', Boolean(value));
   }
 
-  // Generate TailwindCSS classes based on props
+  // Generate TailwindCSS classes based on props and global config
   getTailwindClasses() {
     const size = this.size;
     const color = this.color;
     const disabled = this.disabled;
     const interactive = this.interactive;
+    const config = globalConfig.get('theme.tailwind', {});
     
     // Base classes
     let classes = [
@@ -134,24 +135,24 @@ class MyIcon extends HTMLElement {
       'flex-shrink-0'
     ];
 
-    // Size classes
+    // Size classes - more granular icon sizes
     const sizeClasses = {
-      xs: ['w-4', 'h-4'],
-      sm: ['w-5', 'h-5'],
-      md: ['w-6', 'h-6'],
-      lg: ['w-7', 'h-7'],
-      xl: ['w-8', 'h-8'],
-      '2xl': ['w-10', 'h-10']
+      xs: ['w-4', 'h-4', 'text-base'],
+      sm: ['w-5', 'h-5', 'text-lg'],
+      md: ['w-6', 'h-6', 'text-xl'],
+      lg: ['w-7', 'h-7', 'text-2xl'],
+      xl: ['w-8', 'h-8', 'text-3xl'],
+      '2xl': ['w-10', 'h-10', 'text-4xl']
     };
 
     classes.push(...(sizeClasses[size] || sizeClasses.md));
 
-    // Color classes
+    // Color classes using global config tokens
     if (color) {
-      // Handle predefined colors
+      // Handle predefined semantic colors
       const colorClasses = {
         primary: 'text-primary',
-        secondary: 'text-secondary',
+        secondary: 'text-secondary', 
         tertiary: 'text-tertiary',
         success: 'text-success',
         warning: 'text-warning',
@@ -159,36 +160,52 @@ class MyIcon extends HTMLElement {
         info: 'text-info',
         'on-surface': 'text-surface-on-surface',
         'on-primary': 'text-primary-on-primary',
+        'on-secondary': 'text-secondary-on-secondary',
+        'on-error': 'text-error-on-error',
+        'on-warning': 'text-warning-on-warning',
+        'on-success': 'text-success-on-success',
         outline: 'text-outline',
-        disabled: 'text-outline opacity-50'
+        'outline-variant': 'text-outline-variant',
+        disabled: 'text-outline opacity-50',
+        muted: 'text-outline-variant',
+        subtle: 'text-outline/70',
+        inverse: 'text-surface'
       };
 
       classes.push(colorClasses[color] || `text-${color}`);
     } else {
-      // Default color
+      // Default color from global config
       classes.push('text-surface-on-surface');
     }
 
-    // Interactive states
+    // Interactive states using global config
     if (interactive && !disabled) {
-      classes.push(
-        'cursor-pointer',
-        'transition-all',
-        'duration-medium1',
-        'ease-standard',
-        'hover:scale-105',
-        'hover:text-primary',
-        'active:scale-95',
-        'focus-visible:outline',
-        'focus-visible:outline-2',
-        'focus-visible:outline-primary',
-        'focus-visible:outline-offset-2'
-      );
+      const stateConfig = config.states || {};
+      
+      // Interactive base classes
+      classes.push('cursor-pointer');
+      
+      // Hover state from global config
+      const hoverState = stateConfig.hover || 'hover:bg-opacity-state-hover hover:scale-subtle transition-all duration-short2';
+      classes.push(...hoverState.split(' ').filter(Boolean));
+      
+      // Active state from global config  
+      const activeState = stateConfig.active || 'active:bg-opacity-state-pressed active:scale-95';
+      classes.push(...activeState.split(' ').filter(Boolean));
+      
+      // Focus state from global config
+      const focusState = stateConfig.focus || 'focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2';
+      classes.push(...focusState.split(' ').filter(Boolean));
+      
+      // Add hover color change
+      classes.push('hover:text-primary');
     }
 
-    // Disabled state
+    // Disabled state using global config
     if (disabled) {
-      classes.push('opacity-50', 'cursor-not-allowed');
+      const stateConfig = config.states || {};
+      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+      classes.push(...disabledState.split(' ').filter(Boolean));
     }
 
     return classes.join(' ');
