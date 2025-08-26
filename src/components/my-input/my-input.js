@@ -145,68 +145,52 @@ class MyInput extends MyntUIBaseComponent {
       'font-sans'
     ];
 
-    // Size-specific classes
-    const sizeClasses = config.sizes?.[size] || config.sizes?.md || 'h-input-md text-body-medium px-md';
+    // Get variant classes from config
+    const variantClasses = config.variants?.input?.[variant] || config.variants?.input?.outlined || '';
     
-    // Input field classes
+    // Input field classes using mynt-input-base and size utilities
     let inputClasses = [
       'w-full',
       'bg-transparent',
-      'text-surface-on-surface',
-      'placeholder:text-outline',
+      'border-0',
       'focus:outline-none',
-      'transition-all',
-      'duration-medium1',
-      sizeClasses
+      'placeholder:text-outline/60',
+      `mynt-size-${size}`
     ];
 
-    // Variant-specific classes
+    // Wrapper classes using global config
     let wrapperClasses = [
-      'relative',
-      'flex',
-      'items-center',
-      'transition-all',
-      'duration-medium1',
-      'focus-within:ring-2',
-      'focus-within:ring-primary',
-      'focus-within:ring-opacity-20'
+      'mynt-input-base',
+      ...variantClasses.split(' ').filter(Boolean)
     ];
 
-    switch (variant) {
-      case 'filled':
-        wrapperClasses.push(
-          'bg-surface-container',
-          'border-0',
-          'border-b-2',
-          'border-b-outline-variant',
-          'rounded-t-md',
-          'focus-within:border-b-primary',
-          'hover:bg-surface-container'
-        );
-        break;
-      case 'outlined':
-      default:
-        wrapperClasses.push(
-          'bg-surface',
-          'border',
-          'border-outline-variant',
-          'rounded-md',
-          'focus-within:border-primary',
-          'hover:border-outline'
-        );
-        break;
-    }
+    // State classes from config
+    const stateConfig = config.states || {};
+    
+    // Hover and focus states
+    wrapperClasses.push(
+      stateConfig.hover || 'hover:bg-opacity-state-hover',
+      stateConfig.focus || 'focus-within:ring-2 focus-within:ring-primary/60 focus-within:ring-offset-2'
+    );
 
     // Error state classes
     if (this._errors.length > 0) {
-      wrapperClasses.push('border-error', 'focus-within:border-error', 'focus-within:ring-error');
+      const errorState = stateConfig.error || 'border-error text-error bg-error/5';
+      wrapperClasses.push(...errorState.split(' '));
       inputClasses.push('text-error');
     }
 
     // Disabled state classes
     if (this._schema.disabled) {
-      wrapperClasses.push('opacity-50', 'cursor-not-allowed');
+      const disabledState = stateConfig.disabled || 'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+      wrapperClasses.push(...disabledState.split(' '));
       inputClasses.push('cursor-not-allowed');
+    }
+
+    // Loading state classes
+    if (this._schema.loading) {
+      const loadingState = stateConfig.loading || 'opacity-75 cursor-wait';
+      wrapperClasses.push(...loadingState.split(' '));
     }
 
     // Label classes
@@ -287,43 +271,93 @@ class MyInput extends MyntUIBaseComponent {
       this._errors.length ? 'aria-invalid="true"' : 'aria-invalid="false"'
     ].filter(Boolean);
 
-    // Type-specific attributes
-    const typeAttributes = [];
+    // Enhanced type handling
     switch (type) {
-      case 'number':
-      case 'integer':
-        typeAttributes.push(`type="number"`);
-        if (min !== null) typeAttributes.push(`min="${min}"`);
-        if (max !== null) typeAttributes.push(`max="${max}"`);
-        if (step !== null) typeAttributes.push(`step="${step}"`);
-        break;
+      case 'textarea':
+        return this.generateTextareaElement(commonAttributes);
+      case 'select':
+        return this.generateSelectElement(commonAttributes);
+      case 'dynamic-select':
+        return this.generateDynamicSelectElement(commonAttributes);
+      case 'multiple':
+        return this.generateMultiSelectElement(commonAttributes);
+      case 'country':
+        return this.generateCountrySelectElement(commonAttributes);
+      case 'currency':
+        return this.generateCurrencyInputElement(commonAttributes);
+      case 'phone':
+        return this.generatePhoneInputElement(commonAttributes);
       case 'date':
       case 'datetime-local':
       case 'time':
       case 'date-of-birth':
-        typeAttributes.push(`type="${type === 'date-of-birth' ? 'date' : type}"`);
-        if (min !== null) typeAttributes.push(`min="${min}"`);
-        if (max !== null) typeAttributes.push(`max="${max}"`);
-        break;
-      case 'textarea':
-        return `<textarea ${commonAttributes.join(' ')} rows="3"></textarea>`;
-      case 'select':
-        return this.generateSelectElement(commonAttributes);
+        return this.generateDateTimeInputElement(commonAttributes, type);
+      case 'number':
+      case 'integer':
+        return this.generateNumberInputElement(commonAttributes);
       default:
-        typeAttributes.push(`type="${type}"`);
-        if (minLength !== null) typeAttributes.push(`minlength="${minLength}"`);
-        if (maxLength !== null) typeAttributes.push(`maxlength="${maxLength}"`);
-        if (pattern) typeAttributes.push(`pattern="${pattern}"`);
-        break;
+        return this.generateTextInputElement(commonAttributes, type);
     }
+  }
+
+  // Generate standard text input
+  generateTextInputElement(commonAttributes, type) {
+    const { minLength, maxLength, pattern } = this._schema;
+    const typeAttributes = [`type="${type}"`];
+    
+    if (minLength !== null) typeAttributes.push(`minlength="${minLength}"`);
+    if (maxLength !== null) typeAttributes.push(`maxlength="${maxLength}"`);
+    if (pattern) typeAttributes.push(`pattern="${pattern}"`);
 
     return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+  }
+
+  // Generate number input with enhanced controls
+  generateNumberInputElement(commonAttributes) {
+    const { min, max, step } = this._schema;
+    const typeAttributes = [`type="number"`];
+    
+    if (min !== null) typeAttributes.push(`min="${min}"`);
+    if (max !== null) typeAttributes.push(`max="${max}"`);
+    if (step !== null) typeAttributes.push(`step="${step}"`);
+
+    return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+  }
+
+  // Generate date/time inputs with enhanced picker
+  generateDateTimeInputElement(commonAttributes, type) {
+    const { min, max } = this._schema;
+    const inputType = type === 'date-of-birth' ? 'date' : type;
+    const typeConfig = globalConfig.get(`components.input.typeConfigs.${type}`, {});
+    
+    const typeAttributes = [`type="${inputType}"`];
+    
+    if (min !== null) typeAttributes.push(`min="${min}"`);
+    if (max !== null) typeAttributes.push(`max="${max}"`);
+    if (type === 'date-of-birth' && !max) typeAttributes.push(`max="${new Date().toISOString().split('T')[0]}"`);
+
+    // Add enhanced picker attributes based on config
+    if (typeConfig.enableNativeInput !== false) {
+      return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+    } else {
+      // TODO: Implement custom date picker component
+      return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+    }
+  }
+
+  // Generate enhanced textarea
+  generateTextareaElement(commonAttributes) {
+    const rows = this._schema.rows || 3;
+    const resize = this._schema.resize || 'vertical';
+    
+    return `<textarea ${commonAttributes.join(' ')} rows="${rows}" style="resize: ${resize}"></textarea>`;
   }
 
   // Generate select element with options
   generateSelectElement(commonAttributes) {
     const options = this._schema.options || [];
     const multiple = this._schema.multiple || false;
+    const typeConfig = globalConfig.get('components.input.typeConfigs.select', {});
     
     const selectAttributes = [
       ...commonAttributes,
@@ -339,6 +373,100 @@ class MyInput extends MyntUIBaseComponent {
     }).join('');
 
     return `<select ${selectAttributes.join(' ')}>${optionsHtml}</select>`;
+  }
+
+  // Generate dynamic select with search capability
+  generateDynamicSelectElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.dynamic-select', {});
+    
+    // For now, render as a searchable input with datalist
+    // TODO: Implement full dynamic select component
+    const datalistId = `${this._schema.name}-options`;
+    const options = this._schema.options || [];
+    
+    const datalistHtml = `
+      <datalist id="${datalistId}">
+        ${options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
+      </datalist>
+    `;
+
+    return `
+      <input ${[...commonAttributes, `list="${datalistId}"`].join(' ')} />
+      ${datalistHtml}
+    `;
+  }
+
+  // Generate multi-select with chips
+  generateMultiSelectElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.multiple', {});
+    
+    // For now, render as multiple select
+    // TODO: Implement chip-based multi-select component
+    const options = this._schema.options || [];
+    const selectAttributes = [...commonAttributes, 'multiple'];
+
+    const optionsHtml = options.map(option => {
+      const selected = Array.isArray(this._value) ? this._value.includes(option.value) : false;
+      return `<option value="${option.value}" ${selected ? 'selected' : ''}>${option.label}</option>`;
+    }).join('');
+
+    return `<select ${selectAttributes.join(' ')}>${optionsHtml}</select>`;
+  }
+
+  // Generate country selector with flags
+  generateCountrySelectElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.country', {});
+    
+    // Basic countries list (subset for demo)
+    const countries = [
+      { code: 'US', name: 'United States', flag: '🇺🇸' },
+      { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+      { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+      { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+      { code: 'FR', name: 'France', flag: '🇫🇷' },
+      { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+      { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+      { code: 'JP', name: 'Japan', flag: '🇯🇵' },
+      { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+      { code: 'BR', name: 'Brazil', flag: '🇧🇷' }
+    ];
+
+    const optionsHtml = countries.map(country => {
+      const selected = this._value === country.code;
+      const displayText = typeConfig.includeFlag ? `${country.flag} ${country.name}` : country.name;
+      return `<option value="${country.code}" ${selected ? 'selected' : ''}>${displayText}</option>`;
+    }).join('');
+
+    return `<select ${commonAttributes.join(' ')}>${optionsHtml}</select>`;
+  }
+
+  // Generate currency input with symbol
+  generateCurrencyInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.currency', {});
+    const precision = typeConfig.precision || 2;
+    const step = 1 / Math.pow(10, precision);
+    
+    const typeAttributes = [
+      'type="number"',
+      `step="${step}"`,
+      typeConfig.allowNegative === false ? 'min="0"' : ''
+    ].filter(Boolean);
+
+    return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
+  }
+
+  // Generate phone input with country code
+  generatePhoneInputElement(commonAttributes) {
+    const typeConfig = globalConfig.get('components.input.typeConfigs.phone', {});
+    
+    // For now, render as tel input with pattern
+    // TODO: Implement full phone input with country code selector
+    const typeAttributes = [
+      'type="tel"',
+      'pattern="[+]?[0-9\\s\\-\\(\\)]{10,}"'
+    ];
+
+    return `<input ${[...typeAttributes, ...commonAttributes].join(' ')} />`;
   }
 
   // Enhanced validation with better error messages
@@ -374,12 +502,14 @@ class MyInput extends MyntUIBaseComponent {
           }
           break;
         case 'tel':
+        case 'phone':
           if (!/^[\+]?[\d\s\-\(\)]{10,}$/.test(value)) {
             this._errors.push('Please enter a valid phone number');
           }
           break;
         case 'number':
         case 'integer':
+        case 'currency':
           const num = parseFloat(value);
           if (isNaN(num)) {
             this._errors.push('Please enter a valid number');
@@ -390,6 +520,45 @@ class MyInput extends MyntUIBaseComponent {
             if (max !== null && num > parseFloat(max)) {
               this._errors.push(`Value must be no more than ${max}`);
             }
+          }
+          break;
+        case 'date':
+        case 'date-of-birth':
+        case 'datetime-local':
+          try {
+            const date = new Date(value);
+            if (isNaN(date.getTime())) {
+              this._errors.push('Please enter a valid date');
+            } else {
+              if (min && date < new Date(min)) {
+                this._errors.push('Date is too early');
+              }
+              if (max && date > new Date(max)) {
+                this._errors.push('Date is too late');
+              }
+              if (type === 'date-of-birth' && date > new Date()) {
+                this._errors.push('Birth date cannot be in the future');
+              }
+            }
+          } catch {
+            this._errors.push('Please enter a valid date');
+          }
+          break;
+        case 'time':
+          if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {
+            this._errors.push('Please enter a valid time (HH:MM)');
+          }
+          break;
+        case 'country':
+          // Basic country code validation
+          if (!/^[A-Z]{2}$/.test(value)) {
+            this._errors.push('Please select a valid country');
+          }
+          break;
+        case 'postal-code':
+          // Basic postal code validation (varies by country)
+          if (!/^[A-Za-z0-9\s\-]{3,10}$/.test(value)) {
+            this._errors.push('Please enter a valid postal code');
           }
           break;
       }
